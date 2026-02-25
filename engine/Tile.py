@@ -13,4 +13,4 @@ class Tile:
     def __repr__(self):
         if self.is_joker:
             return "JOKER"
-        return f"{self.color}-{self.number}({self.copy_id})" # for printing clearly
+        return f"{self.color}-{self.number}({self.copy_id}) of 2 copy" # for printing clearly
