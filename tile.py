@@ -1,6 +1,6 @@
 import arcade
 
-TILE_WIDTH = 80
+TILE_WIDTH = 60
 TILE_HEIGHT = 100
 
 class Tile(arcade.Sprite):
