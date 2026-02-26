@@ -10,8 +10,8 @@ class GameWindow(arcade.Window):
 
     def __init__(self):
         super().__init__(
+            1000,
             800,
-            600,
             "Test Game",
             resizable=True
         )
@@ -198,7 +198,6 @@ class GameWindow(arcade.Window):
         self.setup()
 
     def on_mouse_press(self, x, y, button, modifiers):
-
         clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
 
         # Check if a card had been clicked
@@ -214,6 +213,10 @@ class GameWindow(arcade.Window):
 
         # Drop card from held tiles
         self.held_tiles = []
+
+        # Find closest stand slot
+
+
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
