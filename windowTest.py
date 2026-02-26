@@ -1,5 +1,6 @@
 import arcade
 
+import tile
 from com import Com, COM_WIDTH
 from deck import Deck
 from tile import Tile, TILE_WIDTH, TILE_HEIGHT
@@ -28,18 +29,17 @@ class GameWindow(arcade.Window):
         self.discard_list = []
         self.stand_slot_list = []
 
-        # Coordinates of stand start
+        # Stand specifications
         self.stand_start_x = 0
-
-        # Tile stand specifications
+        self.total_stand_height = self.rows * TILE_HEIGHT + self.stand_divider
+        self.stand_divider = 5
         self.rows = 2
         self.columns = 12
         self.total_stand_width = self.columns * TILE_WIDTH
 
-        # Stand divider line size
-        self.stand_divider = 5
+        self.held_tiles = []
 
-        self.total_stand_height = self.rows * TILE_HEIGHT + self.stand_divider
+
 
 
     # Set up game
@@ -176,6 +176,30 @@ class GameWindow(arcade.Window):
         super().on_resize(width, height)
         # Run setup again with new screen size
         self.setup()
+
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        held_tile = arcade.get_sprites_at_point(x, y), self.tile_list
+
+        self.held_tiles = [held_tile]
+
+        self.pull_to_top(self.held_tiles[0])
+    def on_mouse_release(self, x, y, button, modifiers):
+
+        # If no cards are being held, return
+        if len(self.held_tiles) == 0:
+            return
+
+        # Drop card from held tiles
+        self.held_tiles = []
+    def on_mouse_motion(self, x, y, dx, dy):
+        held_tile = self.held_tiles[0]
+        held_tile.center_x += dx
+        held_tile.center_y += dy
+
+    def pull_to_top(self, Tile: arcade.Sprite):
+        self.tile_list.remove(tile)
+        self.tile_list.append(tile)
 
 def main():
     window = GameWindow()
