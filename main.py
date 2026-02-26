@@ -216,8 +216,6 @@ class GameWindow(arcade.Window):
 
         # Find closest stand slot
 
-
-
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
             moving_tile.center_x += dx
