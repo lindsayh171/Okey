@@ -144,37 +144,9 @@ class GameWindow(arcade.Window):
             self.deck.draw()
 
         for tile in self.tile_list:
+            tile.set_face_up()
             # Rectangle
-            arcade.draw_lbwh_rectangle_filled(
-                tile.center_x - TILE_WIDTH / 2,
-                tile.center_y - TILE_HEIGHT / 2,
-                TILE_WIDTH,
-                TILE_HEIGHT,
-                (222, 212, 193)
-            )
-
-            # Value
-            arcade.draw_text(
-                str(tile.value),
-                tile.center_x,
-                tile.center_y + (TILE_HEIGHT / 5),
-                tile.value_color,
-                40,
-                anchor_x="center",
-                anchor_y="center",
-                bold=True
-            )
-
-            # Symbol
-            arcade.draw_text(
-                "♥",
-                tile.center_x,
-                tile.center_y - (TILE_HEIGHT / 3.5),
-                tile.value_color,
-                15,
-                anchor_x="center",
-                anchor_y="center"
-            )
+            tile.draw()
 
     def setup_stand(self):
         screen_width = self.width
