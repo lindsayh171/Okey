@@ -54,7 +54,7 @@ class Dealer:
 
         # Starting player is dealt 15 tiles
         players[starting_player_idx].draw_tile(tiles.pop())
-        
+
         # remaining tiles go on draw pile
         draw_pile = DrawPile(tiles)
 
