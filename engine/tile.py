@@ -2,7 +2,7 @@
 
 class Tile:
     colors = ("red", "blue", "black", "orange")
-    suits = ("circle, triangle, square, star")
+    suits = ("circle", "triangle", "square", "star")
     def __init__(self, color, number, suit, is_joker=False, copy_id = 0):
         self.color = color
         self.number = number #Numbers are 1 to 13
@@ -14,4 +14,4 @@ class Tile:
         if self.is_joker:
             return "JOKER"
         # for printing clearly
-        return f"{self.color}-{self.suits}-{self.number}({self.copy_id}) of 2 copy" 
+        return f"{self.color}-{self.suit}-{self.number}({self.copy_id}) of 2 copy" 
