@@ -33,7 +33,7 @@ class GameWindow(arcade.Window):
         self.total_stand_height = self.rows * TILE_HEIGHT + self.stand_divider
         self.total_stand_width = self.columns * TILE_WIDTH
 
-        self.held_tile = []
+        self.held_tiles = []
 
     # Set up game
     def setup(self):
@@ -89,59 +89,38 @@ class GameWindow(arcade.Window):
 
         self.tile_list.draw()
 
-        for tile in self.tile_list:
-            # Boarder
-            arcade.draw_lbwh_rectangle_outline(
-                tile.center_x - TILE_WIDTH / 2,
-                tile.center_y - TILE_HEIGHT / 2,
-                TILE_WIDTH,
-                TILE_HEIGHT,
-                arcade.color.ASH_GREY,
-                3
-            )
+        # Draw stand
+        for stand in self.stand_slot_list:
+            stand.draw()
 
+        # draw stand line divider
+        arcade.draw_lbwh_rectangle_filled(
+            self.stand_start_x - TILE_WIDTH / 2,
+            TILE_HEIGHT,
+            self.total_stand_width,
+            self.stand_divider,
+            arcade.color.DEEP_COFFEE,
+        )
+
+        # Draw coms
+        self.com_list.draw()
+        for com in self.com_list:
+            # Need to add text to existing sprite square texture
             arcade.draw_text(
-                str(tile.value),
-                tile.center_x,
-                tile.center_y,
-                tile.value_color,
-                40,
+                com.name,
+                com.center_x,
+                com.center_y,
+                arcade.color.WHITE,
+                font_size=15,
                 anchor_x="center",
                 anchor_y="center",
             )
 
-            # Draw stand
-            for stand in self.stand_slot_list:
-                stand.draw()
-
-            # draw stand line divider
-            arcade.draw_lbwh_rectangle_filled(
-                self.stand_start_x - TILE_WIDTH / 2,
-                TILE_HEIGHT,
-                self.total_stand_width,
-                self.stand_divider,
-                arcade.color.DEEP_COFFEE,
-            )
-
-            # Draw coms
-            self.com_list.draw()
-            for com in self.com_list:
-                # Need to add text to existing sprite square texture
-                arcade.draw_text(
-                    com.name,
-                    com.center_x,
-                    com.center_y,
-                    arcade.color.WHITE,
-                    font_size=15,
-                    anchor_x="center",
-                    anchor_y="center",
-                )
-
-            # Draw discard piles
-            for disc in self.discard_list:
-                disc.draw()
-            # Draw deck
-            self.deck.draw()
+        # Draw discard piles
+        for disc in self.discard_list:
+            disc.draw()
+        # Draw deck
+        self.deck.draw()
 
         for tile in self.tile_list:
             tile.set_face_up()
@@ -228,24 +207,25 @@ class GameWindow(arcade.Window):
         self.setup()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        held_tile = arcade.get_sprites_at_point(x, y), self.tile_list
 
-        self.held_tile = [held_tile]
+        clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
 
-        self.pull_to_top(self.held_tile[0])
+        # Check if a card had been clicked
+        if len(clicked_tiles) > 0:
+            self.held_tiles.append(clicked_tiles[0])
+            self.pull_to_top(self.held_tiles[0])
 
     def on_mouse_release(self, x, y, button, modifiers):
 
         # If no cards are being held, return
-        if len(self.held_tile) == 0:
+        if len(self.held_tiles) == 0:
             return
 
         # Drop card from held tiles
-        self.held_tile = []
+        self.held_tiles = []
 
     def on_mouse_motion(self, x, y, dx, dy):
-        for moving_tile in self.held_tile:
-            moving_tile = self.held_tile[0]
+        for moving_tile in self.held_tiles:
             moving_tile.center_x += dx
             moving_tile.center_y += dy
 
