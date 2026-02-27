@@ -202,7 +202,7 @@ class GameView(arcade.View):
         # Check if a card had been clicked
         if len(clicked_tiles) > 0:
             self.held_tiles.append(clicked_tiles[0])
-            self.pull_to_top(self.held_tiles[0])
+            self.pull_to_top(clicked_tiles[0])
 
     def on_mouse_release(self, x, y, button, modifiers):
 
@@ -213,7 +213,6 @@ class GameView(arcade.View):
         # Drop card from held tiles
         self.held_tiles = []
 
-        # Find closest stand slot
 
 
 
