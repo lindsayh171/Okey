@@ -1,4 +1,5 @@
 import arcade
+import ui_components.rounded_rectangle as rr
 
 TILE_WIDTH = 60
 TILE_HEIGHT = 100
@@ -21,6 +22,14 @@ class Tile(arcade.Sprite):
             outer_alpha = 255
         )
 
+        self.tile_bg = rr.RoundedRectangle(self.center_x - TILE_WIDTH / 2,
+            self.center_y - TILE_HEIGHT / 2,
+            TILE_WIDTH,
+            TILE_HEIGHT,
+            TILE_HEIGHT // 4,
+      (222, 212, 193)
+          )
+
         self.width = TILE_WIDTH
         self.height = TILE_HEIGHT
 
@@ -29,13 +38,15 @@ class Tile(arcade.Sprite):
 
     def draw(self):
         # Rectangle
-        arcade.draw_lbwh_rectangle_filled(
-            self.center_x - TILE_WIDTH / 2,
-            self.center_y - TILE_HEIGHT / 2,
-            TILE_WIDTH,
-            TILE_HEIGHT,
-            (222, 212, 193)
-        )
+        tile_bg = rr.RoundedRectangle(self.center_x,
+            self.center_y,
+            self.width,
+            self.height,
+            self.height // 9,
+      (222, 212, 193)
+          )
+        tile_bg.draw()
+
 
         if self.is_face_up:
             # Value

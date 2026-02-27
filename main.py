@@ -79,8 +79,6 @@ class GameView(arcade.View):
     def on_draw(self):
         self.clear()
 
-        self.tile_list.draw()
-
         # Draw stand
         for stand in self.stand_slot_list:
             stand.draw()
