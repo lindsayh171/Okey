@@ -23,14 +23,17 @@ class Button():
                                                   self.height,
                                                   self.radius,
                                                   self.color)
+
+        # draw button text
+        arcade.load_font("../assets/fonts/Itim-Regular.ttf")
         txt = arcade.Text(
             self.text,
             self.center_x,
-            self.center_y,
+            self.center_y - self.height // 4,
             self.text_color,
-            font_size= self.height *0.3,
+            font_size= self.height * 0.6,
             anchor_x="center",
-            font_name="Irish Grover"
+            font_name="Itim"
         )
         rect.draw()
         txt.draw()

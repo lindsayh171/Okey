@@ -11,23 +11,37 @@ class TitleView(arcade.View):
 
         arcade.load_font("../assets/fonts/IrishGrover-Regular.ttf")
 
+        title_x = self.window.width / 2
+        title_y = self.window.height / 2
+
         self.title_text = arcade.Text(
             "Okey",
-            self.window.width / 2,
-            self.window.height / 2,
+            title_x,
+            title_y,
             (255, 107, 107),
-            font_size= self.window.height * 0.25,
+            font_size= self.window.height * 0.3,
             anchor_x="center",
             font_name="Irish Grover"
         )
 
-        self.play_button = button.Button(self.window.width / 3,
-                             self.window.height / 3,
-                             self.window.width / 6,
-                             self.window.height / 11,
+        button_width = self.window.width / 5
+        button_height = self.window.height / 10
+
+        self.play_button = button.Button(title_x - button_width * 0.8,
+                             title_y - button_height * 1.6,
+                             button_width,
+                             button_height,
                              "Play",
-                             (255, 107, 107),
-                                         (1, 22, 56))
+                             (255, 230, 109),
+                             (1, 22, 56))
+
+        self.rules_button = button.Button(title_x + button_width * 0.8,
+                                          title_y - button_height * 1.6,
+                                          button_width,
+                                          button_height,
+                                          "Rules",
+                                          (78, 205, 196),
+                                          (1, 22, 56))
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
@@ -37,9 +51,8 @@ class TitleView(arcade.View):
         """ Draw this view """
         self.clear()
         self.title_text.draw()
-        arcade.draw_text("Click to advance", self.window.width / 2, self.window.height / 2-75,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
         self.play_button.draw()
+        self.rules_button.draw()
 
 def main():
     """ Main function """
