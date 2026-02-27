@@ -214,7 +214,9 @@ class GameWindow(arcade.Window):
         # Drop card from held tiles
         self.held_tiles = []
 
-        # Find closest stand slot
+        # Find the closest stand slot
+
+
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
