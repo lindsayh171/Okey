@@ -15,18 +15,7 @@ class Button():
         self.hover_color = arcade.color.SPRING_GREEN
         self.current_color = self.color
 
-    def draw(self):
-        # draw a rounded rectangle
-        rect = rounded_rectangle.RoundedRectangle(self.center_x,
-                                                  self.center_y,
-                                                  self.width,
-                                                  self.height,
-                                                  self.radius,
-                                                  self.color)
-
-        # draw button text
-        arcade.load_font("../assets/fonts/Itim-Regular.ttf")
-        txt = arcade.Text(
+        self.label = arcade.Text(
             self.text,
             self.center_x,
             self.center_y - self.height // 4,
@@ -35,5 +24,19 @@ class Button():
             anchor_x="center",
             font_name="Itim"
         )
-        rect.draw()
-        txt.draw()
+
+        # draw a rounded rectangle
+        self.rect = rounded_rectangle.RoundedRectangle(self.center_x,
+                                                  self.center_y,
+                                                  self.width,
+                                                  self.height,
+                                                  self.radius,
+                                                  self.color)
+
+    def draw(self):
+
+        # draw button text
+        arcade.load_font("../assets/fonts/Itim-Regular.ttf")
+
+        self.rect.draw()
+        self.label.draw()

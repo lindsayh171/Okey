@@ -1,4 +1,5 @@
 import arcade
+import ui_components.rounded_rectangle as rr
 
 TILE_WIDTH = 60
 TILE_HEIGHT = 100
@@ -22,45 +23,74 @@ class Tile(arcade.Sprite):
             outer_alpha = 255
         )
 
+        self.tile_bg = rr.RoundedRectangle(self.center_x - TILE_WIDTH / 2,
+            self.center_y - TILE_HEIGHT / 2,
+            TILE_WIDTH,
+            TILE_HEIGHT,
+            TILE_HEIGHT // 4,
+      (222, 212, 193)
+          )
+
         self.width = TILE_WIDTH
         self.height = TILE_HEIGHT
 
         self.center_x = x
         self.center_y = y
 
-    def draw(self):
-        # Rectangle
-        arcade.draw_lbwh_rectangle_filled(
-            self.center_x - TILE_WIDTH / 2,
-            self.center_y - TILE_HEIGHT / 2,
+        # text for tile
+        self.tile_value = arcade.Text(
+            str(self.value),
+            self.center_x,
+            self.center_y + (TILE_HEIGHT / 5),
+            self.color,
+            40,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True
+        )
+
+        # symbol for tile
+        self.tile_symbol = arcade.Text(
+            self.suit,
+            self.center_x,
+            self.center_y - (TILE_HEIGHT / 3.5),
+            self.color,
+            15,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
+        # create rectangle
+        self.tile_bg = rr.RoundedRectangle(
+            self.center_x,
+            self.center_y,
             TILE_WIDTH,
             TILE_HEIGHT,
+            TILE_HEIGHT // 9,
             (222, 212, 193)
         )
 
+    def draw(self):
+        # Rectangle
+        self.tile_bg.center_x = self.center_x
+        self.tile_bg.center_y = self.center_y
+        self.tile_bg.draw()
+
+        # draw value and symbol if face up
         if self.is_face_up:
+            # update text and tile positions
+            # Update text position to follow tile
+            self.tile_value.x = self.center_x
+            self.tile_value.y = self.center_y + (TILE_HEIGHT / 5)
+
+            self.tile_symbol.x = self.center_x
+            self.tile_symbol.y = self.center_y - (TILE_HEIGHT / 3.5)
+
             # Value
-            arcade.draw_text(
-                str(self.value),
-                self.center_x,
-                self.center_y + (TILE_HEIGHT / 5),
-                self.color,
-                40,
-                anchor_x="center",
-                anchor_y="center",
-                bold=True
-            )
+            self.tile_value.draw()
 
             # Symbol
-            arcade.draw_text(
-                self.suit,
-                self.center_x,
-                self.center_y - (TILE_HEIGHT / 3.5),
-                self.color,
-                15,
-                anchor_x="center",
-                anchor_y="center"
-            )
+            self.tile_symbol.draw()
 
     def set_face_down(self):
         """ Turn card face-down """
@@ -70,7 +100,7 @@ class Tile(arcade.Sprite):
         """ Turn card face-up """
         self.is_face_up = True
 
-    def is_face_up(self):
+    def get_face_up(self):
         return self.is_face_up
 
     def __repr__(self):

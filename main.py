@@ -97,7 +97,7 @@ class GameView(arcade.View):
         self.com_list.draw()
         for com in self.com_list:
             # Need to add text to existing sprite square texture
-            arcade.draw_text(
+            c_name_txt = arcade.Text(
                 com.name,
                 com.center_x,
                 com.center_y,
@@ -106,6 +106,7 @@ class GameView(arcade.View):
                 anchor_x="center",
                 anchor_y="center",
             )
+            c_name_txt.draw()
 
         # Draw discard piles
         for disc in self.discard_list:
@@ -204,6 +205,7 @@ class GameView(arcade.View):
         if len(clicked_tiles) > 0:
             self.held_tiles.append(clicked_tiles[0])
             self.pull_to_top(self.held_tiles[0])
+
 
     def on_mouse_release(self, x, y, button, modifiers):
 
