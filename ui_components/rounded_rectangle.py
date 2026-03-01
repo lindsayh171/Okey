@@ -36,3 +36,17 @@ class RoundedRectangle():
         arcade.draw_circle_filled(br_corner[0], br_corner[1], self.radius, self.color)
         arcade.draw_circle_filled(tl_corner[0], tl_corner[1], self.radius, self.color)
         arcade.draw_circle_filled(tr_corner[0], tr_corner[1], self.radius, self.color)
+
+    def collided_with_rect(self, x, y):
+        """
+        Custom function to check if collision occurred between button and mouse press
+
+        :param x: x coordinate
+        :param y: y coordinate
+        :return: true if collided, false otherwise
+        """
+
+        x_true = (x <= self.center_x + self.width / 2) and (x >= self.center_x - self.width / 2)
+        y_true = (y <= self.center_y + self.height / 2) and (y >= self.center_y - self.height / 2)
+
+        return x_true and y_true
