@@ -15,6 +15,7 @@ class Tile(arcade.Sprite):
         self.suit = suit
         self.is_joker = is_joker
         self.copy_id = copy_id  # two copies of each # tile - this distinguishes duplicate tiles
+        self.current_slot_location = None
 
         self.texture = arcade.make_soft_square_texture(
             80,

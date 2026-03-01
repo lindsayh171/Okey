@@ -4,6 +4,7 @@ from deck import Deck
 from engine.tile import Tile, TILE_WIDTH, TILE_HEIGHT, TILE_COLORS_SYMBOLS
 from stand_slot import Stand_Slot
 from discard import Discard
+import math
 
 # Game window class
 class GameView(arcade.View):
@@ -202,7 +203,7 @@ class GameView(arcade.View):
         # Check if a card had been clicked
         if len(clicked_tiles) > 0:
             self.held_tiles.append(clicked_tiles[0])
-            self.pull_to_top(clicked_tiles[0])
+            self.pull_to_top(self.held_tiles[0])
 
     def on_mouse_release(self, x, y, button, modifiers):
 
@@ -210,11 +211,11 @@ class GameView(arcade.View):
         if len(self.held_tiles) == 0:
             return
 
+        # Snap tile to the closest stand slot
+        self.snap(self.held_tiles[0], self.stand_slot_list)
+
         # Drop card from held tiles
         self.held_tiles = []
-
-
-
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
@@ -224,6 +225,36 @@ class GameView(arcade.View):
     def pull_to_top(self, selected_tile: arcade.Sprite):
         self.tile_list.remove(selected_tile)
         self.tile_list.append(selected_tile)
+
+    # Snap tile to a slot location
+    def snap(self, tile, selected_list):
+        current_best = 10000
+        best_slot = None
+        snap_threshold = 80
+
+        # Loop through all stand slots and find the closest distance to tile
+        for slot in selected_list:
+            # Using Euclidean distance formula to find the closest stand slot
+            difference = math.sqrt((slot.center_x - tile.center_x) ** 2 + (slot.center_y - tile.center_y) ** 2)
+
+            # Update current best if distance is less than it
+            if difference < current_best and slot.holding_tile != True:
+                current_best = difference
+                best_slot = slot
+
+        # Only snap if there is a best slot and is within the threshold
+        if best_slot is not None and current_best < snap_threshold:
+            tile.center_x = best_slot.center_x
+            tile.center_y = best_slot.center_y
+            best_slot.holding_tile = True
+            # Check if tile was located at another slot previously
+            if tile.current_slot_location is not None:
+                # Get previous slot location and set holding tile to false since the tile is moving
+                previous_slot = tile.current_slot_location
+                previous_slot.holding_tile = False
+
+            tile.current_slot_location = best_slot
+
 
 def main():
     window = arcade.Window(1000,
