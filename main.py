@@ -205,6 +205,7 @@ class GameView(arcade.View):
             self.held_tiles.append(clicked_tiles[0])
             self.pull_to_top(self.held_tiles[0])
 
+
     def on_mouse_release(self, x, y, button, modifiers):
 
         # If no cards are being held, return
