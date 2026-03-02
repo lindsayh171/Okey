@@ -5,7 +5,7 @@
 
 import random
 
-from engine.tile import Tile
+from engine.tile import Tile, TILE_COLORS_SYMBOLS
 from engine.player import Player
 from engine.draw_pile import DrawPile
 from engine.board import Board
@@ -21,15 +21,15 @@ class Dealer:
         # 4 colors
 
         tiles = []
-        for i in range(0,3):
+        for color in TILE_COLORS_SYMBOLS.keys():
             for number in range(1, 14):
                 # appending two copies of each tile
-                tiles.append(Tile(Tile.colors[i], number, Tile.suits[i], False, 0))
-                tiles.append(Tile(Tile.colors[i], number, Tile.suits[i], False, 1))
+                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 0))
+                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 1))
 
         # Adding the jokers
-        tiles.append(Tile(None, None, None, True, 0)) # joker holding value to be implemented later
-        tiles.append(Tile(None, None, None, True, 1))
+        tiles.append(Tile(0, 0, None, (0,0,0), 0, True)) # joker holding value to be implemented later
+        tiles.append(Tile(0, 0, None, (0,0,0), 1, True))
 
         return tiles
 
