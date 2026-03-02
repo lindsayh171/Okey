@@ -5,10 +5,10 @@
 
 import random
 
-from engine.tile import Tile
-from engine.player import Player
-from engine.draw_pile import DrawPile
-from engine.board import Board
+from tile import Tile
+from player import Player
+from draw_pile import DrawPile
+from board import Board
 
 class Dealer:
     def __init__(self):
@@ -21,7 +21,7 @@ class Dealer:
         # 4 colors
 
         tiles = []
-        for i in range(0,3):
+        for i in range(0,4):
             for number in range(1, 14):
                 # appending two copies of each tile
                 tiles.append(Tile(Tile.colors[i], number, Tile.suits[i], False, 0))
