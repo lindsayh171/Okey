@@ -5,13 +5,14 @@ from engine.tile import Tile, TILE_WIDTH, TILE_HEIGHT, TILE_COLORS_SYMBOLS
 from stand_slot import Stand_Slot
 from discard import Discard
 import math
+import assets.colors as colr
 
 # Game window class
 class GameView(arcade.View):
 
     def __init__(self):
         super().__init__()
-        self.background_color = (88, 119, 146)
+        self.background_color = colr.THEME_LIGHT_BLUE
 
         # Sprite list goes here
         self.tile_list = arcade.SpriteList()
