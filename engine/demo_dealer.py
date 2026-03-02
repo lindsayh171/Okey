@@ -3,7 +3,7 @@
 # Deals correctly (15, 14, 14, 14)
 # Player hand sizes are printed as well as the remaining draw pile count
 
-from dealer import Dealer
+from engine.dealer import Dealer
 
 def main():
     dealer = Dealer()

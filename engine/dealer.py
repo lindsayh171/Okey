@@ -5,10 +5,10 @@
 
 import random
 
-from tile import Tile
-from player import Player
-from draw_pile import DrawPile
-from board import Board
+from engine.tile import Tile
+from engine.player import Player
+from engine.draw_pile import DrawPile
+from engine.board import Board
 
 class Dealer:
     def __init__(self):
