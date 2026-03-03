@@ -7,6 +7,10 @@ class Discard:
         self.center_x = x
         self.center_y = y
         self.boarder = 4
+        self.held_tiles = []
+        self.player_discard = False
+        self.player_com_discard = False
+        self.holding_tile = False
 
         # For when there are tiles to put in the deck
         # self.tiles = arcade.SpriteList()

@@ -177,9 +177,11 @@ class GameView(arcade.View):
 
         # Make each discard pile
         com1_disc = Discard(left_disc_x, bottom_disc_y, )
+        com1_disc.player_com_discard = True
         com2_disc = Discard(right_disc_x, top_disc_y, )
         com3_disc = Discard(left_disc_x, top_disc_y, )
         player_disc = Discard(right_disc_x, bottom_disc_y, )
+        player_disc.player_discard = True
 
         # Add discard piles to list
         self.discard_list.append(com1_disc)
@@ -214,8 +216,15 @@ class GameView(arcade.View):
         if len(self.held_tiles) == 0:
             return
 
+        # Add player discard pile to list of slots
+        available_slots = self.stand_slot_list
+        for disc in self.discard_list:
+            if disc.player_discard:
+                available_slots.append(disc)
+
         # Snap tile to the closest stand slot
-        self.snap(self.held_tiles[0], self.stand_slot_list)
+        if (len(self.held_tiles) > 0):
+            self.snap(self.held_tiles[0], self.stand_slot_list)
 
         # Drop card from held tiles
         self.held_tiles = []
