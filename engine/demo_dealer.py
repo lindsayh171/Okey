@@ -20,13 +20,11 @@ def main():
         print("Player index:", i)
         print("Name:", player.name)
         print("Number of tiles in hand:", hand_size)
-        print("Player hand:")
-        for tile in player.hand:
-            print(" ", tile)
-        print()
+        print("Hand Score:", player.get_hand_score())
         print("-------------------------")
 
     print("Tiles remaining in draw pile:", board.draw_pile.count())
+    
 
 if __name__ == "__main__":
     main()

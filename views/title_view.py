@@ -1,6 +1,7 @@
 import arcade
 import ui_components.button as button
 from views.game_view import GameView
+import assets.colors as colr
 
 class TitleView(arcade.View):
     def __init__(self):
@@ -12,7 +13,7 @@ class TitleView(arcade.View):
 
     def on_show_view(self):
         """ This is run once when we switch to this view """
-        self.window.background_color = (1, 22, 56)
+        self.window.background_color = colr.THEME_DARK_BLUE
 
         title_x = self.window.width / 2
         title_y = self.window.height / 2
@@ -27,7 +28,7 @@ class TitleView(arcade.View):
             "Okey",
             title_x,
             title_y,
-            (255, 107, 107),
+            colr.THEME_PINK,
             font_size=self.window.height * 0.3,
             anchor_x="center",
             font_name="Irish Grover"
@@ -39,8 +40,8 @@ class TitleView(arcade.View):
                                          button_width,
                                          button_height,
                                          "Play",
-                                         (255, 230, 109),
-                                         (1, 22, 56))
+                                         colr.THEME_YELLOW,
+                                         colr.THEME_DARK_BLUE)
 
         # rules button
         self.rules_button = button.Button(title_x + button_width * 0.8,
@@ -48,8 +49,8 @@ class TitleView(arcade.View):
                                           button_width,
                                           button_height,
                                           "Rules",
-                                          (78, 205, 196),
-                                          (1, 22, 56))
+                                          colr.THEME_TEAL,
+                                          colr.THEME_DARK_BLUE)
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
