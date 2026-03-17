@@ -6,11 +6,13 @@
 import random
 
 from engine.tile import Tile, TILE_COLORS_SYMBOLS
-from engine.player import Player
 from engine.draw_pile import DrawPile
 from engine.board import Board
 
 class Dealer:
+    """
+    TODO: make docstring
+    """
     def __init__(self):
         self.rng = random.Random()
 
@@ -21,34 +23,30 @@ class Dealer:
         # 4 colors
 
         tiles = []
-        for color in TILE_COLORS_SYMBOLS.keys():
+        for color, symbol in TILE_COLORS_SYMBOLS.items():
             for number in range(1, 14):
                 # appending two copies of each tile
-                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 0))
-                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 1))
+                tiles.append(Tile(0, 0, number, color, symbol, False, 0))
+                tiles.append(Tile(0, 0, number, color, symbol, False, 1))
 
         # Adding the jokers
-        tiles.append(Tile(0, 0, None, (0,0,0), 0, True)) # joker holding value to be implemented later
+        tiles.append(Tile(0, 0, None, (0,0,0),
+                          0, True)) # joker holding value to be implemented later
         tiles.append(Tile(0, 0, None, (0,0,0), 1, True))
 
         return tiles
 
     # Dealer to set up a new round,
-    def deal_new_round(self, player_names, starting_player_idx = 0):
-        if len(player_names) != 4:
+    def deal_new_round(self, players, starting_player_idx = 0):
+        if len(players) != 4:
             raise AttributeError('Okey game requires four players.')
-
-        # creating player objs
-        players = []
-        for name in player_names:
-            players.append(Player(name))
 
         # Build + shuffle
         tiles = self.build_okey_set()
         self.rng.shuffle(tiles)
 
         # Deal 14 tiles to each player
-        for i in range(14):
+        for _ in range(14):
             for player in players:
                 player.draw_tile(tiles.pop())
 
@@ -60,11 +58,3 @@ class Dealer:
 
         # return board state for the round
         return Board(players, draw_pile, starting_player_idx)
-
-
-
-
-
-
-
-

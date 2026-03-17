@@ -1,12 +1,21 @@
 from collections import defaultdict
 
 class Player:
-    def __init__(self, name, is_player_ai = False): # distinguish human player vs AI player
+    """
+    Player class
+    Attributes:
+        name - screen name
+        is_player_ai
+        hand - tiles the player has
+        player - tiles shown once player opens
+        discard_pile - cards this player has discarded
+    """
+    def __init__(self, disc, name, is_player_ai = False): # distinguish human player vs AI player
         self.name = name
         self.is_player_ai = is_player_ai
         self.hand = [] # every player has a hand of tiles, empty initially
         self.played = [] # tiles that are displayed when the player opens
-        self.discard_pile = [] # player's discard piles, empty initially
+        self.discard_pile = disc # player's discard piles, empty initially
         self.opened = False
         self.stars = 0
         self.hand_score = 0 #score used for opening
@@ -30,8 +39,7 @@ class Player:
     def top_discard(self):
         if len(self.discard_pile) > 0:
             return self.discard_pile[-1]
-        else:
-            return None
+        return None
 
     # Calculates the possible points earned for the player based on their current hand
     def get_hand_score(self):
@@ -43,7 +51,7 @@ class Player:
         # Keep track of tiles that have already been used in a set or run
         # This prevents double-counting and enforces set priority
         used_tiles = set()
-        
+
         # ===================================
         # Check For Sets (Priority Over Runs)
         # A set = 3-4 tiles of the same number, all different colors
@@ -57,7 +65,7 @@ class Player:
             number_groups[tile.value].append(tile)
 
         # Evaluate each number group to see if it forms a valid set
-        for number, tiles in number_groups.items():
+        for _, tiles in number_groups.items():
 
             # Only consider tiles that have not already been used
             available_tiles = [t for t in tiles if t not in used_tiles]
@@ -93,7 +101,7 @@ class Player:
                 color_groups[tile.color].append(tile)
 
         # Check each color group for consecutive sequences
-        for color, tiles in color_groups.items():
+        for _, tiles in color_groups.items():
 
             # Sort tiles by number to detect consecutive values
             # Ignores Jokers for the time being
@@ -132,7 +140,7 @@ class Player:
 
         # Return score
         return self.hand_score
-    
+
     # Calculates the turn score after the turn has ended
     def get_turn_score(self):
         self.hand_score += sum(tile.value for tile in self.hand)
