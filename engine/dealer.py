@@ -23,11 +23,11 @@ class Dealer:
         # 4 colors
 
         tiles = []
-        for color in TILE_COLORS_SYMBOLS.keys():
+        for color, symbol in TILE_COLORS_SYMBOLS.items():
             for number in range(1, 14):
                 # appending two copies of each tile
-                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 0))
-                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 1))
+                tiles.append(Tile(0, 0, number, color, symbol, False, 0))
+                tiles.append(Tile(0, 0, number, color, symbol, False, 1))
 
         # Adding the jokers
         tiles.append(Tile(0, 0, None, (0,0,0),
