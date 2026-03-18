@@ -1,7 +1,7 @@
 import math
 import arcade
 from com import Com, COM_WIDTH
-from deck import Deck
+from gui_draw_pile import GuiDrawPile
 from stand_slot import Stand_Slot
 from engine.game import Game
 from engine.tile import Tile, TILE_WIDTH, TILE_HEIGHT, TILE_COLORS_SYMBOLS
@@ -40,7 +40,8 @@ class GameView(arcade.View):
         self.total_stand_width = self.columns * TILE_WIDTH
 
         self.held_tiles = []
-        self.deck = None
+        self.draw_pile = None
+        self.draw_pile_label = None
 
         self.player_hand = None
 
@@ -60,8 +61,8 @@ class GameView(arcade.View):
         self.setup_stand()
         # Com coordinates
         self.setup_coms()
-        # Deck coordinates
-        self.setup_deck()
+        # Draw pile coordinates
+        self.setup_draw_pile()
 
         # TODO: maybe separate this out into another file
         # create tiles
@@ -112,8 +113,11 @@ class GameView(arcade.View):
         # Draw discard piles
         for disc in self.game.discards:
             disc.draw()
-        # Draw deck
-        self.deck.draw()
+        # Draw draw pile
+        self.draw_pile.draw()
+        # Update text to show count of deck
+        self.draw_pile_label.text = str(self.game.draw_pile.count())
+        self.draw_pile_label.draw()
 
         for tile in self.tile_list:
             tile.set_face_up()
@@ -156,6 +160,9 @@ class GameView(arcade.View):
         com2 = Com(com2_x, com2_y, arcade.color.YELLOW, "Com 2")
         com3 = Com(com3_x, com3_y, arcade.color.BLUE, "Com 3")
 
+        # Make com1 the discard player can access
+        com1.player
+
         # Add each com to the list
         self.com_list.append(com1)
         self.com_list.append(com2)
@@ -175,12 +182,22 @@ class GameView(arcade.View):
             )
             self.com_labels.append(label)
 
-    # Deck setup
-    def setup_deck(self):
-        self.deck = Deck(
+    # Draw pile setup
+    def setup_draw_pile(self):
+        self.draw_pile = GuiDrawPile(
             self.width / 2,
             self.height / 2,
             self.game.draw_pile,
+        )
+        self.draw_pile_label = arcade.Text(
+            # Show how many tiles are in the deck
+            str(self.game.draw_pile.count()),
+            self.width / 2,
+            self.height / 2,
+            arcade.color.EGGSHELL,
+            16,
+            anchor_x="center",
+            anchor_y="center",
         )
 
     # Resize window
@@ -199,13 +216,20 @@ class GameView(arcade.View):
             # Return if clicked
             return
 
-        # Check if deck was clicked
-        if self.deck.collides_with_point((x, y)):
-            # Draw top tile from deck
-            if len(self.game.draw_pile) > 0:
+        # Check if draw pile was clicked
+        if self.draw_pile.collides_with_point((x, y)):
+            # Initial check if player has drawn already this round
+            if self.game.players[0].drawn:
+                return
+
+            # Draw top tile from draw pile
+            if self.game.draw_pile.count() > 0 and not self.game.players[0].drawn:
                 # Add tile to players logic hand
-                top_tile = self.game.draw_pile.pop()
-                self.game.players[0].hand.append(top_tile)
+                print("drawn")
+                self.game.players[0].drawn = True
+
+                top_tile = self.game.draw_pile.draw()
+                self.game.players[0].draw_tile(top_tile)
 
                 # Add tile to gui hand
                 for slot in self.stand_slot_list:
@@ -216,12 +240,6 @@ class GameView(arcade.View):
                         top_tile.current_slot_location = slot
                         break
                 self.tile_list.append(top_tile)
-
-
-
-
-
-
 
     def on_mouse_release(self, x, y, button, modifiers):
 
