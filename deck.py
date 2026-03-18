@@ -1,30 +1,44 @@
 import arcade
+import ui_components.rounded_rectangle as rr
 
+from engine.draw_pile import DrawPile
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
+
+STACK_LAYERS = 5
 
 class Deck:
     """
     Keeps track of all the tiles in the deck
     """
-    def __init__(self, x, y):
+    def __init__(self, x, y, draw_pile):
+
         self.center_x = x
         self.center_y = y
-
-        # For when there are tiles to put in the deck
-        #self.tiles = arcade.SpriteList()
+        self.draw_pile = draw_pile
 
     def draw(self):
-        arcade.draw_lbwh_rectangle_outline(
-            self.center_x - TILE_WIDTH / 2,
-            self.center_y - TILE_HEIGHT / 2,
+        tile_count = self.draw_pile.count()
+
+        # Back of top tile
+
+        back_tile = rr.RoundedRectangle(
+            self.center_x,
+            self.center_y,
             TILE_WIDTH,
             TILE_HEIGHT,
-            arcade.color.ASH_GREY,
-            4
+            TILE_HEIGHT // 9,
+            (222, 212, 193)
         )
+        back_tile.draw()
 
-        # Draw tiles on top
-
-        # Add tile function
-
-        # Draw tile function
+        # Draw tile count on top
+        arcade.draw_text(
+            # Show how many tiles are in the deck
+            str(self.draw_pile.count()),
+            self.center_x,
+            self.center_y,
+            arcade.color.EGGSHELL,
+            16,
+            anchor_x="center",
+            anchor_y="center",
+        )

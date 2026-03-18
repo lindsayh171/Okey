@@ -16,7 +16,7 @@ class GameView(arcade.View):
         super().__init__()
 
         # create a new game
-        self.game = Game(self.width, self.height)
+        self.game = None
 
         self.background_color = colr.THEME_LIGHT_BLUE
 
@@ -42,10 +42,14 @@ class GameView(arcade.View):
         self.held_tiles = []
         self.deck = None
 
+        self.player_hand = None
+
     # Set up game
     def setup(self):
         # need to do this here so width and height are set up
         self.game = Game(self.width, self.height)
+        self.game.play_game()
+
 
         # Clear any existing sprites
         self.stand_slot_list.clear()
@@ -82,8 +86,6 @@ class GameView(arcade.View):
         # player name pop-up
         self.game.enter_player_name()
 
-        # play the game
-        self.game.play_game()
 
     # Screen render that clears the board
     def on_draw(self):
@@ -178,6 +180,7 @@ class GameView(arcade.View):
         self.deck = Deck(
             self.width / 2,
             self.height / 2,
+            self.game.draw_pile,
         )
 
     # Resize window
@@ -193,6 +196,32 @@ class GameView(arcade.View):
         if len(clicked_tiles) > 0:
             self.held_tiles.append(clicked_tiles[0])
             self.pull_to_top(self.held_tiles[0])
+            # Return if clicked
+            return
+
+        # Check if deck was clicked
+        if self.deck.collides_with_point((x, y)):
+            # Draw top tile from deck
+            if len(self.game.draw_pile) > 0:
+                # Add tile to players logic hand
+                top_tile = self.game.draw_pile.pop()
+                self.game.players[0].hand.append(top_tile)
+
+                # Add tile to gui hand
+                for slot in self.stand_slot_list:
+                    if not slot.holding_tile:
+                        top_tile.center_x = slot.center_x
+                        top_tile.center_y = slot.center_y
+                        slot.holding_tile = True
+                        top_tile.current_slot_location = slot
+                        break
+                self.tile_list.append(top_tile)
+
+
+
+
+
+
 
     def on_mouse_release(self, x, y, button, modifiers):
 
@@ -201,7 +230,7 @@ class GameView(arcade.View):
             return
 
         # Add player discard pile to list of slots
-        available_slots = self.stand_slot_list
+        available_slots = list(self.stand_slot_list)
         for disc in self.game.discards:
             if disc.player_discard:
                 available_slots.append(disc)

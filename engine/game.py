@@ -4,7 +4,6 @@ Controls the main gameplay logic
 from engine.board import Board
 from engine.dealer import Dealer
 from engine.player import Player
-from engine.draw_pile import DrawPile
 from engine.discard_pile import DiscardPile
 from engine.tile import TILE_WIDTH
 
@@ -25,14 +24,21 @@ class Game:
 
         # TODO: allow someone to pick their own name
         # TODO: generate fun computer names
-        self.board = Board(self.players, 0)
         self.dealer = Dealer()
+        self.board = None
+        self.draw_pile = None
 
-        # initialize a list of tiles
-        self.tiles = self.dealer.build_okey_set()
+    def start_new_round(self, starting_player_idx=0):
+        """
+        Starts a new round
+        :param starting_player_idx:
+        :return:
+        """
 
-        # create draw pile - put all tiles in draw pile for now
-        self.draw_pile = DrawPile(self.tiles)
+        self.board = self.dealer.deal_new_round(self.players, starting_player_idx)
+        self.draw_pile = self.board.draw_pile
+
+
 
     def discard_setup(self):
         """
@@ -61,5 +67,9 @@ class Game:
         return name
 
     def play_game(self):
+        """
+        Loops through rounds but for now it does just one
+        :return:
+        """
         # TODO: loop continuing to deal new rounds while round is not ended
-        self.dealer.deal_new_round(self.players)
+        self.start_new_round()
