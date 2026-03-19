@@ -2,11 +2,23 @@ import arcade
 
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
 
-class Discard:
-    def __init__(self, x, y):
+class DiscardPile:
+    """
+    Pile of tiles that a player has discarded
+    """
+    def __init__(self, x, y, tiles=None):
+        # list of tiles that are in this discard pile
+        if tiles is None:
+            tiles = []
+        self.tiles = tiles
+
         self.center_x = x
         self.center_y = y
         self.boarder = 4
+        self.held_tiles = []
+        self.player_discard = False
+        self.player_com_discard = False
+        self.holding_tile = False
 
         # For when there are tiles to put in the deck
         # self.tiles = arcade.SpriteList()

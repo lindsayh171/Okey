@@ -3,6 +3,9 @@ import arcade
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
 
 class Deck:
+    """
+    Keeps track of all the tiles in the deck
+    """
     def __init__(self, x, y):
         self.center_x = x
         self.center_y = y
@@ -25,4 +28,3 @@ class Deck:
         # Add tile function
 
         # Draw tile function
-

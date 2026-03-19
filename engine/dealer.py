@@ -1,19 +1,18 @@
-"""
-Dealer class "builds" the 106 tiles, randomly shuffles
-Deals 14 to each player, except a single player whom Dealer gives 15
-Puts back the remaining tiles in the draw_pile (middle pile)
-"""
+# Dealer "builds" the 106 tiles, randomly shuffles
+# Deals 14 to each player,
+# except a single player whom Dealer gives 15
+# Puts back the remaining tiles in the draw_pile (middle pile)
 
 import random
 
 from engine.tile import Tile, TILE_COLORS_SYMBOLS
-from engine.player import Player
 from engine.draw_pile import DrawPile
 from engine.board import Board
 
-
 class Dealer:
-    """Handles tile creation, shuffling, and dealing."""
+    """
+    TODO: make docstring
+    """
     def __init__(self):
         self.rng = random.Random()
 
@@ -24,28 +23,23 @@ class Dealer:
         # 4 colors
 
         tiles = []
-        for color in TILE_COLORS_SYMBOLS.keys():
+        for color, symbol in TILE_COLORS_SYMBOLS.items():
             for number in range(1, 14):
                 # appending two copies of each tile
-                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 0))
-                tiles.append(Tile(0, 0, number, color, TILE_COLORS_SYMBOLS[color], False, 1))
+                tiles.append(Tile(0, 0, number, color, symbol, False, 0))
+                tiles.append(Tile(0, 0, number, color, symbol, False, 1))
 
         # Adding the jokers
-        # joker holding value to be implemented later
-        tiles.append(Tile(0, 0, None, (0,0,0), 0, True))
+        tiles.append(Tile(0, 0, None, (0,0,0),
+                          0, True)) # joker holding value to be implemented later
         tiles.append(Tile(0, 0, None, (0,0,0), 1, True))
 
         return tiles
 
     # Dealer to set up a new round,
-    def deal_new_round(self, player_names, starting_player_idx = 0):
-        if len(player_names) != 4:
+    def deal_new_round(self, players, starting_player_idx = 0):
+        if len(players) != 4:
             raise AttributeError('Okey game requires four players.')
-
-        # creating player objs
-        players = []
-        for name in player_names:
-            players.append(Player(name))
 
         # Build + shuffle
         tiles = self.build_okey_set()
