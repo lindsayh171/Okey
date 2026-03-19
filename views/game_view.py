@@ -161,7 +161,6 @@ class GameView(arcade.View):
         com3 = Com(com3_x, com3_y, arcade.color.BLUE, "Com 3")
 
         # Make com1 the discard player can access
-        com1.player
 
         # Add each com to the list
         self.com_list.append(com1)
