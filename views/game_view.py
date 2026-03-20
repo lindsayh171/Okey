@@ -134,7 +134,7 @@ class GameView(arcade.View):
                 # draw stand line divider
                 arcade.draw_lbwh_rectangle_filled(
                     self.com_stand_start_x - TILE_WIDTH / 2,
-                    (self.height / 2) + TILE_HEIGHT + DIVIDER_GAP - self.stand_divider / 2,
+                    (self.height / 2) + TILE_HEIGHT / 2 + DIVIDER_GAP - self.stand_divider / 2,
                     self.total_stand_width,
                     self.stand_divider,
                     arcade.color.DEEP_COFFEE,
@@ -299,18 +299,25 @@ class GameView(arcade.View):
         for com in self.com_list:
             # TODO: Once a boolean for player being open, add and statement to check
             if com.collides_with_point((x, y)):
-                # Turn hand display off
+
+                # No coms are displaying their hand
+                if self.com_displaying_hand is None:
+                    # Display hand
+                    self.com_displaying_hand = com
+                    self.setup_com_stand(com)
+                    return
+
+                # Turn hand display off if it was displaying before
                 if self.com_displaying_hand == com:
                     self.com_displaying_hand = None
 
                     # Delete saved display hand
                     self.com_stand_slots.clear()
-                else:
-                    # Display hand
-                    self.com_displaying_hand = com
-                    self.setup_com_stand(com)
+                    return
 
-                return
+                # If a com that isnt the current displaying hand is clicked
+                if com is not self.com_displaying_hand:
+                    continue
 
     def on_mouse_release(self, x, y, button, modifiers):
 
