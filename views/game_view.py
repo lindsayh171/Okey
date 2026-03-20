@@ -158,17 +158,10 @@ class GameView(arcade.View):
         com3_y = screen_height / 2
 
         # Make each com
-<<<<<<< HEAD
-        com1 = Com(com1_x, com1_y, arcade.color.RED, "Com 1")
-        com2 = Com(com2_x, com2_y, arcade.color.YELLOW, "Com 2")
-        com3 = Com(com3_x, com3_y, arcade.color.BLUE, "Com 3")
 
-        # Make com1 the discard player can access
-=======
         com1 = Com(com1_x, com1_y, arcade.color.RED, "Com 1", self.game.discards[1])
         com2 = Com(com2_x, com2_y, arcade.color.YELLOW, "Com 2", self.game.discards[2])
         com3 = Com(com3_x, com3_y, arcade.color.BLUE, "Com 3", self.game.discards[3])
->>>>>>> draw-pile
 
         # Add each com to the list
         self.com_list.append(com1)
