@@ -67,7 +67,7 @@ class GameView(arcade.View):
         self.setup_player_tiles()
 
         # player name pop-up
-        self.game.enter_player_name()
+        # self.game.enter_player_name()
 
 
     # Screen render that clears the board

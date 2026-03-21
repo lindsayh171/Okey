@@ -1,6 +1,8 @@
 import arcade
 import ui_components.rounded_rectangle as rr
 
+from assets.textures import TILE_TEXTURE
+
 TILE_WIDTH = 60
 TILE_HEIGHT = 100
 TILE_COLORS_SYMBOLS = {arcade.color.RED: "♥", arcade.color.BLACK: "■", arcade.color.BLUE: "●", arcade.color.ORANGE: "▲"}
@@ -17,11 +19,7 @@ class Tile(arcade.Sprite):
         self.copy_id = copy_id  # two copies of each # tile - this distinguishes duplicate tiles
         self.current_slot_location = None
 
-        self.texture = arcade.make_soft_square_texture(
-            80,
-            arcade.color.ANTI_FLASH_WHITE,
-            outer_alpha = 255
-        )
+        self.texture = TILE_TEXTURE
 
         self.tile_bg = rr.RoundedRectangle(self.center_x - TILE_WIDTH / 2,
             self.center_y - TILE_HEIGHT / 2,
