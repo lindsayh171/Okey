@@ -138,9 +138,6 @@ class GameView(arcade.View):
                 # stand_slot position
                 stand_x = self.stand_start_x + column * TILE_WIDTH
 
-                # Debugging output to check coordinates
-                print(f"Stand Slot {row}, {column} at: ({stand_x}, {stand_y})")
-
                 # create stand_slot and append to the slot list
                 stand_slot = StandSlot(stand_x, stand_y, arcade.color.BEAVER)
                 self.stand_slot_list.append(stand_slot)
@@ -252,8 +249,10 @@ class GameView(arcade.View):
                         top_tile.center_y = slot.center_y
                         slot.holding_tile = True
                         top_tile.current_slot_location = slot
+                        top_tile.set_face_up()
+                        self.tile_list.append(top_tile)
                         break
-                self.tile_list.append(top_tile)
+
             return
 
         # Check if discard player accesses was clicked
@@ -349,9 +348,6 @@ class GameView(arcade.View):
             # Using Euclidean distance formula to find the closest stand slot
             difference = math.sqrt((slot.center_x - tile.center_x) ** 2 +
                                    (slot.center_y - tile.center_y) ** 2)
-
-            # Debugging output to check the distance
-            print(f"Distance to slot ({slot.center_x}, {slot.center_y}): {difference}")
 
             # Update current best if distance is less than it
             if difference < current_best and slot.holding_tile is not True:
