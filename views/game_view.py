@@ -74,6 +74,8 @@ class GameView(arcade.View):
         # player name pop-up
         # self.game.enter_player_name()
 
+    def on_show_view(self):
+        self.background_color = colr.THEME_LIGHT_BLUE
 
     # Screen render that clears the board
     def on_draw(self):
