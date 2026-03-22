@@ -107,10 +107,6 @@ class GameView(arcade.View):
             arcade.color.DEEP_COFFEE,
         )
 
-        # Draw tiles
-        for tile in self.tile_list:
-            tile.draw()
-
         # Draw coms
         self.com_list.draw()
         for label in self.com_labels:
@@ -144,6 +140,10 @@ class GameView(arcade.View):
             self.com_stand_button.draw()
 
         self.menu_button.draw()
+
+        # Draw tiles at end on top of everything.
+        for tile in self.tile_list:
+            tile.draw()
 
     def setup_stand(self):
         screen_width = self.width
@@ -238,9 +238,9 @@ class GameView(arcade.View):
         self.setup()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
 
-        # Check if a tile had been clicked
+        # TILE IS CLICKED
+        clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
         if len(clicked_tiles) > 0:
             self.held_tiles.append(clicked_tiles[0])
             self.pull_to_top(self.held_tiles[0])
@@ -248,6 +248,7 @@ class GameView(arcade.View):
                 clicked_tiles[0].current_slot.holding_tile = False
             # Return if clicked
             return
+
         if self.com_displaying_hand is None:
             # Check if a card had been clicked
             if len(clicked_tiles) > 0:
@@ -261,7 +262,6 @@ class GameView(arcade.View):
                 # Initial check if player has drawn already this round
                 if self.game.players[0].drawn:
                     return
-                self.game.players[0].drawn = True
 
                 # Draw top tile from draw pile
                 if self.game.draw_pile.count() > 0:
@@ -282,8 +282,6 @@ class GameView(arcade.View):
                         top_tile.set_face_up()
                         self.tile_list.append(top_tile)
                         break
-
-            return
 
             # Check if discard player accesses was clicked
             for discard in self.game.discards:
@@ -341,9 +339,6 @@ class GameView(arcade.View):
                 self.com_displaying_hand = None
                 return
 
-                # If a com that isnt the current displaying hand is clicked
-                if com is not self.com_displaying_hand:
-                    continue
 
         # check if menu was clicked
         if self.menu_button.button_pressed(x, y):
@@ -413,14 +408,13 @@ class GameView(arcade.View):
     def setup_com_stand(self, com):
         self.com_stand_slot_list.clear()
 
-    def setup_com_stand(self):
         # Coordinates of the stand based on the size of the screen
         self.com_stand_start_x = 2 * COM_WIDTH + DIVIDER_GAP + TILE_WIDTH / 2
 
         start_y = self.total_stand_height + TILE_HEIGHT / 2 + DIVIDER_GAP
 
         button_size = 30
-        self.com_stand_button = Button(
+        self.com_stand_button = ui_button.Button(
             2 * COM_WIDTH + DIVIDER_GAP + button_size / 2,
             self.height - (self.total_stand_height - COM_WIDTH) - DIVIDER_GAP,
             button_size,
@@ -441,3 +435,5 @@ class GameView(arcade.View):
                 # create stand_slot and append to the slot list
                 stand_slot = StandSlot(stand_x, stand_y, arcade.color.BLUE)
                 self.com_stand_slot_list.append(stand_slot)
+
+        # Insert tiles onto stand
