@@ -28,7 +28,7 @@ class DiscardPile(arcade.Sprite):
     def count(self):
         return len(self.tiles)
 
-    def draw_tiles(self):
+    def draw_tile(self):
         if len(self.tiles) > 0:
             return self.tiles.pop()
         return None

@@ -27,6 +27,7 @@ class GameView(arcade.View):
 
         # com text
         self.com_labels = []
+        self.com_displaying_hand = False
 
         # Non-sprite lists
         self.stand_slot_list = []
@@ -316,7 +317,7 @@ class GameView(arcade.View):
                     self.com_displaying_hand = None
 
                     # Delete saved display hand
-                    self.com_stand_slots.clear()
+                    self.com_stand_slot_list.clear()
                     return
 
                 # If a com that isnt the current displaying hand is clicked

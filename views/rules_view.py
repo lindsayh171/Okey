@@ -160,5 +160,5 @@ class RulesView(arcade.View):
                     next_view = MenuView(self.game_view)
                 case _:
                     from views.menu_view import MenuView
-                    next_view = MenuView()
+                    next_view = MenuView(self.game_view)
             self.window.show_view(next_view)
