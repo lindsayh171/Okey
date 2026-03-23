@@ -61,6 +61,17 @@ class GameView(arcade.View):
 
         self.com_stand_button = None
 
+        # open button
+
+        # open button
+        self.open_button = ui_button.Button(self.window.width * 0.07,
+                                            self.window.height * 0.07,
+                                            self.window.width / 6,
+                                            self.window.width / 13,
+                                            "Open",
+                                            colr.THEME_PINK,
+                                            colr.THEME_LIGHT_BLUE)
+
     # Set up game
     def setup(self):
         # need to do this here so width and height are set up
@@ -140,6 +151,7 @@ class GameView(arcade.View):
             self.com_stand_button.draw()
 
         self.menu_button.draw()
+        self.open_button.draw()
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
