@@ -59,8 +59,6 @@ class GameView(arcade.View):
                                          colr.THEME_LIGHT_BLUE,
                                          colr.THEME_DARK_BLUE)
 
-        self.com_stand_button = None
-
         # open button
 
         # open button
@@ -147,8 +145,6 @@ class GameView(arcade.View):
             for slot in self.com_stand_slot_list:
                 slot.draw()
 
-            # Draw X button
-            self.com_stand_button.draw()
 
         self.menu_button.draw()
         self.open_button.draw()
@@ -340,17 +336,14 @@ class GameView(arcade.View):
                     return
 
                 # If a com that isn't the current displaying hand is clicked
-                if com is not self.com_displaying_hand or self.com_displaying_hand:
+                if com is not self.com_displaying_hand:
                     continue
 
-        # Turn hand display off if pressed x button
-        if self.com_displaying_hand is not None and self.com_stand_button is not None:
-            if self.com_stand_button.button_pressed(x,y):
-                # Delete saved display hand
-                self.com_stand_slot_list.clear()
-                self.com_displaying_hand = None
-                return
-
+                if self.com_displaying_hand is com:
+                    # Delete saved display hand
+                    self.com_stand_slot_list.clear()
+                    self.com_displaying_hand = None
+                    return
 
         # check if menu was clicked
         if self.menu_button.button_pressed(x, y):
@@ -425,17 +418,6 @@ class GameView(arcade.View):
 
         start_y = self.total_stand_height + TILE_HEIGHT / 2 + DIVIDER_GAP
 
-        button_size = 30
-        self.com_stand_button = ui_button.Button(
-            2 * COM_WIDTH + DIVIDER_GAP + button_size / 2,
-            self.height - (self.total_stand_height - COM_WIDTH) - DIVIDER_GAP,
-            button_size,
-            button_size,
-            "X",
-            arcade.color.RED,
-            arcade.color.BLACK
-        )
-
         # Build as many rows as the player has sets in their open
         for current_set in range(len(com.player.sets_played)):
             stand_y = start_y + current_set * (TILE_HEIGHT + 2 * DIVIDER_GAP)
@@ -445,7 +427,7 @@ class GameView(arcade.View):
                 stand_x = self.com_stand_start_x + column * TILE_WIDTH
 
                 # create stand_slot and append to the slot list
-                stand_slot = StandSlot(stand_x, stand_y, arcade.color.GRAY_BLUE)
+                stand_slot = StandSlot(stand_x, stand_y, arcade.color.BLUE)
                 self.com_stand_slot_list.append(stand_slot)
 
         # Insert tiles onto stand
