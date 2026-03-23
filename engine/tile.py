@@ -22,6 +22,7 @@ class Tile(arcade.Sprite):
         self.is_joker = is_joker
         self.copy_id = copy_id  # two copies of each # tile - this distinguishes duplicate tiles
         self.current_slot_location = None
+        self.is_in_set = False # distinguish what tiles are in another players set
 
         self.texture = TILE_TEXTURE
 

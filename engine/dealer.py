@@ -4,6 +4,7 @@
 # Puts back the remaining tiles in the draw_pile (middle pile)
 
 import random
+import arcade
 
 from engine.tile import Tile, TILE_COLORS_SYMBOLS
 from engine.draw_pile import DrawPile
@@ -30,9 +31,8 @@ class Dealer:
                 tiles.append(Tile(0, 0, number, color, symbol, False, 1))
 
         # Adding the jokers
-        tiles.append(Tile(0, 0, None, (0,0,0),
-                          0, True)) # joker holding value to be implemented later
-        tiles.append(Tile(0, 0, None, (0,0,0), 1, True))
+        tiles.append(Tile(0, 0, "〠", arcade.color.FOREST_GREEN, "⚡", True, 0))
+        tiles.append(Tile(0, 0, "〠", arcade.color.FOREST_GREEN, "⚡", True, 1))
 
         return tiles
 

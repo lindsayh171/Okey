@@ -10,10 +10,11 @@ class RulesView(arcade.View):
     View displaying the game rules.
     Exits back to previous screen
     """
-    def __init__(self, origin):
+    def __init__(self, origin, game_view=None):
         super().__init__()
 
         self.origin = origin
+        self.game_view = game_view
         self.title_text = None
         self.exit_button = None
 
@@ -153,4 +154,11 @@ class RulesView(arcade.View):
                     # TODO: ask Jason about this pylint error because otherwise circular import
                     from views.title_view import TitleView
                     next_view = TitleView()
+                case Views.MENU:
+                    from views.menu_view import MenuView
+
+                    next_view = MenuView(self.game_view)
+                case _:
+                    from views.menu_view import MenuView
+                    next_view = MenuView(self.game_view)
             self.window.show_view(next_view)
