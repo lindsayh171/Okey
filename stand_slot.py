@@ -17,8 +17,8 @@ class StandSlot:
         self.border_width = 4
 
         # For when adding tiles to stand
-        self.holding_tile = False
         self.curr_tile = None
+        self.holding_tile = False
 
     def draw(self):
         arcade.draw_lbwh_rectangle_filled(
