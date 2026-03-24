@@ -16,7 +16,7 @@ def distance(t1, t2):
 
 
 # function that finds nearby tiles
-def group_tiles(tiles, threshold = 80):
+def group_tiles(tiles, threshold = 25):
     """
     Go over tiles/hand and create groups from it
     based on their coordinates (distance)
@@ -51,6 +51,8 @@ def group_tiles(tiles, threshold = 80):
                 if other_t not in visited:
                     if distance(current, other_t) < threshold:
                         stack.append(other_t)
+                        # Obtain the distance between tiles to set threshold
+                        # print("distance:", distance(current, other_t))
 
         # Append to group object list once group is built
         groups.append(group)
@@ -59,6 +61,7 @@ def group_tiles(tiles, threshold = 80):
     return groups
 
 
+#
 class Player:
     """
     Player class
@@ -69,6 +72,10 @@ class Player:
         player - tiles shown once player opens
         discard_pile - cards this player has discarded
     """
+
+    # TO-DO: address disabled 'R0902: Too many instance attributes'
+    # pylint: disable=R0902
+
     def __init__(self, disc, name, is_player_ai = False):
         self.name = name
         self.is_player_ai = is_player_ai # distinguish human player vs AI player
@@ -115,6 +122,8 @@ class Player:
             return self.discard_pile[-1]
         return None
 
+    # TO-DO: address disabled 'R0912: Too many branches'
+    # pylint: disable=R0912
     # Calculates the possible points earned for the player based on their current hand
     def get_hand_score(self):
         # Resets turn_score each time points are calculated
@@ -292,9 +301,13 @@ class Player:
         self.hand_score += sum(tile.value for tile in self.hand)
         return self.turn_score
 
-
+# TO-DO: address disabled 'R0903: Too few public methods'
+# pylint: disable=R0903
 ### Testing player_get_hand_score() and group_tiles()
 class DummyTile:
+    """
+    For testing purposes before integrating to GUI
+    """
     def __init__(self, x, y, color, value):
         self.center_x = x
         self.center_y = y
@@ -302,12 +315,12 @@ class DummyTile:
         self.value = value
 
 
-t1 = DummyTile(0, 0, "red", 1)
-t2 = DummyTile(500, 0, "red", 2)
-t3 = DummyTile(20, 0, "red", 3)
+tile1 = DummyTile(0, 0, "red", 1)
+tile2 = DummyTile(19, 0, "red", 2)
+tile3 = DummyTile(20, 0, "red", 3)
 
 player = Player(0, "Joe", False)
-player.hand = [t1, t2, t3]
+player.hand = [tile1, tile2, tile3]
 
 
 print(player.player_get_hand_score())
