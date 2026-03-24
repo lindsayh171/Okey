@@ -15,49 +15,24 @@ def distance(t1, t2):
     )
 
 
-# function that finds nearby tiles
-def group_tiles(tiles, threshold = 25):
-    """
-    Go over tiles/hand and create groups from it
-    based on their coordinates (distance)
-    """
-
+def group_tiles(tiles, y_threshold=25):
     groups = []
-    # to keep track of tiles already grouped
-    visited = set()
 
-    for tile in tiles:
-        # skipping tiles already part of a group
-        if tile in visited:
-            continue
+    sorted_tiles = sorted(tiles, key=lambda t: t.center_y)
 
-        # Build the group once identified
-        group = []
-        # Begin group search from this tile
-        stack = [tile]
+    for tile in sorted_tiles:
+        placed = False
 
-        # find all tiles that are close enough
-        while stack:
-            current = stack.pop()
-            if current in visited:
-                continue
+        for group in groups:
+            # check if tile belongs in same row
+            if abs(tile.center_y - group[0].center_y) < y_threshold:
+                group.append(tile)
+                placed = True
+                break
 
-            # mark tile as used and append to current group
-            visited.add(current)
-            group.append(current)
+        if not placed:
+            groups.append([tile])
 
-            # check other tiles to see if they belong in this group
-            for other_t in tiles:
-                if other_t not in visited:
-                    if distance(current, other_t) < threshold:
-                        stack.append(other_t)
-                        # Obtain the distance between tiles to set threshold
-                        # print("distance:", distance(current, other_t))
-
-        # Append to group object list once group is built
-        groups.append(group)
-
-    # once every group is added to the list, return
     return groups
 
 
@@ -228,72 +203,102 @@ class Player:
     # based on physical arrangement/ coordinates
     def player_get_hand_score(self):
         """
-        data structure: list of group objects
-        Go over tiles/ hand of the user
-        Create groups based on coordinates
-        Evaluate each group -> set, run
-        Calculate each group's score
-        Returns summed score from all groups evaluated
+        Calculates score based on how tiles are arranged on screen.
+
+        Rules:
+        - Tiles are grouped into rows (Y position)
+        - Rows are split into subgroups (X spacing)
+        - Each subgroup must be ENTIRELY a valid:
+            - SET (same number, different colors)
+            - OR RUN (same color, consecutive numbers)
+        - If a subgroup is invalid, it gives 0 points
         """
 
+        # Reset score every time
         self.hand_score = 0
 
-        # Go over tiles and create groups from it
+        # for testing
+        valid_group_count = 0
+
+        # Step 1: group tiles into rows
         self.groups = group_tiles(self.hand)
 
-        ## print("GROUPS:", [[(t.value, t.color) for t in g] for g in self.groups])
-
-        # Once every group is created
+        # Loop through each row
         for group in self.groups:
 
-            # skip small groups
-            if len(group) < 3:
+            if not group:
                 continue
 
-            # extract colors and numbers
-            colors = []
-            numbers = []
-
-            for tile in group:
-                colors.append(tile.color)
-                numbers.append(tile.value)
-
-            # sort to account for a player's disarranged tiles -> 1, 3, 2
-            numbers.sort()
+            # Sort tiles left → right
+            group = sorted(group, key=lambda t: t.center_x)
 
             # -------------------------
-            # CHECK SET - tiles of same number, but
-            #  different color --> 1(red), 1(blue), 1(black)
+            # Step 2: split into subgroups (based on spacing)
             # -------------------------
+            subgroups = []
+            current_subgroup = [group[0]]
 
-            # check if all tiles are the same number
-            one_number = len(set(numbers)) == 1
-            # check that are colors are different
-            diff_colors = len(set(colors)) == len(colors)
+            for i in range(1, len(group)):
+                curr = group[i]
 
-            if one_number and diff_colors:
-                self.hand_score += sum(numbers)
-                continue
+                # If gap is large → new subgroup
+                if abs(curr.center_x - current_subgroup[-1].center_x) > 100:
+                    subgroups.append(current_subgroup)
+                    current_subgroup = [curr]
+                else:
+                    current_subgroup.append(curr)
+
+            subgroups.append(current_subgroup)
 
             # -------------------------
-            # CHECK RUN - tiles of same color, but
-            # different number --> 1(red), 2(red), 3(red)
+            # Step 3: evaluate each subgroup
             # -------------------------
+            for subgroup in subgroups:
 
-            # check if all tiles are the same color
-            same_color = len(set(colors)) == 1
+                # Ignore groups smaller than 3
+                if len(subgroup) < 3:
+                    continue
 
-            # check for consecutive order
-            consecutive_order = True
-            for i in range(len(numbers) - 1):
-                if numbers[i] + 1 != numbers[i + 1]:
-                    consecutive_order = False
-                    break
+                numbers = [t.value for t in subgroup]
+                colors = [t.color for t in subgroup]
 
-            if same_color and consecutive_order:
-                self.hand_score += sum(numbers)
+                # -------------------------
+                # CHECK SET
+                # Conditions:
+                # - 3 or 4 tiles
+                # - same number
+                # - all colors different
+                # -------------------------
+                same_number = len(set(numbers)) == 1
+                all_diff_colors = len(set(colors)) == len(colors)
 
-        # returns sum group scores of evaluated groups
+                if 3 <= len(subgroup) <= 4 and same_number and all_diff_colors:
+                    print(f"SET FOUND: {numbers[0]}")
+                    self.hand_score += sum(numbers)
+                    valid_group_count += 1
+                    continue  # don't check run if already a set
+
+                # -------------------------
+                # CHECK RUN
+                # Conditions:
+                # - same color
+                # - consecutive numbers
+                # -------------------------
+                same_color = len(set(colors)) == 1
+
+                sorted_numbers = sorted(numbers)
+
+                is_consecutive = all(
+                    sorted_numbers[i] + 1 == sorted_numbers[i + 1]
+                    for i in range(len(sorted_numbers) - 1)
+                )
+
+                if same_color and is_consecutive:
+                    print(f"RUN FOUND: {sorted_numbers}")
+                    self.hand_score += sum(sorted_numbers)
+                    valid_group_count += 1
+
+        print("Number of valid groups found:", valid_group_count)
         return self.hand_score
 
     # Calculates the turn score after the turn has ended
@@ -313,6 +318,9 @@ class DummyTile:
         self.center_y = y
         self.color = color
         self.value = value
+    def __repr__(self):
+        return f"{self.value}{self.color[0]}({self.center_x},{self.center_y})"
+
 
 
 tile1 = DummyTile(0, 0, "red", 1)
