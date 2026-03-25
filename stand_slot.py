@@ -3,22 +3,24 @@ from engine.tile import TILE_WIDTH, TILE_HEIGHT
 
 DIVIDER_GAP = 5
 
-class StandSlot:
+class StandSlot(arcade.Sprite):
     """
     Slots for each spot in the stand
     """
     def __init__(self, x, y, color):
+        super().__init__()
+
         self.center_x = x
         self.center_y = y
         self.color = color
-        self.size = 5
+        self.scale = 5
         self.width = TILE_WIDTH
         self.height = TILE_HEIGHT
         self.border_width = 4
 
         # For when adding tiles to stand
-        self.holding_tile = False
         self.curr_tile = None
+        self.holding_tile = False
 
     def draw(self):
         arcade.draw_lbwh_rectangle_filled(

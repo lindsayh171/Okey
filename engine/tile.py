@@ -21,7 +21,7 @@ class Tile(arcade.Sprite):
         self.suit = suit
         self.is_joker = is_joker
         self.copy_id = copy_id  # two copies of each # tile - this distinguishes duplicate tiles
-        self.current_slot_location = None
+        self.current_slot = curr_slot
         self.is_in_set = False # distinguish what tiles are in another players set
 
         self.texture = TILE_TEXTURE
@@ -73,8 +73,6 @@ class Tile(arcade.Sprite):
             (222, 212, 193)
         )
 
-        self.current_slot = curr_slot
-
     def draw(self):
         # Rectangle
         self.tile_bg.center_x = self.center_x
@@ -118,7 +116,7 @@ class Tile(arcade.Sprite):
         self.current_slot = slot
         self.center_x = slot.center_x
         self.center_y = slot.center_y
-        self.update_position()
+        # self.update_position()
 
     def update_position(self):
         """Update rectangle and text positions to match center_x/center_y"""
