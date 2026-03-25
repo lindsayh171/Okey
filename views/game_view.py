@@ -217,7 +217,7 @@ class GameView(arcade.View):
             label = arcade.Text(
                 com.name,
                 com.center_x,
-                com.center_y,
+                com.center_y - COM_WIDTH - 15, # minus 15 for font size
                 arcade.color.WHITE,
                 font_size=15,
                 anchor_x="center",
