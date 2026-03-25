@@ -211,6 +211,9 @@ class GameView(arcade.View):
         self.com_list.append(com2)
         self.com_list.append(com3)
 
+        # Run com static method to assign com icons
+        Com.assign_unique_icons(self.com_list)
+
         # create labels
         for com in self.com_list:
             # Need to add text to existing sprite square texture

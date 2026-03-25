@@ -1,4 +1,8 @@
+import random
+
 import arcade
+from arcade import load_texture
+
 from assets import textures
 COM_WIDTH = 75
 
@@ -23,3 +27,11 @@ class Com(arcade.Sprite):
         self.texture = textures.get_random_icon()
 
     # Highlight com to show hand
+
+    # Set different icons for each com
+    @staticmethod
+    def assign_unique_icons(com_list):
+       available = textures.ICON_TEXTURES.copy()
+       random.shuffle(available)
+       for i in range(len(com_list)):
+           com_list[i].texture = load_texture(available.pop())
