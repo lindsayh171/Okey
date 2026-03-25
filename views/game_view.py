@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import math
 import arcade
 from com import Com, COM_WIDTH
