@@ -7,7 +7,7 @@ scores that are dependent on how each evaluate tiles.
 from collections import defaultdict
 import math
 
-
+ 
 def distance(t1, t2):
     """
     helper function to measure the Euclidean distance
