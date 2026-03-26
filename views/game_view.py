@@ -74,6 +74,16 @@ class GameView(arcade.View):
                                             colr.THEME_PINK,
                                             colr.THEME_LIGHT_BLUE)
 
+        # end turn button
+        self.end_turn_button = ui_button.Button(self.window.width * 0.92, # right side ~approx
+                                            self.window.height * 0.07,
+                                            self.window.width / 6,
+                                            self.window.width / 13,
+                                            "End Turn",
+                                            colr.THEME_PINK,
+                                            colr.THEME_LIGHT_BLUE)
+
+
     # Set up game
     def setup(self):
         # need to do this here so width and height are set up
@@ -158,6 +168,7 @@ class GameView(arcade.View):
 
         self.menu_button.draw()
         self.open_button.draw()
+        self.end_turn_button.draw()
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
@@ -258,8 +269,12 @@ class GameView(arcade.View):
         # TILE IS CLICKED
         clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
         if len(clicked_tiles) > 0:
-            self.held_tiles.append(clicked_tiles[0])
-            self.pull_to_top(self.held_tiles[0])
+            tile = clicked_tiles[0]
+            player = self.game.get_current_player()
+            # allow dragging of player hand and own discard
+            if tile in player.hand or tile in player.discard_pile.tiles:
+                self.held_tiles.append(tile)
+                self.pull_to_top(tile)
             # Return if clicked
             return
 
@@ -380,6 +395,11 @@ class GameView(arcade.View):
                 self.open_displaying_player = None
             return
 
+        # Check if end_turn button was clicked
+        if self.end_turn_button.button_pressed(x, y):
+            self.game.end_turn()
+
+
         # check if menu was clicked
         if self.menu_button.button_pressed(x, y):
             from views.menu_view import MenuView
@@ -393,18 +413,27 @@ class GameView(arcade.View):
 
         tile = self.held_tiles[0]
 
-        # Put tile in discard pile
-        available_slots = list(self.stand_slot_list)
-        # each player has their own discard pile
-        disc = self.game.get_current_player().discard_pile
-        # disc = self.game.discards[0]
+        player = self.game.get_current_player()
+        disc = player.discard_pile
+
+        # if tile was placed on discard and dragged away, then return to hand
+        if tile in disc.tiles and not arcade.check_for_collision(tile, disc):
+            disc.tiles.clear()
+            player.hand.append(tile)
+            print("Returning tile from discard back to hand")
+        # if tile was placed on discard only, keep it there
         if arcade.check_for_collision(tile, disc):
             # prevent someone from picking this back up
             tile.position = (disc.center_x, disc.center_y)
             print("Tile dropped on discard")
+
             self.game.discard_tile(tile)
+
             self.held_tiles = []
             return
+
+        # Put tile in discard pile
+        available_slots = list(self.stand_slot_list)
 
         # Snap tile to the closest stand slot or a com hand if displayed
         if len(self.held_tiles) > 0:
@@ -420,13 +449,11 @@ class GameView(arcade.View):
             else:
                 self.snap(self.held_tiles[0], available_slots)
 
-        # Drop card from held tiles
-        self.held_tiles = []
+            # Drop card from held tiles
+            self.held_tiles = []
 
-        # recalculate score after move for current player
-        player = self.game.get_current_player()
-        score = player.player_get_hand_score()
-        print("New score:", score)
+            score = player.player_get_hand_score()
+            print("New score:", score)
 
 
     def on_mouse_motion(self, x, y, dx, dy):
