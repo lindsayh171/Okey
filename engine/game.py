@@ -92,7 +92,72 @@ class Game:
         self.start_new_round()
 
     def get_current_player(self):
+        """
+        returns the player who is in their turn currently
+        """
         return self.players[self.current_player_idx]
+
+    def discard_tile(self, tile):
+        """
+        function discards a tile and ends the turn
+        """
+
+        player = self.get_current_player()
+
+        # player must draw before discarding (except for first turn)
+        if self.must_draw:
+            print("Draw before discarding tile")
+            return
+
+        # Remove tile from player's hand
+        if tile in player.hand:
+            player.hand.remove(tile)
+        else:
+            raise ValueError("Tile not in hand to be discarded")
+
+        # save last discarded tile for next player to possibly take
+        self.last_discard = tile
+
+        # update to only show last tile
+        player.discard_pile.tiles.clear() # remove everything in discard pile
+        player.discard_pile.tiles.append(tile) # add tile player just discarded
+
+        print(f"{player.name} discarded {tile.value}")
+
+        # lock score
+        player.locked_score = player.player_get_hand_score()
+        print(f"Locked score: {player.locked_score}")
+
+        # end turn
+        self.end_turn()
+
+
+    def end_turn(self):
+        """
+        Move to next player
+        """
+
+        # moves to next player (circular)
+        self.current_player_idx = (self.current_player_idx - 1) % len(self.players)
+
+        # After first turn, all players draw before discarding
+        self.must_draw = True
+
+        player = self.get_current_player()
+
+        print(f"Next player's turn: {self.get_current_player().name}")
+
+    # def confirm_end_turn(self):
+    #     player = self.get_current_player()
+    #
+    #     # lock score at final state
+    #     player.locked_score = player.player_get_hand_score()
+    #
+    #     print(f"Final score: {player.locked_score}")
+    #
+    #     # now end turn
+    #     self.end_turn()
+
 
     def debug_state(self):
         """
