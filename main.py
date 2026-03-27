@@ -2,7 +2,7 @@ import arcade
 from views.title_view import TitleView
 
 def main():
-    window = arcade.Window(1000,
+    window = arcade.Window(1200,
             800,
             "Test Game",
             resizable=False)

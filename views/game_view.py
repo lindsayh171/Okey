@@ -6,6 +6,7 @@ from engine.game import Game
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
 import assets.colors as colr
 import ui_components.button as ui_button
+import ui_components.rounded_rectangle as ui_rr
 
 # Game window class
 class GameView(arcade.View):
@@ -66,13 +67,13 @@ class GameView(arcade.View):
         # open button
 
         # open button, initially set to grey
-        self.open_button = ui_button.Button(self.window.width * 0.07,
+        self.open_button = ui_button.Button(self.window.width * 0.93,
                                             self.window.height * 0.07,
-                                            COM_WIDTH * 2 - (DIVIDER_GAP * 3),
-                                            self.window.width / 13,
-                                            "Open",
-                                            arcade.color.GRAY,
-                                            colr.THEME_LIGHT_BLUE)
+                                         self.window.width / 8,
+                                         self.window.height / 12,
+                                         "Open",
+                                         arcade.color.GRAY,
+                                         colr.THEME_DARK_BLUE)
 
     # Set up game
     def setup(self):
@@ -159,11 +160,14 @@ class GameView(arcade.View):
         self.menu_button.draw()
         # Change open button if player can open
         if self.game.players[0].can_open:
-            self.open_button.set_color(colr.THEME_PINK)
+            self.open_button.set_color(colr.THEME_YELLOW)
             self.open_button.draw()
         else:
             self.open_button.set_color(arcade.color.GRAY)
             self.open_button.draw()
+
+        # draw hand score
+        arcade.draw_lbwh_rectangle_outline()
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
