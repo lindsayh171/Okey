@@ -393,31 +393,39 @@ class GameView(arcade.View):
 
         tile = self.held_tiles[0]
 
-        # Put tile in discard pile
-        available_slots = list(self.stand_slot_list)
+        # Get discard pile
         disc = self.game.discards[0]
-        if arcade.check_for_collision(tile, disc):
-            # TODO: prevent someone from picking this back up
-            tile.position = (disc.center_x, disc.center_y)
-            self.held_tiles = []
-            return
+
+        # get set of slots
+        available_slots = list(self.stand_slot_list)
+        if self.open_displaying_player is not None:
+            available_slots = self.stand_slot_list + self.open_stand_slot_list
 
         # Snap tile to the closest stand slot or a com hand if displayed
-        if len(self.held_tiles) > 0:
-            # snapping to another open set
-            if self.open_displaying_player is not None:
-                # Combine player stand slots and window slots
-                combined_slots = self.stand_slot_list + self.open_stand_slot_list
-                self.snap(tile, combined_slots)
-                # TODO: check if placing tile matches with set
-                if tile.current_slot in self.open_stand_slot_list:
-                    self.current_open_tiles.append(tile)
-                    self.open_window_tiles.append(tile)
-            else:
-                self.snap(self.held_tiles[0], available_slots)
+        # check if tile touching slot
+        touching_slot = None
+        for slot in available_slots:
+            if not slot.holding_tile and arcade.check_for_collision(tile, slot):
+                touching_slot = slot
+                break
 
-        # Drop card from held tiles
-        self.held_tiles = []
+        if touching_slot:
+            self.snap(tile, available_slots)
+            if touching_slot in self.open_stand_slot_list:
+                self.current_open_tiles.append(tile)
+                self.open_window_tiles.append(tile)
+            self.held_tiles = []
+            return
+        elif arcade.check_for_collision(tile, disc):
+            # TODO: prevent someone from picking this back up
+            # tile.position = (disc.center_x, disc.center_y)
+            self.snap(tile, [disc])
+            self.held_tiles = []
+            return
+        else:
+            # return tile to original position
+            self.snap(tile, available_slots)
+            self.held_tiles = []
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
@@ -434,7 +442,7 @@ class GameView(arcade.View):
 
         # find the closest spot by looping through list
         available_slots = list(selected_list)
-        slot, _ = arcade.get_closest_sprite(tile, available_slots)
+        slot, distance = arcade.get_closest_sprite(tile, available_slots)
 
         while available_slots and reset_position:
             # if closest slot is empty and tile is on top of it at all, snap
