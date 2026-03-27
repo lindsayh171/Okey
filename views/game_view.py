@@ -430,7 +430,7 @@ class GameView(arcade.View):
             self.held_tiles = []
             tile.unhighlight()
             return
-        elif arcade.check_for_collision(tile, disc):
+        if arcade.check_for_collision(tile, disc):
             # TODO: prevent someone from picking this back up
             # tile.position = (disc.center_x, disc.center_y)
             self.snap(tile, [disc])
@@ -458,7 +458,7 @@ class GameView(arcade.View):
 
         # find the closest spot by looping through list
         available_slots = list(selected_list)
-        slot, distance = arcade.get_closest_sprite(tile, available_slots)
+        slot, _ = arcade.get_closest_sprite(tile, available_slots)
 
         while available_slots and reset_position:
             # if closest slot is empty and tile is on top of it at all, snap
@@ -494,7 +494,7 @@ class GameView(arcade.View):
         start_y = self.total_stand_height + TILE_HEIGHT / 2 + DIVIDER_GAP
 
         # Build as many rows as the player has sets in their open
-        for current_set, played_set in enumerate(player.sets_played):
+        for current_set, _ in enumerate(player.sets_played):
             stand_y = start_y + current_set * (TILE_HEIGHT + 2 * DIVIDER_GAP)
             # Build as many columns as there are length of the current set +
             # 2 empty slots on either side
