@@ -65,13 +65,13 @@ class GameView(arcade.View):
 
         # open button
 
-        # open button
+        # open button, initially set to grey
         self.open_button = ui_button.Button(self.window.width * 0.07,
                                             self.window.height * 0.07,
-                                            self.window.width / 6,
+                                            COM_WIDTH * 2 - (DIVIDER_GAP * 3),
                                             self.window.width / 13,
                                             "Open",
-                                            colr.THEME_PINK,
+                                            arcade.color.GRAY,
                                             colr.THEME_LIGHT_BLUE)
 
     # Set up game
@@ -157,7 +157,13 @@ class GameView(arcade.View):
 
 
         self.menu_button.draw()
-        self.open_button.draw()
+        # Change open button if player can open
+        if self.game.players[0].can_open:
+            self.open_button.set_color(colr.THEME_PINK)
+            self.open_button.draw()
+        else:
+            self.open_button.set_color(arcade.color.GRAY)
+            self.open_button.draw()
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
@@ -202,14 +208,18 @@ class GameView(arcade.View):
         com3_y = screen_height / 2
 
         # Make each com
-        com1 = Com(com1_x, com1_y, arcade.color.RED, "Com 1", self.game.players[1])
-        com2 = Com(com2_x, com2_y, arcade.color.YELLOW, "Com 2", self.game.players[2])
-        com3 = Com(com3_x, com3_y, arcade.color.BLUE, "Com 3", self.game.players[3])
+        com1 = Com(com1_x, com1_y, arcade.color.RED, self.game.players[1])
+        com2 = Com(com2_x, com2_y, arcade.color.YELLOW, self.game.players[2])
+        com3 = Com(com3_x, com3_y, arcade.color.BLUE, self.game.players[3])
 
         # Add each com to the list
         self.com_list.append(com1)
         self.com_list.append(com2)
         self.com_list.append(com3)
+
+        # Run com static method to assign com icons and names
+        Com.assign_unique_icons(self.com_list)
+        Com.assign_unique_names(self.com_list)
 
         # create labels
         for com in self.com_list:
@@ -217,7 +227,7 @@ class GameView(arcade.View):
             label = arcade.Text(
                 com.name,
                 com.center_x,
-                com.center_y,
+                com.center_y - COM_WIDTH - 15, # minus 15 for font size
                 arcade.color.WHITE,
                 font_size=15,
                 anchor_x="center",
@@ -260,6 +270,8 @@ class GameView(arcade.View):
         if len(clicked_tiles) > 0:
             self.held_tiles.append(clicked_tiles[0])
             self.pull_to_top(self.held_tiles[0])
+            # Highlight tile
+            self.held_tiles[0].highlight()
             # Return if clicked
             return
 
@@ -268,6 +280,7 @@ class GameView(arcade.View):
             if len(clicked_tiles) > 0:
                 self.held_tiles.append(clicked_tiles[0])
                 self.pull_to_top(self.held_tiles[0])
+
                 # Return if clicked
                 return
 
@@ -415,17 +428,20 @@ class GameView(arcade.View):
                 self.current_open_tiles.append(tile)
                 self.open_window_tiles.append(tile)
             self.held_tiles = []
+            tile.unhighlight()
             return
         elif arcade.check_for_collision(tile, disc):
             # TODO: prevent someone from picking this back up
             # tile.position = (disc.center_x, disc.center_y)
             self.snap(tile, [disc])
             self.held_tiles = []
+            tile.unhighlight()
             return
         else:
             # return tile to original position
             self.snap(tile, available_slots)
             self.held_tiles = []
+            tile.unhighlight()
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:

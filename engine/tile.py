@@ -29,7 +29,8 @@ class Tile(arcade.Sprite):
         self.center_x = x
         self.center_y = y
 
-        self.tile_bg = rr.RoundedRectangle(self.center_x - TILE_WIDTH / 2,
+        self.tile_bg = rr.RoundedRectangle(
+            self.center_x - TILE_WIDTH / 2,
             self.center_y - TILE_HEIGHT / 2,
             TILE_WIDTH,
             TILE_HEIGHT,
@@ -128,6 +129,12 @@ class Tile(arcade.Sprite):
 
         self.tile_symbol.x = self.center_x
         self.tile_symbol.y = self.center_y - (TILE_HEIGHT / 3.5)
+
+    def highlight(self):
+        self.tile_bg.color = arcade.color.LIGHT_GOLDENROD_YELLOW
+
+    def unhighlight(self):
+        self.tile_bg.color = (222, 212, 193)
 
     def __repr__(self):
         if self.is_joker:

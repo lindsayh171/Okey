@@ -49,3 +49,6 @@ class Button():
         :return: true if collides, false otherwise
         """
         return self.rect.collided_with_rect(x, y)
+
+    def set_color(self, color):
+        self.color = color
