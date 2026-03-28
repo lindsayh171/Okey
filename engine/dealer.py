@@ -8,7 +8,6 @@ import arcade
 
 from engine.tile import Tile, TILE_COLORS_SYMBOLS
 from engine.draw_pile import DrawPile
-from engine.board import Board
 
 class Dealer:
     """
@@ -56,5 +55,5 @@ class Dealer:
         # remaining tiles go on draw pile
         draw_pile = DrawPile(tiles)
 
-        # return board state for the round
-        return Board(players, draw_pile, starting_player_idx)
+        # return this draw pile back
+        return draw_pile

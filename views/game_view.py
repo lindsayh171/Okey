@@ -74,6 +74,16 @@ class GameView(arcade.View):
                                             arcade.color.GRAY,
                                             colr.THEME_LIGHT_BLUE)
 
+        # end turn button
+        self.end_turn_button = ui_button.Button(self.window.width * 0.92, # right side ~approx
+                                            self.window.height * 0.07,
+                                            self.window.width / 6,
+                                            self.window.width / 13,
+                                            "End Turn",
+                                            colr.THEME_PINK,
+                                            colr.THEME_LIGHT_BLUE)
+
+
     # Set up game
     def setup(self):
         # need to do this here so width and height are set up
@@ -392,6 +402,11 @@ class GameView(arcade.View):
                 self.open_stand_slot_list.clear()
                 self.open_displaying_player = None
             return
+
+        # Check if end_turn button was clicked
+        if self.end_turn_button.button_pressed(x, y):
+            self.game.end_turn()
+
 
         # check if menu was clicked
         if self.menu_button.button_pressed(x, y):
