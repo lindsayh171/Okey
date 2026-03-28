@@ -1,5 +1,6 @@
 import arcade
 import ui_components.rounded_rectangle as rr
+import assets.colors as colr
 
 from engine.draw_pile import DrawPile
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
@@ -17,9 +18,21 @@ class GuiDrawPile(arcade.Sprite):
         self.center_y = y
         self.draw_pile = draw_pile
 
-    def draw(self):
+        # create label
         tile_count = self.draw_pile.count()
+        self.label_x = self.center_x + TILE_WIDTH/2
+        self.label_y = self.center_y + TILE_HEIGHT/2
+        self.tile_count_text = arcade.Text(
+            str(tile_count),
+            self.label_x,
+            self.label_y,
+            arcade.color.WHITE,
+            font_size=15,
+            anchor_x="center",
+            anchor_y="center",
+        )
 
+    def draw(self):
         # Back of top tile
 
         back_tile = rr.RoundedRectangle(
@@ -31,3 +44,12 @@ class GuiDrawPile(arcade.Sprite):
             (222, 212, 193)
         )
         back_tile.draw()
+
+        # label
+        arcade.draw_circle_filled(self.label_x,
+                                 self.label_y,
+                                 TILE_WIDTH/4,
+                                 colr.THEME_DARK_BLUE,
+                                 num_segments=-1)
+
+        self.tile_count_text.draw()

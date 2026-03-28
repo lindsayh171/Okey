@@ -286,16 +286,6 @@ class GameView(arcade.View):
             self.height / 2,
             self.game.draw_pile,
         )
-        self.draw_pile_label = arcade.Text(
-            # Show how many tiles are in the deck
-            str(self.game.draw_pile.count()),
-            self.width / 2,
-            self.height / 2,
-            arcade.color.EGGSHELL,
-            16,
-            anchor_x="center",
-            anchor_y="center",
-        )
 
     # Discard setup
     def setup_discard(self, player):
