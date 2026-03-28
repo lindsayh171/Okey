@@ -6,7 +6,6 @@ from engine.game import Game
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
 import assets.colors as colr
 import ui_components.button as ui_button
-import ui_components.rounded_rectangle as ui_rr
 
 # Game window class
 class GameView(arcade.View):
@@ -492,11 +491,10 @@ class GameView(arcade.View):
             self.held_tiles = []
             tile.unhighlight()
             return
-        else:
-            # return tile to original position
-            self.snap(tile, available_slots)
-            self.held_tiles = []
-            tile.unhighlight()
+        # return tile to original position
+        self.snap(tile, available_slots)
+        self.held_tiles = []
+        tile.unhighlight()
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:

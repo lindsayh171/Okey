@@ -1,5 +1,3 @@
-import random
-
 NAMES = [
     "Zack",
     "Lindsay",
