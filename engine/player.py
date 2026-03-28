@@ -291,7 +291,6 @@ class Player:
                 all_diff_colors = len(set(colors)) == len(colors)
 
                 if 3 <= len(subgroup) <= 4 and same_number and all_diff_colors:
-                    print(f"SET FOUND: {numbers[0]}")
                     self.hand_score += sum(numbers)
                     valid_group_count += 1
                     continue  # don't check run if already a set
@@ -313,12 +312,8 @@ class Player:
                         break
 
                 if same_color and is_consecutive:
-                    print(f"RUN FOUND: {sorted_numbers}")
                     self.hand_score += sum(sorted_numbers)
                     valid_group_count += 1
-
-        # Debug: show how many valid groups were found
-        print("Number of valid groups found:", valid_group_count)
 
         # Return total score from all valid groups sums
         return self.hand_score
@@ -328,29 +323,3 @@ class Player:
         self.hand_score += sum(tile.value for tile in self.hand)
         return self.turn_score
 
-# TO-DO: address disabled 'R0903: Too few public methods'
-# pylint: disable=R0903
-### Testing player_get_hand_score() and group_tiles()
-class DummyTile:
-    """
-    For testing purposes before integrating to GUI
-    """
-    def __init__(self, x, y, color, value):
-        self.center_x = x
-        self.center_y = y
-        self.color = color
-        self.value = value
-    def __repr__(self):
-        return f"{self.value}{self.color[0]}({self.center_x},{self.center_y})"
-
-
-
-tile1 = DummyTile(0, 0, "red", 1)
-tile2 = DummyTile(19, 0, "red", 2)
-tile3 = DummyTile(20, 0, "red", 3)
-
-player = Player(0, "Joe", False)
-player.hand = [tile1, tile2, tile3]
-
-
-# print(player.player_get_hand_score())
