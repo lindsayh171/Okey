@@ -308,6 +308,9 @@ class GameView(arcade.View):
         self.setup()
 
     def on_mouse_press(self, x, y, button, modifiers):
+        # prevents more clicking of player after end of turn
+        if self.game.get_current_player() != self.game.players[0]:
+            return
 
         # TILE IS CLICKED
         clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
@@ -336,7 +339,7 @@ class GameView(arcade.View):
                 # if draw not allowed, stop
                 if top_tile is None:
                     return
-                print("Tile drawn from draw pile")
+                print(f"Tile drawn from draw pile: {top_tile.value}")
 
                 # Add tile to gui hand
                 for slot in self.stand_slot_list:
@@ -358,7 +361,7 @@ class GameView(arcade.View):
                     top_tile = self.game.draw_from_discard(discard)
                     if top_tile is None:
                         return
-                    print("drawn from discard pile")
+                    print(f"Drawn from discard pile: {top_tile.value}")
 
                     # Add tile to gui hand
                     for slot in self.stand_slot_list:
@@ -440,7 +443,6 @@ class GameView(arcade.View):
 
             # Handing discard to game logic
             self.game.discard_tile(tile)
-            self.game.turn_ended = True
             # now end turn
             self.game.end_turn()
             return
@@ -475,7 +477,7 @@ class GameView(arcade.View):
             disc.tiles.clear()
             disc.tiles.append(tile)
 
-            print("Tile dropped on discard")
+            print(f"Tile dropped on discard: {tile.value}")
 
             self.held_tiles = []
             tile.unhighlight()
