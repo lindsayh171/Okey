@@ -65,13 +65,13 @@ class GameView(arcade.View):
 
         # open button
 
-        # open button
+        # open button, initially set to grey
         self.open_button = ui_button.Button(self.window.width * 0.07,
                                             self.window.height * 0.07,
-                                            self.window.width / 6,
+                                            COM_WIDTH * 2 - (DIVIDER_GAP * 3),
                                             self.window.width / 13,
                                             "Open",
-                                            colr.THEME_PINK,
+                                            arcade.color.GRAY,
                                             colr.THEME_LIGHT_BLUE)
 
         # end turn button
@@ -167,8 +167,13 @@ class GameView(arcade.View):
 
 
         self.menu_button.draw()
-        self.open_button.draw()
-        self.end_turn_button.draw()
+        # Change open button if player can open
+        if self.game.players[0].can_open:
+            self.open_button.set_color(colr.THEME_PINK)
+            self.open_button.draw()
+        else:
+            self.open_button.set_color(arcade.color.GRAY)
+            self.open_button.draw()
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
@@ -213,14 +218,18 @@ class GameView(arcade.View):
         com3_y = screen_height / 2
 
         # Make each com
-        com1 = Com(com1_x, com1_y, arcade.color.RED, "Com 1", self.game.players[1])
-        com2 = Com(com2_x, com2_y, arcade.color.YELLOW, "Com 2", self.game.players[2])
-        com3 = Com(com3_x, com3_y, arcade.color.BLUE, "Com 3", self.game.players[3])
+        com1 = Com(com1_x, com1_y, arcade.color.RED, self.game.players[1])
+        com2 = Com(com2_x, com2_y, arcade.color.YELLOW, self.game.players[2])
+        com3 = Com(com3_x, com3_y, arcade.color.BLUE, self.game.players[3])
 
         # Add each com to the list
         self.com_list.append(com1)
         self.com_list.append(com2)
         self.com_list.append(com3)
+
+        # Run com static method to assign com icons and names
+        Com.assign_unique_icons(self.com_list)
+        Com.assign_unique_names(self.com_list)
 
         # create labels
         for com in self.com_list:
@@ -269,12 +278,10 @@ class GameView(arcade.View):
         # TILE IS CLICKED
         clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
         if len(clicked_tiles) > 0:
-            tile = clicked_tiles[0]
-            player = self.game.get_current_player()
-            # allow dragging of player hand and own discard
-            if tile in player.hand or tile in player.discard_pile.tiles:
-                self.held_tiles.append(tile)
-                self.pull_to_top(tile)
+            self.held_tiles.append(clicked_tiles[0])
+            self.pull_to_top(self.held_tiles[0])
+            # Highlight tile
+            self.held_tiles[0].highlight()
             # Return if clicked
             return
 
@@ -283,6 +290,7 @@ class GameView(arcade.View):
             if len(clicked_tiles) > 0:
                 self.held_tiles.append(clicked_tiles[0])
                 self.pull_to_top(self.held_tiles[0])
+
                 # Return if clicked
                 return
 
@@ -413,48 +421,42 @@ class GameView(arcade.View):
 
         tile = self.held_tiles[0]
 
-        player = self.game.get_current_player()
-        disc = player.discard_pile
+        # Get discard pile
+        disc = self.game.discards[0]
 
-        # if tile was placed on discard and dragged away, then return to hand
-        if tile in disc.tiles and not arcade.check_for_collision(tile, disc):
-            disc.tiles.clear()
-            player.hand.append(tile)
-            print("Returning tile from discard back to hand")
-        # if tile was placed on discard only, keep it there
-        if arcade.check_for_collision(tile, disc):
-            # prevent someone from picking this back up
-            tile.position = (disc.center_x, disc.center_y)
-            print("Tile dropped on discard")
-
-            self.game.discard_tile(tile)
-
-            self.held_tiles = []
-            return
-
-        # Put tile in discard pile
+        # get set of slots
         available_slots = list(self.stand_slot_list)
+        if self.open_displaying_player is not None:
+            available_slots = self.stand_slot_list + self.open_stand_slot_list
 
         # Snap tile to the closest stand slot or a com hand if displayed
-        if len(self.held_tiles) > 0:
-            # snapping to another open set
-            if self.open_displaying_player is not None:
-                # Combine player stand slots and window slots
-                combined_slots = self.stand_slot_list + self.open_stand_slot_list
-                self.snap(tile, combined_slots)
-                # TODO: check if placing tile matches with set
-                if tile.current_slot in self.open_stand_slot_list:
-                    self.current_open_tiles.append(tile)
-                    self.open_window_tiles.append(tile)
-            else:
-                self.snap(self.held_tiles[0], available_slots)
+        # check if tile touching slot
+        touching_slot = None
+        for slot in available_slots:
+            if not slot.holding_tile and arcade.check_for_collision(tile, slot):
+                touching_slot = slot
+                break
 
-            # Drop card from held tiles
+        if touching_slot:
+            self.snap(tile, available_slots)
+            if touching_slot in self.open_stand_slot_list:
+                self.current_open_tiles.append(tile)
+                self.open_window_tiles.append(tile)
             self.held_tiles = []
-
-            score = player.player_get_hand_score()
-            print("New score:", score)
-
+            tile.unhighlight()
+            return
+        if arcade.check_for_collision(tile, disc):
+            # TODO: prevent someone from picking this back up
+            # tile.position = (disc.center_x, disc.center_y)
+            self.snap(tile, [disc])
+            self.held_tiles = []
+            tile.unhighlight()
+            return
+        else:
+            # return tile to original position
+            self.snap(tile, available_slots)
+            self.held_tiles = []
+            tile.unhighlight()
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
@@ -507,7 +509,7 @@ class GameView(arcade.View):
         start_y = self.total_stand_height + TILE_HEIGHT / 2 + DIVIDER_GAP
 
         # Build as many rows as the player has sets in their open
-        for current_set, played_set in enumerate(player.sets_played):
+        for current_set, _ in enumerate(player.sets_played):
             stand_y = start_y + current_set * (TILE_HEIGHT + 2 * DIVIDER_GAP)
             # Build as many columns as there are length of the current set +
             # 2 empty slots on either side

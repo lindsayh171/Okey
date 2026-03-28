@@ -1,0 +1,2 @@
+[MASTER]
+init-hook=import sys; sys.path.insert(0, r"c:\Users\linds\OneDrive - University of Vermont\Senior Year\Software Engineering\Final Project\Okey")
