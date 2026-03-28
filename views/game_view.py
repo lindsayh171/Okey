@@ -65,9 +65,9 @@ class GameView(arcade.View):
                                          colr.THEME_DARK_BLUE)
 
         # open button, initially set to grey
-        self.open_button = ui_button.Button(self.window.width * 0.93,
+        self.open_button = ui_button.Button(self.window.width * 0.9,
                                             self.window.height * 0.07,
-                                         self.window.width / 8,
+                                         self.window.width / 5,
                                          self.window.height / 12,
                                          "Open",
                                          arcade.color.GRAY,
@@ -83,24 +83,16 @@ class GameView(arcade.View):
             anchor_x="center",
             anchor_y="center",
         )
-        self.score_text = arcade.Text(
-            "0",
-            self.window.height * 0.03 + self.total_stand_height * 0.75 * 0.5,
-            self.window.height * 0.03 + self.total_stand_height * 0.55,
-            colr.THEME_DARK_BLUE,
-            font_size = 20,
-            anchor_x = "center",
-            anchor_y = "center",
-        )
+        self.score = 0
 
         # end turn button
-        self.end_turn_button = ui_button.Button(self.window.width * 0.92, # right side ~approx
-                                            self.window.height * 0.07,
-                                            self.window.width / 6,
-                                            self.window.width / 13,
+        self.end_turn_button = ui_button.Button(self.window.width * 0.9,
+                                            self.window.height * 0.07 + self.window.height / 11,
+                                                self.window.width / 5,
+                                                self.window.height / 12,
                                             "End Turn",
                                             colr.THEME_PINK,
-                                            colr.THEME_LIGHT_BLUE)
+                                            colr.THEME_DARK_BLUE)
 
 
     # Set up game
@@ -205,8 +197,8 @@ class GameView(arcade.View):
                                            )
         self.score_label.draw()
 
-        self.score_text = arcade.Text(
-            str(self.game.players[0].player_get_hand_score()),
+        score_text = arcade.Text(
+            str(self.score),
             self.window.height * 0.03 + self.total_stand_height * 0.75 * 0.5,
             self.window.height * 0.03 + self.total_stand_height * 0.3,
             colr.THEME_TEAL,
@@ -214,7 +206,8 @@ class GameView(arcade.View):
             anchor_x="center",
             anchor_y="center",
         )
-        self.score_text.draw()
+        score_text.draw()
+        self.end_turn_button.draw()
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
@@ -483,20 +476,17 @@ class GameView(arcade.View):
             if touching_slot in self.open_stand_slot_list:
                 self.current_open_tiles.append(tile)
                 self.open_window_tiles.append(tile)
-            self.held_tiles = []
-            tile.unhighlight()
-            return
-        if arcade.check_for_collision(tile, disc):
+        elif arcade.check_for_collision(tile, disc):
             # TODO: prevent someone from picking this back up
             # tile.position = (disc.center_x, disc.center_y)
             self.snap(tile, [disc])
-            self.held_tiles = []
-            tile.unhighlight()
-            return
-        # return tile to original position
-        self.snap(tile, available_slots)
+        else:
+            # return tile to original position
+            self.snap(tile, available_slots)
+
         self.held_tiles = []
         tile.unhighlight()
+        self.score = self.game.players[0].player_get_hand_score()
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
