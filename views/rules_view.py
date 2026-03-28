@@ -31,6 +31,7 @@ class RulesView(arcade.View):
 
             "Opening Your Hand:\n\n"
             "Minimum 81 points to open\n"
+            "Separate groups of tiles by an empty space\n"
             "Must exceed previous open value\n"
             "100+ pts → star (-100)",
 
