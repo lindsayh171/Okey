@@ -12,11 +12,12 @@ class GameView(arcade.View):
     """
     Main view for the program as the game is being played
     """
-    def __init__(self):
+    def __init__(self, player_name):
         super().__init__()
 
         # create a new game
         self.game = None
+        self.player_name = player_name
 
         self.background_color = colr.THEME_LIGHT_BLUE
 
@@ -106,6 +107,7 @@ class GameView(arcade.View):
     def setup(self):
         # need to do this here so width and height are set up
         self.game = Game(self.width, self.height)
+        self.game.set_player_name(self.player_name)
         self.game.start_game()
 
 

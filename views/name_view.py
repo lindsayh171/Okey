@@ -82,7 +82,7 @@ class NameView(arcade.View):
 
     def on_mouse_press(self, x, y, _button, _modifiers):
         if self.continue_button.button_pressed(x, y):
-            game_view = GameView()
+            game_view = GameView(self.input_field.text)
             game_view.setup()
             self.window.show_view(game_view)
         if self.back_button.button_pressed(x, y):

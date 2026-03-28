@@ -302,6 +302,7 @@ class Player:
                 same_color = len(set(colors)) == 1
 
                 # Sort numbers to check sequence order
+                # TODO: fix - breaks with joker
                 sorted_numbers = sorted(numbers)
 
                 # Check if each number increases by 1

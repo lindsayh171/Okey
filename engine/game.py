@@ -20,7 +20,7 @@ class Game:
         # To note what discard pile player can access
         self.discards[1].player_com_discard = True
 
-        self.players = [Player(self.discards[0], self.enter_player_name(), False),
+        self.players = [Player(self.discards[0], "Person", False),
                         Player(self.discards[1],"Com_1", True),
                         Player(self.discards[2],"Com_2", True),
                         Player(self.discards[3],"Com_3", True)]
@@ -78,10 +78,8 @@ class Game:
                      DiscardPile(left_disc_x, top_disc_y, )]
         return discards
 
-    def enter_player_name(self):
-        name = "Player"
-        # TODO: pop-up to ask for player name
-        return name
+    def set_player_name(self, name):
+        self.players[0].name = name
 
     def start_game(self):
         """
