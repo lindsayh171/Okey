@@ -20,7 +20,17 @@ class Com(arcade.Sprite):
         self.value_color = tuple(color)
         self.name = "Com"
         self.player = player
-        self.box_size = 150
+        # removed box_size = 150
+        self.com_displaying_hand = False
+        self.label = arcade.Text(
+            self.name,
+            self.center_x,
+            self.center_y - COM_WIDTH - 15, # minus 15 for font size
+            arcade.color.WHITE,
+            font_size=15,
+            anchor_x="center",
+            anchor_y="center",
+        )
 
         # Assign random texture to com
         self.texture = textures.get_random_icon()
@@ -41,3 +51,13 @@ class Com(arcade.Sprite):
         random.shuffle(available)
         for com in com_list:
             com.name = available.pop()
+
+    def draw(self):
+        arcade.draw_sprite(self)
+
+        # Update the label text and position
+        self.label.text = self.name
+        self.label.position = (self.center_x, self.center_y - COM_WIDTH - 15)
+
+        # Draw the label
+        self.label.draw()
