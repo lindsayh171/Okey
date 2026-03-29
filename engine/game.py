@@ -1,7 +1,6 @@
 """
 Controls the main gameplay logic
 """
-import time
 from engine.dealer import Dealer
 from engine.player import Player
 from engine.discard_pile import DiscardPile
@@ -219,24 +218,7 @@ class Game:
 
         print(f"Next player's turn: {self.get_current_player().name}")
         self.debug_state()
-        # If the current player is AI, run the com turn logic
-        if self.get_current_player().is_player_ai:
-            self.com_turn()
 
-    def com_turn(self):
-        """Handles AI player's full turn."""
-        player = self.get_current_player()
-        self.draw_tile()
-        # Simulated wait time
-        time.sleep(2)
-        # Gets the hand score and determines which tiles are being used for scoring
-        player.get_hand_score()
-        # TODO: Add opening logic here
-        # Simulated wait time
-        time.sleep(2)
-        # Runs the com discard function
-        self.discard_tile(player.com_discard_tile())
-        self.end_turn()
     def debug_state(self):
         """
         Prints game state in readable format
