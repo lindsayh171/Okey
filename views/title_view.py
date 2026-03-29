@@ -40,22 +40,22 @@ class TitleView(arcade.View):
         )
 
         # play button
-        self.play_button = button.Button(title_x - button_width * 0.8,
-                                         title_y - button_height * 1.6,
-                                         button_width,
-                                         button_height,
+        self.play_button = button.Button([title_x - button_width * 0.8,
+                                         title_y - button_height * 1.6],
+                                         [button_width,
+                                         button_height],
                                          "Play",
-                                         colr.THEME_YELLOW,
-                                         colr.THEME_DARK_BLUE)
+                                         [colr.THEME_YELLOW,
+                                         colr.THEME_DARK_BLUE])
 
         # rules button
-        self.rules_button = button.Button(title_x + button_width * 0.8,
-                                          title_y - button_height * 1.6,
-                                          button_width,
-                                          button_height,
+        self.rules_button = button.Button([title_x + button_width * 0.8,
+                                          title_y - button_height * 1.6],
+                                          [button_width,
+                                          button_height],
                                           "Rules",
-                                          colr.THEME_TEAL,
-                                          colr.THEME_DARK_BLUE)
+                                          [colr.THEME_TEAL,
+                                          colr.THEME_DARK_BLUE])
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.

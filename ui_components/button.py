@@ -9,7 +9,7 @@ class Button():
         self.coordinates = {"x": coords[0], "y": coords[1]}
         self.dimensions = {"width": dimensions[0], "height": dimensions[1]}
         self.text = value
-        self.radius = dimensions["height"] // 4
+        self.radius = self.dimensions["height"] // 4
 
         self.colors = {"color": colors[0],
                        "text_color": colors[1]}

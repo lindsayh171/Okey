@@ -42,30 +42,30 @@ class MenuView(arcade.View):
         )
 
         # close button
-        self.close_button = button.Button(title_x + close_button * 3,
-                                         title_y + close_button * 1.5,
-                                         close_button,
-                                         close_button,
+        self.close_button = button.Button([title_x + close_button * 3,
+                                         title_y + close_button * 1.5],
+                                         [close_button,
+                                         close_button],
                                          "❌",
-                                         colr.THEME_LIGHT_BLUE,
-                                         colr.THEME_DARK_BLUE)
+                                         [colr.THEME_LIGHT_BLUE,
+                                         colr.THEME_DARK_BLUE])
 
         # rules button
-        self.rules_button = button.Button(title_x,
-                                          title_y - button_height * 1.2,
-                                          button_width,
-                                          button_height,
+        self.rules_button = button.Button([title_x,
+                                          title_y - button_height * 1.2],
+                                          [button_width,
+                                          button_height],
                                           "Rules",
-                                          colr.THEME_TEAL,
-                                          colr.THEME_DARK_BLUE)
+                                          [colr.THEME_TEAL,
+                                          colr.THEME_DARK_BLUE])
 
-        self.quit_button = button.Button(title_x,
-                                          title_y - button_height * 3,
-                                          button_width,
-                                          button_height,
+        self.quit_button = button.Button([title_x,
+                                          title_y - button_height * 3],
+                                          [button_width,
+                                          button_height],
                                           "Quit",
-                                          colr.THEME_YELLOW,
-                                          colr.THEME_DARK_BLUE)
+                                          [colr.THEME_YELLOW,
+                                          colr.THEME_DARK_BLUE])
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.

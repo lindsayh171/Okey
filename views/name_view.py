@@ -39,24 +39,24 @@ class NameView(arcade.View):
 
         # Back button
         self.back_button = button.Button(
-            self.window.width * 0.35,
-            self.window.height * 0.3,
-            button_width,
-            button_height,
+            [self.window.width * 0.35,
+            self.window.height * 0.3],
+            [button_width,
+            button_height],
             "Back",
-            colr.THEME_TEAL,
-            colr.THEME_DARK_BLUE
+            [colr.THEME_TEAL,
+            colr.THEME_DARK_BLUE]
         )
 
         # Continue button
         self.continue_button = button.Button(
-            self.window.width * 0.65,
-            self.window.height * 0.3,
-            button_width,
-            button_height,
+            [self.window.width * 0.65,
+            self.window.height * 0.3],
+            [button_width,
+            button_height],
             "Continue",
-            colr.THEME_YELLOW,
-            colr.THEME_DARK_BLUE
+            [colr.THEME_YELLOW,
+            colr.THEME_DARK_BLUE]
         )
 
         # Main vertical layout with spacing

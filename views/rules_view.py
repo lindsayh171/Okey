@@ -116,13 +116,13 @@ class RulesView(arcade.View):
 
         # Exit button
         self.exit_button = button.Button(
-            title_x,
-            self.window.height / 10,
-            button_width,
-            button_height,
+            [title_x,
+            self.window.height / 10],
+            [button_width,
+            button_height],
             "Exit",
-            colr.THEME_TEAL,
-            colr.THEME_DARK_BLUE
+            [colr.THEME_TEAL,
+            colr.THEME_DARK_BLUE]
         )
 
         self.window.default_camera.use()

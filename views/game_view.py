@@ -4,6 +4,7 @@ from gui_draw_pile import GuiDrawPile
 from stand_slot import StandSlot, DIVIDER_GAP
 from engine.game import Game
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
+from stand import Stand
 import assets.colors as colr
 import ui_components.button as ui_button
 
@@ -17,6 +18,8 @@ class GameView(arcade.View):
 
         # create a new game
         self.game = None
+
+        # get player name from previous screen
         self.player_name = player_name
 
         self.background_color = colr.THEME_LIGHT_BLUE
@@ -34,13 +37,7 @@ class GameView(arcade.View):
         self.com_stand_slot_list = []
 
         # Stand specifications
-        self.stand_start_x = 0
-        self.open_stand_start_x = 0
-        self.stand_divider = 5
-        self.rows = 2
-        self.columns = 12
-        self.total_stand_height = self.rows * TILE_HEIGHT + self.stand_divider
-        self.total_stand_width = self.columns * TILE_WIDTH
+        self.stand = Stand()
 
         self.held_tiles = []
         self.draw_pile = None
@@ -56,28 +53,28 @@ class GameView(arcade.View):
         self.open_window_tiles = []
 
         # menu
-        self.menu_button = ui_button.Button(self.window.width * 0.9,
-                                         self.window.height * 0.9,
-                                         self.window.width / 15,
-                                         self.window.width / 15,
+        self.menu_button = ui_button.Button([self.window.width * 0.9,
+                                         self.window.height * 0.9],
+                                         [self.window.width / 15,
+                                         self.window.width / 15],
                                          "☰",
-                                         colr.THEME_LIGHT_BLUE,
-                                         colr.THEME_DARK_BLUE)
+                                         [colr.THEME_LIGHT_BLUE,
+                                         colr.THEME_DARK_BLUE])
 
         # open button, initially set to grey
-        self.open_button = ui_button.Button(self.window.width * 0.9,
-                                            self.window.height * 0.07,
-                                         self.window.width / 5,
-                                         self.window.height / 12,
+        self.open_button = ui_button.Button([self.window.width * 0.9,
+                                            self.window.height * 0.07],
+                                         [self.window.width / 5,
+                                         self.window.height / 12],
                                          "Open",
-                                         arcade.color.GRAY,
-                                         colr.THEME_DARK_BLUE)
+                                         [arcade.color.GRAY,
+                                         colr.THEME_DARK_BLUE])
 
         # hand score
         self.score_label = arcade.Text(
             "Hand Score",
-            self.window.height * 0.03 + self.total_stand_height * 0.75 * 0.5,
-            self.window.height * 0.03 + self.total_stand_height * 0.65,
+            self.window.height * 0.03 + self.stand.total_stand_height * 0.75 * 0.5,
+            self.window.height * 0.03 + self.stand.total_stand_height * 0.65,
             colr.THEME_DARK_BLUE,
             font_size=15,
             anchor_x="center",
@@ -86,13 +83,13 @@ class GameView(arcade.View):
         self.score = 0
 
         # end turn button
-        self.end_turn_button = ui_button.Button(self.window.width * 0.9,
-                                            self.window.height * 0.07 + self.window.height / 11,
-                                                self.window.width / 5,
-                                                self.window.height / 12,
+        self.end_turn_button = ui_button.Button([self.window.width * 0.9,
+                                            self.window.height * 0.07 + self.window.height / 11],
+                                                [self.window.width / 5,
+                                                self.window.height / 12],
                                             "End Turn",
-                                            colr.THEME_PINK,
-                                            colr.THEME_DARK_BLUE)
+                                            [colr.THEME_PINK,
+                                            colr.THEME_DARK_BLUE])
 
 
     # Set up game
@@ -115,7 +112,7 @@ class GameView(arcade.View):
         self.com_list.clear()
 
         # Stand coordinates
-        self.setup_stand()
+        self.stand_slot_list = self.stand.setup(self.width)
         # Com coordinates
         self.setup_coms()
         # Draw pile coordinates
@@ -135,18 +132,7 @@ class GameView(arcade.View):
     def on_draw(self):
         self.clear()
 
-        # Draw stand slots
-        for stand in self.stand_slot_list:
-            stand.draw()
-
-        # draw stand line divider
-        arcade.draw_lbwh_rectangle_filled(
-            self.stand_start_x - TILE_WIDTH / 2,
-            (TILE_HEIGHT + DIVIDER_GAP / 2) - self.stand_divider / 2,
-            self.total_stand_width,
-            self.stand_divider,
-            arcade.color.DEEP_COFFEE,
-        )
+        self.stand.draw(self.stand_slot_list)
 
         # Draw coms
         self.com_list.draw()
@@ -164,9 +150,9 @@ class GameView(arcade.View):
             # Draw window box
             arcade.draw_lbwh_rectangle_filled(
                 2 * COM_WIDTH + DIVIDER_GAP,
-                self.total_stand_height + DIVIDER_GAP,
+                self.stand.total_stand_height + DIVIDER_GAP,
                 self.width - (4 * COM_WIDTH + 2 * DIVIDER_GAP),
-                self.height - self.total_stand_height - 2 * COM_WIDTH - 2 * DIVIDER_GAP,
+                self.height - self.stand.total_stand_height - 2 * COM_WIDTH - 2 * DIVIDER_GAP,
                 arcade.color.GRAY_BLUE
             )
 
@@ -187,8 +173,8 @@ class GameView(arcade.View):
         # draw hand score
         arcade.draw_lbwh_rectangle_outline(self.window.height * 0.03,
                                            self.window.height * 0.03,
-                                           self.total_stand_height * 0.75,
-                                           self.total_stand_height * 0.75,
+                                           self.stand.total_stand_height * 0.75,
+                                           self.stand.total_stand_height * 0.75,
                                            colr.THEME_DARK_BLUE,
                                            3.0
                                            )
@@ -196,8 +182,8 @@ class GameView(arcade.View):
 
         score_text = arcade.Text(
             str(self.score),
-            self.window.height * 0.03 + self.total_stand_height * 0.75 * 0.5,
-            self.window.height * 0.03 + self.total_stand_height * 0.3,
+            self.window.height * 0.03 + self.stand.total_stand_height * 0.75 * 0.5,
+            self.window.height * 0.03 + self.stand.total_stand_height * 0.3,
             colr.THEME_TEAL,
             font_size=50,
             anchor_x="center",
@@ -209,24 +195,6 @@ class GameView(arcade.View):
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
             tile.draw()
-
-    def setup_stand(self):
-        screen_width = self.width
-
-        # Coordinates of the stand based on the size of the screen
-        self.stand_start_x = (screen_width - self.total_stand_width) / 2 + TILE_WIDTH / 2
-
-        # 2 rows in the tile stand
-        for row in range(self.rows):
-            stand_y = (TILE_HEIGHT / 2) + row * (TILE_HEIGHT + DIVIDER_GAP)
-            # 12 slots on each row
-            for column in range(self.columns):
-                # stand_slot position
-                stand_x = self.stand_start_x + column * TILE_WIDTH
-
-                # create stand_slot and append to the slot list
-                stand_slot = StandSlot(stand_x, stand_y, arcade.color.BEAVER)
-                self.stand_slot_list.append(stand_slot)
 
     def setup_player_tiles(self):
         for i, tile in enumerate(self.game.players[0].hand):
@@ -296,7 +264,7 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         # prevents more clicking of player after end of turn
-        if self.game.get_current_player() != self.game.players[0]:
+        if self.game.turn.get_current_player() != self.game.players[0]:
             return
 
         # TILE IS CLICKED
@@ -306,7 +274,7 @@ class GameView(arcade.View):
 
             # prevent a player from picking up discarded tile after ending their turn
             for disc in self.game.discards:
-                if tile in disc.tiles and self.game.turn_ended:
+                if tile in disc.tiles and self.game.turn.turn_ended:
                     print("Cannot move discarded tile after ending turn")
                     return
 
@@ -322,7 +290,7 @@ class GameView(arcade.View):
             # Check if draw pile was clicked
             if self.draw_pile.collides_with_point((x, y)):
                 # make Game handle draw logic
-                top_tile = self.game.draw_tile()
+                top_tile = self.game.turn.draw_tile()
                 # if draw not allowed, stop
                 if top_tile is None:
                     return
@@ -429,9 +397,9 @@ class GameView(arcade.View):
             tile = disc.tiles[-1]
 
             # Handing discard to game logic
-            self.game.discard_tile(tile)
+            self.game.turn.discard_tile(tile)
             # now end turn
-            self.game.end_turn()
+            self.game.turn.end_turn()
             return
 
         # check if menu was clicked
@@ -529,9 +497,9 @@ class GameView(arcade.View):
         self.current_open_tiles.clear()
 
         # Coordinates of the stand based on the size of the screen
-        self.open_stand_start_x = 2 * COM_WIDTH + DIVIDER_GAP + TILE_WIDTH / 2
+        self.stand.open_stand_start_x = 2 * COM_WIDTH + DIVIDER_GAP + TILE_WIDTH / 2
 
-        start_y = self.total_stand_height + TILE_HEIGHT / 2 + DIVIDER_GAP
+        start_y = self.stand.total_stand_height + TILE_HEIGHT / 2 + DIVIDER_GAP
 
         # Build as many rows as the player has sets in their open
         for current_set, _ in enumerate(player.sets_played):
@@ -540,7 +508,7 @@ class GameView(arcade.View):
             # 2 empty slots on either side
             for column in range(len(player.sets_played[current_set]) + 4):
                 # stand_slot position
-                stand_x = self.open_stand_start_x + column * TILE_WIDTH
+                stand_x = self.stand.open_stand_start_x + column * TILE_WIDTH
 
                 # create stand_slot and append to the slot list
                 stand_slot = StandSlot(stand_x, stand_y, arcade.color.BLUE)
