@@ -1,8 +1,6 @@
 import arcade
 import ui_components.rounded_rectangle as rr
 import assets.colors as colr
-
-from engine.draw_pile import DrawPile
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
 
 STACK_LAYERS = 5

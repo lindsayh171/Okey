@@ -1,5 +1,5 @@
-import arcade
 import random
+import arcade
 
 TILE_TEXTURE = arcade.make_soft_square_texture(
     80,

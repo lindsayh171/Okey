@@ -1,6 +1,9 @@
 # This is the face down draw pile (middle pile)
 
 class DrawPile:
+    """
+    Pile of cards left to draw
+    """
     def __init__(self, tiles=None):
         # avoids multiple objects from sharing same list in memory
         if tiles is None:
@@ -16,4 +19,3 @@ class DrawPile:
             raise ValueError("DrawPile.draw() called without tiles")
         # for every call, one tile is drawn out
         return self.tiles.pop()
-
