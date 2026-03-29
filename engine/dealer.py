@@ -30,8 +30,8 @@ class Dealer:
                 tiles.append(Tile(0, 0, number, color, symbol, False, 1))
 
         # Adding the jokers
-        tiles.append(Tile(0, 0, "〠", arcade.color.FOREST_GREEN, "⚡", True, 0))
-        tiles.append(Tile(0, 0, "〠", arcade.color.FOREST_GREEN, "⚡", True, 1))
+        tiles.append(Tile(0, 0, 0, arcade.color.FOREST_GREEN, "⚡", True, 0))
+        tiles.append(Tile(0, 0, 0, arcade.color.FOREST_GREEN, "⚡", True, 1))
 
         return tiles
 

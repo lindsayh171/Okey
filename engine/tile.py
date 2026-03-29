@@ -42,16 +42,28 @@ class Tile(arcade.Sprite):
         self.height = TILE_HEIGHT
 
         # text for tile
-        self.tile_value = arcade.Text(
-            str(self.value),
-            self.center_x,
-            self.center_y + (TILE_HEIGHT / 5),
-            self.color,
-            40,
-            anchor_x="center",
-            anchor_y="center",
-            bold=True
-        )
+        if is_joker:
+            self.tile_value = arcade.Text(
+                "〠",
+                self.center_x,
+                self.center_y + (TILE_HEIGHT / 5),
+                self.color,
+                40,
+                anchor_x="center",
+                anchor_y="center",
+                bold=True
+            )
+        else:
+            self.tile_value = arcade.Text(
+                str(self.value),
+                self.center_x,
+                self.center_y + (TILE_HEIGHT / 5),
+                self.color,
+                40,
+                anchor_x="center",
+                anchor_y="center",
+                bold=True
+            )
 
         # symbol for tile
         self.tile_symbol = arcade.Text(
