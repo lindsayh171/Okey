@@ -159,9 +159,6 @@ class GameView(arcade.View):
 
         # Draw draw pile
         self.draw_pile.draw()
-        # Update text to show count of deck
-        self.draw_pile_label.text = str(self.game.draw_pile.count())
-        self.draw_pile_label.draw()
 
         if self.open_displaying_player is not None:
             # Draw window box
