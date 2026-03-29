@@ -328,9 +328,7 @@ class GameView(arcade.View):
 
         # check if menu was clicked
         if self.gui.menu_button.button_pressed(x, y):
-            from views.menu_view import MenuView
-
-            self.window.show_view(MenuView(self))
+            self.window.show_menu(self)
 
     def on_mouse_release(self, x, y, button, modifiers):
         # If no cards are being held, return

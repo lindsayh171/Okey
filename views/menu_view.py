@@ -83,9 +83,6 @@ class MenuView(arcade.View):
         if self.close_button.button_pressed(x, y):
             self.window.show_view(self.game_view)
         if self.rules_button.button_pressed(x, y):
-            from views.rules_view import RulesView
-
-            rules_view = RulesView(Views.MENU, self.game_view)
-            self.window.show_view(rules_view)
+            self.window.show_rules(Views.MENU, self.game_view)
         if self.quit_button.button_pressed(x, y):
-            self.window.show_view(self.window.title_view)
+            self.window.show_title()

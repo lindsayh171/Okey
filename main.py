@@ -1,13 +1,10 @@
 import arcade
-from views.title_view import TitleView
+from views.view_manager import ViewManager
+
 
 def main():
-    window = arcade.Window(1200,
-            800,
-            "Okey",
-            resizable=False)
-    start_view = TitleView()
-    window.show_view(start_view)
+    window = ViewManager(1200, 800, "Okey", resizable=False)
+    window.show_title()
     arcade.run()
 
 if __name__ == "__main__":

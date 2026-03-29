@@ -1,7 +1,5 @@
 import arcade
 from ui_components import button
-from views.name_view import NameView
-from views.rules_view import RulesView
 import assets.colors as colr
 from assets.utils import Views
 
@@ -71,8 +69,6 @@ class TitleView(arcade.View):
     def on_mouse_press(self, x, y, _button, _modifiers):
         """ If the user presses the mouse button, start the game. """
         if self.play_button.button_pressed(x,y):
-            name_view = NameView()
-            self.window.show_view(name_view)
+            self.window.show_name_entry()
         if self.rules_button.button_pressed(x, y):
-            rules_view = RulesView(Views.TITLE)
-            self.window.show_view(rules_view)
+            self.window.show_rules(Views.TITLE)

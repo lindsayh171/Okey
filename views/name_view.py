@@ -2,7 +2,6 @@ import arcade
 from arcade import gui
 import assets.colors as colr
 from ui_components import button
-from views.game_view import GameView
 
 class NameView(arcade.View):
     """
@@ -86,10 +85,6 @@ class NameView(arcade.View):
 
     def on_mouse_press(self, x, y, _button, _modifiers):
         if self.continue_button.button_pressed(x, y):
-            game_view = GameView(self.input_field.text)
-            game_view.setup()
-            self.window.show_view(game_view)
+            self.window.show_game(self.input_field.text)
         if self.back_button.button_pressed(x, y):
-            from views.title_view import TitleView
-            title_view = TitleView()
-            self.window.show_view(title_view)
+            self.window.show_title()

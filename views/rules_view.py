@@ -152,14 +152,8 @@ class RulesView(arcade.View):
         if self.exit_button.button_pressed(x, y):
             match self.origin:
                 case Views.TITLE:
-                    # TODO: ask Jason about this pylint error because otherwise circular import
-                    from views.title_view import TitleView
-                    next_view = TitleView()
+                    self.window.show_title()
                 case Views.MENU:
-                    from views.menu_view import MenuView
-
-                    next_view = MenuView(self.game_view)
+                    self.window.show_menu(self.game_view)
                 case _:
-                    from views.menu_view import MenuView
-                    next_view = MenuView(self.game_view)
-            self.window.show_view(next_view)
+                    self.window.show_menu(self.game_view)
