@@ -98,7 +98,8 @@ class GameView(arcade.View):
                 2 * COM_WIDTH + DIVIDER_GAP,
                 self.player_stand.total_stand_height + DIVIDER_GAP,
                 self.width - (4 * COM_WIDTH + 2 * DIVIDER_GAP),
-                self.height - self.player_stand.total_stand_height - 2 * COM_WIDTH - 2 * DIVIDER_GAP,
+                (self.height - self.player_stand.total_stand_height
+                 - 2 * COM_WIDTH - 2 * DIVIDER_GAP),
                 arcade.color.GRAY_BLUE
             )
 
