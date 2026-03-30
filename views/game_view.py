@@ -181,12 +181,6 @@ class GameView(arcade.View):
     def setup_discard(self, player):
         pass
 
-    # Resize window
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        # Run setup again with new screen size
-        self.setup()
-
     def on_mouse_press(self, x, y, button, modifiers):
         # prevents more clicking of player after end of turn
         if self.game.turn.get_current_player() != self.game.players[0]:
