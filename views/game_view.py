@@ -1,10 +1,9 @@
 import arcade
-from com import Com, COM_WIDTH
-from open_stand import OpenStand
-from stand_slot import StandSlot, DIVIDER_GAP
+from board_components.com import Com, COM_WIDTH
+from board_components.stand_slot import StandSlot, DIVIDER_GAP
 from engine.game import Game
-from engine.tile import TILE_WIDTH, TILE_HEIGHT, Tile, TileInfo
-from stand import Stand
+from engine.tile import TILE_WIDTH, TILE_HEIGHT
+from board_components.stand import Stand
 import assets.colors as colr
 from views.game_view_graphics import GameViewGraphics
 

@@ -1,6 +1,6 @@
 import arcade
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
-from stand_slot import StandSlot, DIVIDER_GAP
+from board_components.stand_slot import StandSlot, DIVIDER_GAP
 
 class Stand:
     """
