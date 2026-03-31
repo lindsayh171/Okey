@@ -41,7 +41,6 @@ class GameView(arcade.View):
         self.player_hand = None
 
         self.open_displaying_player = None
-        self.open_stand_slot_list = []
         self.current_open_tiles = []
         self.open_window_tiles = []
 
@@ -262,7 +261,6 @@ class GameView(arcade.View):
                         else:
                             continue
                     self.open_window_tiles.clear()
-                    self.open_stand_slot_list.clear()
                     self.open_displaying_player = None
                     return
 
@@ -285,7 +283,6 @@ class GameView(arcade.View):
                         continue
                 self.open_window_tiles.clear()
                 self.current_open_tiles.clear()
-                self.open_stand_slot_list.clear()
                 self.open_displaying_player = None
             return
 
@@ -329,8 +326,8 @@ class GameView(arcade.View):
 
         # get set of slots
         available_slots = list(self.stand_slot_list)
-        if self.open_displaying_player is not None:
-            available_slots = self.stand_slot_list + self.open_stand_slot_list
+        if self.open_displaying_player is not False:
+            available_slots = self.stand_slot_list + self.open_displaying_player.open_stand.slots
 
         # Snap tile to the closest stand slot or a com hand if displayed
         # check if tile touching slot
@@ -348,7 +345,7 @@ class GameView(arcade.View):
             disc.holding_tile = True
         elif touching_slot:
             self.snap(tile, available_slots)
-            if touching_slot in self.open_stand_slot_list:
+            if touching_slot in self.open_displaying_player.open_stand.slots:
                 self.current_open_tiles.append(tile)
                 self.open_window_tiles.append(tile)
             if tile not in player.hand:
