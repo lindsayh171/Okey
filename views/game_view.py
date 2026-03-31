@@ -3,7 +3,7 @@ from com import Com, COM_WIDTH
 from open_stand import OpenStand
 from stand_slot import StandSlot, DIVIDER_GAP
 from engine.game import Game
-from engine.tile import TILE_WIDTH, TILE_HEIGHT
+from engine.tile import TILE_WIDTH, TILE_HEIGHT, Tile, TileInfo
 from stand import Stand
 import assets.colors as colr
 from views.game_view_graphics import GameViewGraphics
@@ -58,8 +58,8 @@ class GameView(arcade.View):
 
         # TODO: DELETE THESE TWO LINES, ONLY HERE FOR TESTING PLAYER OPEN
         self.game.players[0].can_open = True
-        self.game.players[0].open_tiles = [[1, 2, 3, 4], [4, 4, 4], [9, 10, 11, 12],
-                                           [1, 1, 1, 1, 1]]
+        self.game.players[0].open_tiles = [[Tile(TileInfo(3, arcade.color.RED, "♥")), Tile(TileInfo(3, arcade.color.RED, "♥"))], [], [],
+                                           []]
 
 
         # Clear any existing sprites
@@ -96,7 +96,7 @@ class GameView(arcade.View):
 
         if self.open_displaying_player is not None:
             # Draw window box
-            self.open_stand.draw_stand(self.open_displaying_player)
+            self.open_stand.draw_stand(self.width, self.height, self.open_displaying_player)
 
         self.gui.menu_button.draw()
         # Change open button if player can open
