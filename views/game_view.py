@@ -88,6 +88,14 @@ class GameView(arcade.View):
         # Draw discard piles
         for disc in self.game.discards:
             disc.draw()
+            # Draw top tile
+            if disc.tiles:
+                tile = disc.tiles[len(disc.tiles) - 1]
+                # Set coordinates of tile to discard
+                tile.set_x(disc.center_x)
+                tile.set_y(disc.center_y)
+                tile.tile_info.set_face_up()
+                tile.draw()
 
         # Draw draw pile
         self.game.turn.draw_pile.draw()
@@ -315,6 +323,15 @@ class GameView(arcade.View):
             # get the tile that is visually in discard
             tile = disc.tiles[-1]
 
+            # Remove discarded tile from held tiles
+            if tile in self.held_tiles:
+                self.held_tiles.remove(tile)
+                tile.unhighlight()
+
+            # Don't draw tile over open display
+            if tile in self.tile_list:
+                self.tile_list.remove(tile)
+
             # Handing discard to game logic
             self.game.turn.discard_tile(tile)
             # now end turn
@@ -354,19 +371,39 @@ class GameView(arcade.View):
 
         touching_discard = disc.tile_overlaps(tile)
 
-        if touching_discard and not touching_slot:
-            self.snap(tile, [disc])
-            disc.tiles.append(tile)
-            disc.holding_tile = True
-        elif touching_slot:
-            self.snap(tile, available_slots)
-            if touching_slot in self.open_stand_slot_list:
-                self.current_open_tiles.append(tile)
-                self.open_window_tiles.append(tile)
-            if tile not in player.hand:
-                player.hand.append(tile)
+        # Tile snapping if an open window is displaying
+        if self.open_displaying_player is not None:
+            if touching_slot:
+                self.snap(tile, available_slots)
+                # if tile is touching player stand or open slot stands
+                if touching_slot in self.open_stand_slot_list:
+                    if tile not in self.current_open_tiles:
+                        self.current_open_tiles.append(tile)
+                    if tile not in self.open_window_tiles:
+                        self.open_window_tiles.append(tile)
+                if tile not in player.hand:
+                    player.hand.append(tile)
+            else:
+                # snap tile back to original position
+                self.snap(tile, available_slots)
+
+        # Tile snapping if no open window is displaying
         else:
-            self.snap(tile, available_slots)
+            # If tile is over discard
+            if touching_discard and not touching_slot:
+                self.snap(tile, [disc])
+                if tile not in disc.tiles:
+                    disc.tiles.append(tile)
+                disc.holding_tile = True
+            # If tile is touching a stand slot
+            elif touching_slot:
+                self.snap(tile, available_slots)
+                if tile not in player.hand:
+                    player.hand.append(tile)
+            # Else nowhere to snap so send it back to original spot
+            else:
+                # Snap back to original slot
+                self.snap(tile, available_slots)
 
         self.held_tiles = []
         tile.unhighlight()

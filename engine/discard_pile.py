@@ -17,12 +17,14 @@ class DiscardPile(arcade.Sprite):
         else:
             self.tiles = tiles
 
-        self.held_tiles = []
+        # TODO: Delete this
+        #self.held_tiles = []
         self.player_discard = False
         self.player_com_discard = False
         self.holding_tile = False
         self.center_x = x
         self.center_y = y
+
 
     def count(self):
         return len(self.tiles)
