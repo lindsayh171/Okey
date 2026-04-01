@@ -326,11 +326,7 @@ class GameView(arcade.View):
             row_index = touching_slot.open_row_index
             open_edge = getattr(touching_slot, "open_edge", None)
 
-            # only allow placement on rows with sets
-            if (self.open_displaying_player is not None and
-                row_index is not None and
-                    len(self.open_displaying_player.open_tiles[row_index]) > 2):
-                print(len(self.open_displaying_player.open_tiles[row_index]))
+            if self.open_displaying_player is not None:
                 row = self.open_displaying_player.open_tiles[row_index]
                 if open_edge == "before":
                     row.insert(0, tile)
