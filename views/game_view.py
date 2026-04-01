@@ -305,7 +305,8 @@ class GameView(arcade.View):
         available_slots = list(self.stand_slot_list)
         if self.open_displaying_player is not None:
             for slot in self.open_displaying_player.open_stand.slots:
-                if not slot.holding_tile and len(self.open_displaying_player.open_stand.tiles[slot.open_row_index]) > 0:
+                if (not slot.holding_tile and
+                        len(self.open_displaying_player.open_stand.tiles[slot.open_row_index]) > 0):
                     available_slots.append(slot)
 
         # Snap tile to the closest stand slot or a com hand if displayed
