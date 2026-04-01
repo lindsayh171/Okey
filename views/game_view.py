@@ -38,8 +38,6 @@ class GameView(arcade.View):
         self.player_hand = None
 
         self.open_displaying_player = None
-        self.current_open_tiles = []
-        self.open_window_tiles = []
 
         self.gui = GameViewGraphics(self.window, self.player_stand.total_stand_height)
 
@@ -249,14 +247,6 @@ class GameView(arcade.View):
 
                 # Closing currently open com window
                 if self.open_displaying_player == com.player:
-                    # Remove tile display with window
-                    for tile in self.open_window_tiles:
-                        if tile in self.tile_list:
-                            self.tile_list.remove(tile)
-                            tile.current_slot = None
-                        else:
-                            continue
-                    self.open_window_tiles.clear()
                     self.open_displaying_player = None
                     return
 
@@ -270,18 +260,6 @@ class GameView(arcade.View):
 
             # Stop displaying player open window
             else:
-                # Save tile to open sets list
-                if self.current_open_tiles:
-                    self.open_displaying_player.open_tiles.append(self.current_open_tiles.copy())
-                # Remove tile display with window
-                for tile in self.open_window_tiles:
-                    if tile in self.tile_list:
-                        self.tile_list.remove(tile)
-                        tile.current_slot = None
-                    else:
-                        continue
-                self.open_window_tiles.clear()
-                self.current_open_tiles.clear()
                 self.open_displaying_player = None
             return
 
@@ -344,10 +322,15 @@ class GameView(arcade.View):
             disc.holding_tile = True
         elif touching_slot:
             self.snap(tile, available_slots)
-            if touching_slot in self.open_displaying_player.open_stand.slots:
-                self.open_displaying_player.open_tiles[touching_slot.open_row_index].append(tile)
+            row_idx = getattr(touching_slot, "open_row_index", None)
+            open_edge = getattr(touching_slot, "open_edge", None)
+            if self.open_displaying_player is not None and open_edge in ("before", "after"):
+                row = self.open_displaying_player.open_tiles[row_idx]
+                if open_edge == "before":
+                    row.insert(0, tile)
+                else:
+                    row.append(tile)
                 self.open_displaying_player.open_stand.update()
-                self.open_window_tiles.append(tile)
             if tile not in player.hand:
                 player.hand.append(tile)
         else:
@@ -382,7 +365,15 @@ class GameView(arcade.View):
 
                 # reset previous slot before changing curr slot to new location
                 if tile.current_slot is not None:
-                    tile.current_slot.holding_tile = False
+                    prev_slot = tile.current_slot
+                    prev_slot.holding_tile = False
+
+                    row_index = prev_slot.open_row_index
+                    if row_index is not None and self.open_displaying_player is not None:
+                        row = self.open_displaying_player.open_tiles[row_index]
+                        if tile in row:
+                            row.remove(tile)
+                            self.open_displaying_player.open_stand.update()
                 tile.current_slot = slot
                 reset_position = False
             else:

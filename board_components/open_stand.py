@@ -54,6 +54,7 @@ class OpenStand(Stand):
             stand_slot = StandSlot(stand_x, stand_y, arcade.color.BLUE)
             stand_slot.holding_tile = False
             stand_slot.open_row_index = set_index
+            stand_slot.open_edge = "before"
             self.slots.append(stand_slot)
 
             # current set of tiles and their slots
@@ -63,6 +64,7 @@ class OpenStand(Stand):
                 stand_slot = StandSlot(stand_x, stand_y, arcade.color.BLUE)
                 stand_slot.holding_tile = True
                 stand_slot.open_row_index = set_index
+                stand_slot.open_edge = None
                 self.slots.append(stand_slot)
 
                 tile.set_x(self.open_stand_start_x + (index + 1) * TILE_WIDTH)
@@ -75,6 +77,5 @@ class OpenStand(Stand):
             stand_slot = StandSlot(stand_x, stand_y, arcade.color.BLUE)
             stand_slot.holding_tile = False
             stand_slot.open_row_index = set_index
+            stand_slot.open_edge = "after"
             self.slots.append(stand_slot)
-
-        print(self.tiles)
