@@ -3,6 +3,8 @@ from views.view_manager import ViewManager
 
 
 def main():
+    # Load font once
+    arcade.load_font("assets/fonts/Itim-Regular.ttf")
     window = ViewManager(1200, 800, "Okey", resizable=False)
     window.show_title()
     arcade.run()

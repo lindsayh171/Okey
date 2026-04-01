@@ -40,6 +40,7 @@ class GameView(arcade.View):
         self.open_displaying_player = None
 
         self.gui = GameViewGraphics(self.window, self.player_stand.total_stand_height)
+        self.hand_score = None
 
 
     # Set up game
@@ -68,6 +69,16 @@ class GameView(arcade.View):
         self.setup_coms()
 
         self.setup_player_tiles()
+
+        self.hand_score = arcade.Text(
+            str(self.game.turn.get_current_player().hand_score),
+            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.75 * 0.5,
+            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.3,
+            colr.THEME_TEAL,
+            font_size=50,
+            anchor_x="center",
+            anchor_y="center",
+        )
 
     def on_show_view(self):
         self.background_color = colr.THEME_LIGHT_BLUE
@@ -120,16 +131,10 @@ class GameView(arcade.View):
                                            )
         self.gui.score_label.draw()
 
-        score_text = arcade.Text(
-            str(self.game.turn.get_current_player().hand_score),
-            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.75 * 0.5,
-            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.3,
-            colr.THEME_TEAL,
-            font_size=50,
-            anchor_x="center",
-            anchor_y="center",
+        self.hand_score.text = str(
+            self.game.turn.get_current_player().hand_score
         )
-        score_text.draw()
+        self.hand_score.draw()
         self.gui.end_turn_button.draw()
 
         # Draw tiles at end on top of everything.

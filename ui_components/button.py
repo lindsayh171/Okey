@@ -14,30 +14,25 @@ class Button():
         self.colors = {"color": colors[0],
                        "text_color": colors[1]}
 
-        self.rect = None
-
-    def draw(self):
-        # draw_tile a rounded rectangle
-        self.rect = rounded_rectangle.RoundedRectangle([self.coordinates["x"],
-                                                        self.coordinates["y"]],
-                                                  [self.dimensions["width"],
-                                                   self.dimensions["height"]],
-                                                  self.radius,
-                                                  self.colors["color"])
-
-        # draw_tile button text
-        arcade.load_font("assets/fonts/Itim-Regular.ttf")
-        txt = arcade.Text(
+        self.rect = rounded_rectangle.RoundedRectangle(
+            [self.coordinates["x"], self.coordinates["y"]],
+            [self.dimensions["width"], self.dimensions["height"]],
+            self.radius,
+            self.colors["color"],
+        )
+        self.label = arcade.Text(
             self.text,
             self.coordinates["x"],
             self.coordinates["y"] - self.dimensions["height"] // 4,
             self.colors["text_color"],
-            font_size= self.dimensions["height"] * 0.6,
+            font_size = self.dimensions["height"] * 0.6,
             anchor_x="center",
             font_name="Itim"
         )
+
+    def draw(self):
         self.rect.draw()
-        txt.draw()
+        self.label.draw()
 
     def button_pressed(self, x, y):
         """
@@ -51,3 +46,4 @@ class Button():
 
     def set_color(self, color):
         self.colors["color"] = color
+        self.rect.color = color
