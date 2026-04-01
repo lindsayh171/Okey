@@ -1,9 +1,8 @@
 import arcade
 from board_components.com import Com, COM_WIDTH
-from board_components.stand_slot import StandSlot, DIVIDER_GAP
-from engine.game import Game
-from engine.tile import TILE_WIDTH, TILE_HEIGHT, Tile, TileInfo
 from board_components.stand import Stand
+from engine.game import Game
+from engine.tile import Tile, TileInfo
 import assets.colors as colr
 from views.game_view_graphics import GameViewGraphics
 
@@ -55,7 +54,8 @@ class GameView(arcade.View):
 
         # TODO: DELETE THESE TWO LINES, ONLY HERE FOR TESTING PLAYER OPEN
         self.game.players[0].can_open = True
-        self.game.players[0].open_tiles = [[Tile(TileInfo(3, arcade.color.RED, "♥")), Tile(TileInfo(3, arcade.color.RED, "♥"))], [], [],
+        self.game.players[0].open_tiles = [[Tile(TileInfo(3, arcade.color.RED, "♥")),
+                                            Tile(TileInfo(3, arcade.color.RED, "♥"))], [], [],
                                            []]
         self.game.players[0].open_stand.update()
 
