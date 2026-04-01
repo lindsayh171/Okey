@@ -99,9 +99,10 @@ class GameView(arcade.View):
             # Draw top tile
             if disc.tiles:
                 tile = disc.tiles[len(disc.tiles) - 1]
+                if disc is not self.game.players[0].discard_pile:
+                    tile.center_x = disc.center_x
+                    tile.center_y = disc.center_y
                 # Set coordinates of tile to discard
-                tile.set_x(disc.center_x)
-                tile.set_y(disc.center_y)
                 tile.tile_info.set_face_up()
                 tile.draw()
 
@@ -327,6 +328,11 @@ class GameView(arcade.View):
             disc.tiles.remove(tile)
             disc.holding_tile = False
 
+            tile.current_slot = None
+
+            if tile not in player.hand:
+                player.hand.append(tile)
+
         # get set of slots
         available_slots = list(self.stand_slot_list)
         if self.open_displaying_player is not None:
@@ -369,6 +375,8 @@ class GameView(arcade.View):
                 self.snap(tile, [disc])
                 if tile not in disc.tiles:
                     disc.tiles.append(tile)
+                if tile in player.hand:
+                    player.hand.remove(tile)
                 disc.holding_tile = True
             # If tile is touching a stand slot
             elif touching_slot:
@@ -432,7 +440,8 @@ class GameView(arcade.View):
 
         # if invalid spot reset
         if reset_position:
-            tile.position = tile.current_slot.center_x, tile.current_slot.center_y
+            if tile.current_slot is not None:
+                tile.position = tile.current_slot.center_x, tile.current_slot.center_y
 
     def tile_clicked(self, x, y, tile):
         return (tile.center_x - tile.width < x < tile.center_x + self.width
