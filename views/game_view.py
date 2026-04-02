@@ -185,6 +185,18 @@ class GameView(arcade.View):
         if self.game.turn.get_current_player() != self.game.players[0]:
             return
 
+        # when player must draw, allow clicking draw pile or discard pile
+        if self.game.turn.must_draw:
+            if not self.game.turn.draw_pile.collides_with_point((x, y)):
+                prev_plyr_disc_click = False
+                for discard in self.game.discards:
+                    if discard.collides_with_point((x, y)) and discard.player_com_discard:
+                        prev_plyr_disc_click = True
+                        break
+                if not prev_plyr_disc_click:
+                    print("You must draw first")
+                    return
+
         # TILE IS CLICKED
         clicked_tile = None
         for t in self.tile_list:
@@ -287,13 +299,17 @@ class GameView(arcade.View):
             player = self.game.turn.get_current_player()
             disc = player.discard_pile
 
-            # must have placed a tile in discard
+            # must have visually placed a tile in discard
             if not disc.tiles:
                 print("Please place a tile in discard before ending your turn")
                 return
 
             # get the tile that is visually in discard
             tile = disc.tiles[-1]
+
+            if tile not in player.hand:
+                print("You must place a *new* tile in discard before ending your turn")
+                return
 
             # Remove discarded tile from held tiles
             if tile in self.held_tiles:
@@ -372,12 +388,27 @@ class GameView(arcade.View):
         else:
             # If tile is over discard
             if touching_discard and not touching_slot:
+
+                # block access to discard except first player
+                if self.game.turn.must_draw:
+                    print("You must draw before discarding")
+                    # send tile back to stand
+                    self.snap(tile, available_slots)
+
+                    self.held_tiles = []
+                    tile.unhighlight()
+                    return
+                # allow discard access after draw
                 self.snap(tile, [disc])
+
                 if tile not in disc.tiles:
                     disc.tiles.append(tile)
-                if tile in player.hand:
-                    player.hand.remove(tile)
+                #
+                # if tile in player.hand:
+                #     player.hand.remove(tile)
+
                 disc.holding_tile = True
+
             # If tile is touching a stand slot
             elif touching_slot:
                 self.snap(tile, available_slots)
