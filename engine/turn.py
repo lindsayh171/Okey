@@ -13,6 +13,7 @@ class Turn:
         self.last_discard = None  # track most recently discarded tile
         self.must_draw = False  # check if player must draw before discarding
         self.turn_ended = False  # to track if discard is finalized
+        self.has_discarded = False # to track if a player discarded in their turn
 
     def get_current_player(self):
         """
@@ -46,8 +47,6 @@ class Turn:
         # Remove tile from player's hand
         if tile in player.hand:
             player.hand.remove(tile)
-        #else:
-        #    raise ValueError("Tile not in hand to be discarded")
 
         # save last discarded tile for next player to possibly take
         self.last_discard = tile
@@ -57,6 +56,7 @@ class Turn:
         player.discard_pile.holding_tile = False
 
         print(f"{player.name} placed {tile.tile_info.value} in discard (NOT FINAL)")
+        self.has_discarded = True
 
     def draw_tile(self):
         """
@@ -132,44 +132,56 @@ class Turn:
         Finalizes the turn of a player by validating rules.
         Locks player's arranged valid tile groupings
         """
-        self.turn_ended = True
 
         player = self.get_current_player()
 
         # validate that player indeed discarded
-        if not player.discard_pile.tiles:
+        if not self.has_discarded:
             print("Please discard a tile before ending your turn")
             return
 
         # Lock score at what player last arranged for their tiles
         player.locked_score = player.player_get_hand_score()
 
-        # reset draw flag for current player before moving to next
-        player.drawn = False
-
         # moves to next player (circular)
         self.current_player_idx = (self.current_player_idx - 1) % len(self.players)
 
-        # After first turn, all players draw before discarding
-        self.must_draw = True
+        # get next player
+        next_player = self.get_current_player()
 
-        print(f"Next player's turn: {self.get_current_player().name}")
-        # self.debug_state()
+        # ---- Resetting turn state for next player
+        self.must_draw = True # next player must draw
+        self.has_discarded = False # reset discard tracking
+        self.turn_ended = True # allow dragging back
+        player.drawn = False # next player hasn't drawn yet
+
+        print(f"\n--- {next_player.name}'s turn ---")
+
         # If the current player is AI, run the com turn logic
-        if self.get_current_player().is_player_ai:
+        if next_player.is_player_ai:
+            time.sleep(2)
             self.com_turn()
 
     def com_turn(self):
         """Handles AI player's full turn."""
         player = self.get_current_player()
-        self.draw_tile()
+        print(f"AI player's turn: {player.name}")
+
+        # -----1. Draw
+        tile = self.draw_tile()
         # Simulated wait time
         time.sleep(2)
         # Gets the hand score and determines which tiles are being used for scoring
         player.get_hand_score()
         # TODO: Add opening logic here
-        # Simulated wait time
-        time.sleep(2)
+
+        # -----2. Discard
         # Runs the com discard function
         self.discard_tile(player.com_discard_tile())
-        self.end_turn()
+
+        # Simulated wait time
+        time.sleep(2)
+
+        if self.has_discarded:
+            self.end_turn()
+
