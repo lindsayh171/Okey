@@ -23,6 +23,7 @@ class Game:
 
         self.players = [Player(self.discards[0], "Person", False),
                         Player(self.discards[1],"Com_1", True),
+                        # com 2 and 3 discard were displaying in opposite places on board
                         Player(self.discards[3],"Com_2", True),
                         Player(self.discards[2],"Com_3", True)]
 
