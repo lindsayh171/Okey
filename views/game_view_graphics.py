@@ -24,7 +24,7 @@ class GameViewGraphics:
                                             [window.width / 5,
                                              window.height / 12],
                                             "Open",
-                                            [arcade.color.GRAY,
+                                            [colr.GRAY,
                                              colr.THEME_DARK_BLUE])
 
         # menu

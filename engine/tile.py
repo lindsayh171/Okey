@@ -1,10 +1,12 @@
 import arcade
 import ui_components.rounded_rectangle as rr
+import assets.colors as colr
+
 
 TILE_WIDTH = 60
 TILE_HEIGHT = 100
-TILE_COLORS_SYMBOLS = {arcade.color.RED: "♥", arcade.color.BLACK: "■",
-                       arcade.color.BLUE: "●", arcade.color.ORANGE: "▲"}
+TILE_COLORS_SYMBOLS = {colr.RED: "♥", colr.BLACK: "■",
+                       colr.BLUE: "●", colr.ORANGE: "▲"}
 
 class TileInfo:
     """
@@ -122,7 +124,7 @@ class Tile(arcade.Sprite):
         self.center_y = slot.center_y
 
     def highlight(self):
-        self.gui["bg"].color = arcade.color.LIGHT_GOLDENROD_YELLOW
+        self.gui["bg"].color = colr.LIGHT_GOLDENROD_YELLOW
 
     def unhighlight(self):
         self.gui["bg"].color = (222, 212, 193)

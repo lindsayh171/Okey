@@ -50,12 +50,12 @@ class GameView(arcade.View):
         self.game.set_player_name(self.player_name)
         self.game.start_game()
 
-
         # TODO: DELETE THESE TWO LINES, ONLY HERE FOR TESTING PLAYER OPEN
         self.game.players[0].can_open = True
         self.game.players[0].open_tiles = [[Tile(TileInfo(3, arcade.color.RED, "♥")),
                                             Tile(TileInfo(3, arcade.color.RED, "♥"))], [], [],
                                            []]
+
         self.game.players[0].open_stand.update()
 
         # Clear any existing sprites
@@ -119,7 +119,7 @@ class GameView(arcade.View):
             self.gui.open_button.set_color(colr.THEME_YELLOW)
             self.gui.open_button.draw()
         else:
-            self.gui.open_button.set_color(arcade.color.GRAY)
+            self.gui.open_button.set_color(colr.GRAY)
             self.gui.open_button.draw()
 
         # draw hand score
@@ -163,9 +163,9 @@ class GameView(arcade.View):
         com3_y = screen_height / 2
 
         # Make each com
-        com1 = Com(com1_x, com1_y, arcade.color.RED, self.game.players[1])
-        com2 = Com(com2_x, com2_y, arcade.color.YELLOW, self.game.players[2])
-        com3 = Com(com3_x, com3_y, arcade.color.BLUE, self.game.players[3])
+        com1 = Com(com1_x, com1_y, colr.GRAY, self.game.players[1])
+        com2 = Com(com2_x, com2_y, colr.GRAY, self.game.players[2])
+        com3 = Com(com3_x, com3_y, colr.GRAY, self.game.players[3])
 
         # Add each com to the list
         self.com_list.append(com1)

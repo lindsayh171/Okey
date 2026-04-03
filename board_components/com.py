@@ -2,7 +2,7 @@ import random
 
 import arcade
 from arcade import load_texture
-
+import assets.colors as colr
 from assets import textures
 from assets import names
 COM_WIDTH = 75
@@ -24,7 +24,7 @@ class Com(arcade.Sprite):
             self.name,
             self.center_x,
             self.center_y - COM_WIDTH - 15, # minus 15 for font size
-            arcade.color.WHITE,
+            colr.WHITE,
             font_size=15,
             anchor_x="center",
             anchor_y="center",
