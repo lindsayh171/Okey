@@ -167,7 +167,7 @@ class Turn:
         print(f"AI player's turn: {player.name}")
 
         # -----1. Draw
-        tile = arcade.schedule_once(self.draw_tile, 1)
+        arcade.schedule_once(self.draw_tile, 1)
 
         arcade.schedule_once(self.com_discard, 2)
 
