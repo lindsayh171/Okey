@@ -1,4 +1,3 @@
-import time
 import arcade
 
 class Turn:
@@ -59,7 +58,7 @@ class Turn:
         print(f"{player.name} placed {tile.tile_info.value} in discard (NOT FINAL)")
         self.has_discarded = True
 
-    def draw_tile(self):
+    def draw_tile(self, delta_time = 2):
         """
         function that handles the action of drawing a tile from middle pile
         """
@@ -160,17 +159,22 @@ class Turn:
 
         # If the current player is AI, run the com turn logic
         if next_player.is_player_ai:
-            arcade.schedule_once(self.com_turn, 2)
+            arcade.schedule_once(self.com_turn, 1)
 
-    def com_turn(self, delta_time = 4):
+    def com_turn(self, delta_time = 2):
         """Handles AI player's full turn."""
         player = self.get_current_player()
         print(f"AI player's turn: {player.name}")
 
         # -----1. Draw
-        tile = self.draw_tile()
+        tile = arcade.schedule_once(self.draw_tile, 1)
+
+        arcade.schedule_once(self.com_discard, 2)
+
+    def com_discard(self, delta_time = 2):
+        player = self.get_current_player()
         # Gets the hand score and determines which tiles are being used for scoring
-        player.get_hand_score()
+        print(player.get_hand_score())
         # TODO: Add opening logic here
 
         # -----2. Discard
