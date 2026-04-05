@@ -140,9 +140,6 @@ class Turn:
             print("Please discard a tile before ending your turn")
             return
 
-        # Lock score at what player last arranged for their tiles
-        player.locked_score = player.player_get_hand_score()
-
         # moves to next player (circular)
         self.current_player_idx = (self.current_player_idx - 1) % len(self.players)
 

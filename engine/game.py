@@ -88,7 +88,7 @@ class Game:
         # Scores
         arranged_score = player.player_get_hand_score()
         print(f"GUI tile arrangement Score: {arranged_score}")
-        print(f"Locked Score: {player.locked_score}")
+        print(f"Locked Score: {player.hand_score}")
 
         # Discard
         if player.discard_pile.tiles:

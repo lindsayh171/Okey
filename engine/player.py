@@ -7,8 +7,6 @@ scores that are dependent on how each evaluate tiles.
 from collections import defaultdict
 import math
 from board_components.open_stand import OpenStand
-import assets.colors as colr
-
 
 def distance(t1, t2):
     """
@@ -69,13 +67,11 @@ class Player:
         self.name = name
         self.is_player_ai = is_player_ai # distinguish human player vs AI player
         self.hand = [] # every player has a hand of tiles, empty initially
-        self.groups = [] # groups of tiles put together by player, empty initially
         self.played = [] # tiles that are displayed when the player opens
         self.open_tiles = [[],[],[],[]] # sets of tiles out of what the player has opened with
         self.open_stand = OpenStand(self)
         self.used_tiles = set()  # Keep track of tiles that have already been used in a set or run
         self.discard_pile = disc # player's discard piles, empty initially
-        self.locked_score = 0
         self.can_open = False
         self.opened = False
         self.stars = 0
@@ -257,15 +253,8 @@ class Player:
         # Reset score every time
         self.hand_score = 0
 
-        # to track how many valid groups (sets and runs) are found
-        valid_group_count = 0
-
-        # group tiles into rows based on y position
-        self.groups = group_tiles(self.hand)
-
         # Loop through each row
-        for group in self.groups:
-
+        for group in group_tiles(self.hand):
             # skip empty groups
             if not group:
                 continue
@@ -277,19 +266,16 @@ class Player:
             # Split into subgroups (based on X spacing)
             # -------------------------
             subgroups = []
-
             # dynamic list that grows and resets
             current_subgroup = [group[0]]
 
-            for i in range(1, len(group)):
-                curr = group[i]
-
+            for tile in group[1:]:
                 # If gap is large → new subgroup
-                if abs(curr.center_x - current_subgroup[-1].center_x) > 100:
+                if abs(tile.center_x - current_subgroup[-1].center_x) > 100:
                     subgroups.append(current_subgroup)
-                    current_subgroup = [curr]
+                    current_subgroup = [tile]
                 else:
-                    current_subgroup.append(curr)
+                    current_subgroup.append(tile)
 
             # Append the last subgroup
             subgroups.append(current_subgroup)
@@ -324,7 +310,6 @@ class Player:
                     # add the jokers to the score
                     self.hand_score += numbers[0] * len(joker_tiles)
 
-                    valid_group_count += 1
                     continue  # don't check run if already a set
 
 
@@ -337,15 +322,14 @@ class Player:
                 is_consecutive = True
                 all_values = [t.tile_info.value for t in subgroup]
                 # set joker values
-                for index in range(len(all_values)):
+                for index, _ in enumerate(all_values):
                     # make joker value the next consecutive value if prior tile is valid
                     if all_values[index] == 0 and index > 0:
                         # joker cannot be 14
                         if all_values[index - 1] == 13:
                             is_consecutive = False
                             break
-                        else:
-                            all_values[index] = all_values[index - 1] + 1
+                        all_values[index] = all_values[index - 1] + 1
                     # check if first tile is joker
                     elif all_values[index] == 0 and index == 0:
                         # joker cannot come before a 1 (or two jokers before a two)
@@ -353,7 +337,7 @@ class Player:
                             is_consecutive = False
                             break
                         # check for two jokers in a row
-                        elif all_values[index + 1] == 0:
+                        if all_values[index + 1] == 0:
                             all_values[index] = all_values[index + 2] - 2
                         else:
                             all_values[index] = all_values[index + 1] - 1
@@ -367,7 +351,6 @@ class Player:
                 # check color and add to hand score
                 if same_color and is_consecutive:
                     self.hand_score += sum(all_values)
-                    valid_group_count += 1
 
         # Return total score from all valid groups sums
         return self.hand_score
