@@ -7,6 +7,7 @@ scores that are dependent on how each evaluate tiles.
 from collections import defaultdict
 import math
 from board_components.open_stand import OpenStand
+import assets.colors as colr
 
 
 def distance(t1, t2):
@@ -63,9 +64,6 @@ class Player:
         player - tiles shown once player opens
         discard_pile - cards this player has discarded
     """
-
-    # TO-DO: address disabled 'R0902: Too many instance attributes'
-    # pylint: disable=R0902
 
     def __init__(self, disc, name, is_player_ai = False):
         self.name = name
@@ -305,9 +303,13 @@ class Player:
                 if len(subgroup) < 3:
                     continue
 
+                # check regular and joker tiles
+                joker_tiles = [t for t in subgroup if t.tile_info.value == 0]
+                normal_tiles = [t for t in subgroup if t.tile_info.value != 0]
+
                 # extract tile values and colors
-                numbers = [t.tile_info.value for t in subgroup if t.tile_info.value is not None]
-                colors = [t.tile_info.color for t in subgroup if t.tile_info.color is not None]
+                numbers = [t.tile_info.value for t in normal_tiles]
+                colors = [t.tile_info.color for t in normal_tiles]
 
 
                 # -------------------------
@@ -320,8 +322,13 @@ class Player:
 
                 if 3 <= len(subgroup) <= 4 and same_number and all_diff_colors:
                     self.hand_score += sum(numbers)
+
+                    # add the jokers to the score
+                    self.hand_score += numbers[0] * len(joker_tiles)
+
                     valid_group_count += 1
                     continue  # don't check run if already a set
+
 
                 # -------------------------
                 # CHECK RUN
@@ -329,13 +336,23 @@ class Player:
                 same_color = len(set(colors)) == 1
 
                 # Sort numbers to check sequence order
-                # TODO: fix - breaks with joker
                 sorted_numbers = sorted(numbers)
 
                 # Check if each number increases by 1
                 is_consecutive = True
                 for i in range(len(sorted_numbers) - 1):
-                    if sorted_numbers[i] + 1 != sorted_numbers[i + 1]:
+                    # current tile being checked
+                    curr_value = sorted_numbers[i]
+
+                    # check for joker
+                    if sorted_numbers[i] == 0:
+                        if i > 0:
+                            # if not the first tile in run, set as next consecutive tile
+                            sorted_numbers[i] = sorted_numbers[i - 1] + 1
+                        else:
+                            # if joker is first in run, set to next tile
+                            sorted_numbers[i] = sorted_numbers[i + 1] - 1
+                    elif sorted_numbers[i] + 1 != sorted_numbers[i + 1]:
                         is_consecutive = False
                         break
 
