@@ -194,6 +194,81 @@ class Turn:
     def com_open_turn(self, delta_time = 2):
         player = self.get_current_player()
         player.add_valid_tiles_to_open()
+        self.add_to_other_open(player)
         player.print_open_tiles()
         arcade.schedule_once(self.com_discard, 2)
         return
+    
+    def try_add_tile_to_group(self, tile, target_player, group_index):
+        group = target_player.open_tiles[group_index]
+
+        if tile is None or not group:
+            return False
+
+        is_set = all(t.tile_info.value == group[0].tile_info.value for t in group)
+        is_run = all(t.tile_info.color == group[0].tile_info.color for t in group)
+
+        # SET RULE
+        if is_set:
+            if tile.tile_info.value != group[0].tile_info.value:
+                return False
+
+            colors = {t.tile_info.color for t in group}
+            if tile.tile_info.color in colors:
+                return False
+
+            group.append(tile)
+            return True
+
+        # RUN RULE
+        if is_run:
+            if tile.tile_info.color != group[0].tile_info.color:
+                return False
+
+            values = sorted(t.tile_info.value for t in group)
+
+            if tile.tile_info.value == values[0] - 1:
+                group.insert(0, tile)
+                return True
+
+            if tile.tile_info.value == values[-1] + 1:
+                group.append(tile)
+                return True
+
+        return False
+    
+    def add_to_other_open(self, ai_player):
+        """
+        During AI turn: attempt to extend ANY player's open tiles
+        using ALL tiles in AI hand.
+        """
+        moved = True
+
+        while moved:
+            moved = False
+
+            for tile in ai_player.hand[:]:   # all AI tiles
+
+                if tile is None:
+                    continue
+
+                for target_player in self.players:   # ALL AI players
+                    if not target_player.is_player_ai or target_player is ai_player:
+                        continue
+
+                    for group_index in range(len(target_player.open_tiles)):
+
+                        if self.try_add_tile_to_group(tile, target_player, group_index):
+
+                            ai_player.hand.remove(tile)
+                            moved = True
+                            print(f"Added {tile.tile_info.value} to {target_player.name}'s open")
+
+                            # Restart scanning after any successful move
+                            break
+
+                    if moved:
+                        break
+
+                if moved:
+                    break
