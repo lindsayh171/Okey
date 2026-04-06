@@ -62,6 +62,7 @@ class Game:
         return discards
 
     def set_player_name(self, name):
+        """Sets the player's name to the inputed name"""
         self.players[0].name = name
 
     def start_game(self):

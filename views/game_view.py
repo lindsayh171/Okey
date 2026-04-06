@@ -43,8 +43,8 @@ class GameView(arcade.View):
         self.hand_score = None
 
 
-    # Set up game
     def setup(self):
+        """Sets up the game"""
         # need to do this here so width and height are set up
         self.game = Game(self.width, self.height)
         self.game.set_player_name(self.player_name)
@@ -143,6 +143,7 @@ class GameView(arcade.View):
             tile.draw()
 
     def setup_player_tiles(self):
+        """Sets up the player's tiles"""
         for i, tile in enumerate(self.game.players[0].hand):
             tile.set_curr_slot(self.stand_slot_list[i])
             self.stand_slot_list[i].holding_tile = True
@@ -151,6 +152,7 @@ class GameView(arcade.View):
 
     # Com setup
     def setup_coms(self):
+        """Sets up the computers"""
         screen_width = self.width
         screen_height = self.height
 
@@ -178,6 +180,7 @@ class GameView(arcade.View):
 
     # Discard setup
     def setup_discard(self, player):
+        """Sets up discard"""
         pass
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -432,8 +435,8 @@ class GameView(arcade.View):
         self.tile_list.remove(selected_tile)
         self.tile_list.append(selected_tile)
 
-    # Snap tile to a slot location
     def snap(self, tile, selected_list):
+        """Snaps a tile to a slot location"""
         reset_position = True
 
         # find the closest spot by looping through list
@@ -475,5 +478,6 @@ class GameView(arcade.View):
                 tile.position = tile.current_slot.center_x, tile.current_slot.center_y
 
     def tile_clicked(self, x, y, tile):
+        """Returns the location of a tile when it is clicked"""
         return (tile.center_x - tile.width < x < tile.center_x + self.width
                 and tile.center_y - self.height < y < tile.center_y + self.height)

@@ -23,6 +23,7 @@ class Turn:
         return self.players[self.current_player_idx]
 
     def new_round(self, start_player):
+        """Sets all the variables for a new round"""
         # set turn to starting player (at start, current player is the starting player)
         self.current_player_idx = start_player
 
@@ -59,7 +60,7 @@ class Turn:
         print(f"{player.name} placed {tile.tile_info.value} in discard (NOT FINAL)")
         self.has_discarded = True
 
-    def draw_tile(self, delta_time = 2):
+    def draw_tile(self):
         """
         function that handles the action of drawing a tile from middle pile
         """
@@ -161,7 +162,7 @@ class Turn:
         if next_player.is_player_ai:
             arcade.schedule_once(self.com_turn, 1)
 
-    def com_turn(self, delta_time = 2):
+    def com_turn(self):
         """Handles AI player's full turn."""
         player = self.get_current_player()
         print(f"AI player's turn: {player.name}")
@@ -172,13 +173,13 @@ class Turn:
             print(f"{player.hand_score}")
             self.open_score = player.hand_score
             player.open()
-        
-        if player.opened == True:
+        if player.opened:
             arcade.schedule_once(self.com_open_turn, 2)
         else:
             arcade.schedule_once(self.com_discard, 2)
 
-    def com_discard(self, delta_time = 2):
+    def com_discard(self):
+        """Logic for computer discarding"""
         player = self.get_current_player()
         # Gets the hand score and determines which tiles are being used for scoring
         print(player.hand_score)
@@ -190,8 +191,9 @@ class Turn:
 
         if self.has_discarded:
             self.end_turn()
-    
-    def com_open_turn(self, delta_time = 2):
+
+    def com_open_turn(self):
+        """Logic for what a computer does on a turn if they have opened"""
         player = self.get_current_player()
         # TODO add drawing from other player's discards
         player.add_valid_tiles_to_open()
@@ -199,7 +201,7 @@ class Turn:
         player.print_open_tiles()
         arcade.schedule_once(self.com_discard, 2)
         return
-    
+
     def try_add_tile_to_group(self, tile, target_player, group_index):
         """Tries to add a given tile to aan existing group in a player's open"""
         group = target_player.open_tiles[group_index]
@@ -238,7 +240,7 @@ class Turn:
                 return True
 
         return False
-    
+
     def add_to_other_open(self, ai_player):
         """
         During AI turn: attempt to extend ANY player's open tiles

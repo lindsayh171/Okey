@@ -99,8 +99,8 @@ class Player:
 
     def com_discard_tile(self):
         """Handles AI player's discard logic."""
-        if self.opened == True:
-            
+        if self.opened:
+
             valid_tiles = [t for t in self.hand if t is not None]
 
             if not valid_tiles:
@@ -150,7 +150,8 @@ class Player:
     # pylint: disable=R0912
     # Calculates the possible points earned for the player based on their current hand
     def get_hand_score(self):
-        """Scores hand, sorts self.hand into sets/runs, and stores only valid sets/runs in used_tiles"""
+        """Scores hand, sorts self.hand into sets/runs, 
+        and stores only valid sets/runs in used_tiles"""
 
         # Resets score each time points are calculated
         self.hand_score = 0
@@ -394,7 +395,7 @@ class Player:
         """Calculates the turn score after the turn has ended"""
         self.turn_score += sum(tile.tile_info.value for tile in self.hand)
         return self.turn_score
-    
+
     def open(self):
         """Populates open_tiles from used_tiles and removes tiles from hand"""
         print(f"{self.name} opened")
@@ -417,7 +418,7 @@ class Player:
         # append last group if exists
         if current_group:
             self.open_tiles.append(current_group)
-        
+
     def add_valid_tiles_to_open(self):
         """
         1. Uses get_hand_score() to generate full sets/runs in used_tiles
@@ -466,7 +467,7 @@ class Player:
         # STEP 3: Try to add leftover single tiles into groups
         # ---------------------------------------------------
         for tile in self.hand[:]:
-            
+
             if tile is None:
                 continue
             for group in self.open_tiles:
@@ -522,7 +523,7 @@ class Player:
                         group.append(tile)
                         self.hand.remove(tile)
                         break
-    
+
     def print_open_tiles(self):
         """Prints open_tiles with visible grouping (sets/runs separated)."""
 
