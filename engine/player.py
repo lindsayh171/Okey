@@ -77,6 +77,7 @@ class Player:
         self.stars = 0
         self.hand_score = 0 # score used for opening
         self.turn_score = 0 # score during a round that is added to total
+        self.round_scores = [] # scores of each turn
         self.total_score = 0 # accumulates over the no. of rounds
         self.drawn = False # Keeps track that one tile has been drawn per round
 

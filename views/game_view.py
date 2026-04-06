@@ -178,6 +178,10 @@ class GameView(arcade.View):
         Com.assign_unique_icons(self.com_list)
         Com.assign_unique_names(self.com_list)
 
+        for com in self.com_list:
+            if com.player is not self.game.players[0]:
+                com.player.name = com.name
+
     # Discard setup
     def setup_discard(self, player):
         """Sets up discard"""
@@ -298,36 +302,37 @@ class GameView(arcade.View):
 
         # Check if end_turn button was clicked
         if self.gui.end_turn_button.button_pressed(x, y):
+            # Make sure no open window is displaying before ending turn
+            if self.open_displaying_player is None:
+                player = self.game.turn.get_current_player()
+                disc = player.discard_pile
 
-            player = self.game.turn.get_current_player()
-            disc = player.discard_pile
+                # must have visually placed a tile in discard
+                if not disc.tiles:
+                    print("Please place a tile in discard before ending your turn")
+                    return
 
-            # must have visually placed a tile in discard
-            if not disc.tiles:
-                print("Please place a tile in discard before ending your turn")
+                # get the tile that is visually in discard
+                tile = disc.tiles[-1]
+
+                if tile not in player.hand:
+                    print("You must place a *new* tile in discard before ending your turn")
+                    return
+
+                # Remove discarded tile from held tiles
+                if tile in self.held_tiles:
+                    self.held_tiles.remove(tile)
+                    tile.unhighlight()
+
+                # Don't draw tile over open display
+                if tile in self.tile_list:
+                    self.tile_list.remove(tile)
+
+                # Handing discard to game logic
+                self.game.turn.discard_tile(tile)
+                # now end turn
+                self.game.turn.end_turn()
                 return
-
-            # get the tile that is visually in discard
-            tile = disc.tiles[-1]
-
-            if tile not in player.hand:
-                print("You must place a *new* tile in discard before ending your turn")
-                return
-
-            # Remove discarded tile from held tiles
-            if tile in self.held_tiles:
-                self.held_tiles.remove(tile)
-                tile.unhighlight()
-
-            # Don't draw tile over open display
-            if tile in self.tile_list:
-                self.tile_list.remove(tile)
-
-            # Handing discard to game logic
-            self.game.turn.discard_tile(tile)
-            # now end turn
-            self.game.turn.end_turn()
-            return
 
         # check if menu was clicked
         if self.gui.menu_button.button_pressed(x, y):

@@ -85,6 +85,9 @@ class NameView(arcade.View):
 
     def on_mouse_press(self, x, y, _button, _modifiers):
         if self.continue_button.button_pressed(x, y):
-            self.window.show_game(self.input_field.text)
+            # Only continue if a name has been entered
+            username = self.input_field.text
+            if username:
+                self.window.show_game(self.input_field.text)
         if self.back_button.button_pressed(x, y):
             self.window.show_title()
