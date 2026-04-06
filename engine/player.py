@@ -69,6 +69,7 @@ class Player:
         self.hand = [] # every player has a hand of tiles, empty initially
         self.played = [] # tiles that are displayed when the player opens
         self.open_tiles = [[],[],[],[]] # sets of tiles out of what the player has opened with
+        self.arranged_groups = [] # to track player's list of arranged valid groups
         self.open_stand = OpenStand(self)
         self.used_tiles = set()  # Keep track of tiles that have already been used in a set or run
         self.discard_pile = disc # player's discard piles, empty initially
@@ -252,6 +253,7 @@ class Player:
 
         # Reset score every time
         self.hand_score = 0
+        self.arranged_groups = []
 
         # Loop through each row
         for group in group_tiles(self.hand):
@@ -286,7 +288,7 @@ class Player:
             for subgroup in subgroups:
 
                 # Ignore groups smaller that are not 3-4 tiles
-                if len(subgroup) < 3 or len(subgroup) > 4:
+                if len(subgroup) < 3:
                     continue
 
                 # check regular and joker tiles
@@ -304,11 +306,13 @@ class Player:
                 same_number = len(set(numbers)) == 1
                 all_diff_colors = len(set(colors)) == len(colors)
 
-                if same_number and all_diff_colors:
+                if 3 <= len(subgroup) <= 4 and same_number and all_diff_colors:
                     self.hand_score += sum(numbers)
 
                     # add the jokers to the score
                     self.hand_score += numbers[0] * len(joker_tiles)
+
+                    self.arranged_groups.append(subgroup)
 
                     continue  # don't check run if already a set
 
@@ -351,6 +355,8 @@ class Player:
                 # check color and add to hand score
                 if same_color and is_consecutive:
                     self.hand_score += sum(all_values)
+
+                    self.arranged_groups.append(subgroup)
 
         # Return total score from all valid groups sums
         return self.hand_score
