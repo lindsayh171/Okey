@@ -50,6 +50,7 @@ class Com(arcade.Sprite):
         for com in com_list:
             com.name = available.pop()
 
+
     def draw(self):
         arcade.draw_sprite(self)
 

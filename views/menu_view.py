@@ -16,6 +16,7 @@ class MenuView(arcade.View):
         self.close_button = None
         self.quit_button = None
         self.rules_button = None
+        self.scoreboard_button = None
 
     def on_show_view(self):
         """ This is run once when we switch to this view """
@@ -27,6 +28,8 @@ class MenuView(arcade.View):
         menu_buttons_width = self.window.width / 6
         button_height = self.window.height / 12
         close_button = self.window.height / 16
+
+        button_divider = button_height * 1.8
 
         arcade.load_font("assets/fonts/IrishGrover-Regular.ttf")
 
@@ -52,15 +55,23 @@ class MenuView(arcade.View):
 
         # rules button
         self.rules_button = button.Button([title_x,
-                                          title_y - button_height * 1.2],
+                                          title_y - button_divider],
                                           [menu_buttons_width,
                                           button_height],
                                           "Rules",
                                           [colr.THEME_TEAL,
                                           colr.THEME_DARK_BLUE])
 
+        self.scoreboard_button = button.Button([title_x,
+                                           title_y - button_divider * 2],
+                                          [menu_buttons_width,
+                                           button_height],
+                                          "Scores",
+                                          [colr.THEME_PINK,
+                                           colr.THEME_DARK_BLUE])
+
         self.quit_button = button.Button([title_x,
-                                          title_y - button_height * 3],
+                                          title_y - button_divider * 3],
                                           [menu_buttons_width,
                                           button_height],
                                           "Quit",
@@ -77,6 +88,7 @@ class MenuView(arcade.View):
         self.title_text.draw()
         self.close_button.draw()
         self.rules_button.draw()
+        self.scoreboard_button.draw()
         self.quit_button.draw()
 
     def on_mouse_press(self, x, y, _button, _modifiers):
@@ -84,5 +96,11 @@ class MenuView(arcade.View):
             self.window.show_view(self.game_view)
         if self.rules_button.button_pressed(x, y):
             self.window.show_rules(Views.MENU, self.game_view)
+        if self.scoreboard_button.button_pressed(x, y):
+            if self.game_view is not None:
+                game = self.game_view.game
+            else:
+                game = None
+            self.window.show_scoreboard(Views.MENU, game, self.game_view)
         if self.quit_button.button_pressed(x, y):
             self.window.show_title()
