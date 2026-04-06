@@ -19,10 +19,13 @@ class Dealer:
         self.rng = random.Random()
 
     def build_okey_set(self):
-        # 106 total tiles
-        # Numbers 1-13; 2 copies of each
-        # 2 jokers
-        # 4 colors
+        """
+        Builds the tiles that are used in the game
+        106 total tiles
+        Numbers 1-13; 2 copies of each
+        2 jokers
+        4 colors
+        """
 
         tiles = []
         for color, symbol in TILE_COLORS_SYMBOLS.items():
