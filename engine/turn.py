@@ -14,6 +14,7 @@ class Turn:
         self.must_draw = False  # check if player must draw before discarding
         self.turn_ended = False  # to track if discard is finalized
         self.has_discarded = False # to track if a player discarded in their turn
+        self.open_score = 10
 
     def get_current_player(self):
         """
@@ -153,6 +154,8 @@ class Turn:
         player.drawn = False # next player hasn't drawn yet
 
         print(f"\n--- {next_player.name}'s turn ---")
+        print(f"Open score {self.open_score}")
+        print(f"Open Status {next_player.opened}")
 
         # If the current player is AI, run the com turn logic
         if next_player.is_player_ai:
@@ -162,16 +165,23 @@ class Turn:
         """Handles AI player's full turn."""
         player = self.get_current_player()
         print(f"AI player's turn: {player.name}")
-
         # -----1. Draw
         arcade.schedule_once(self.draw_tile, 1)
 
-        arcade.schedule_once(self.com_discard, 2)
+        if player.get_hand_score() >= self.open_score:
+            print(f"{player.hand_score}")
+            self.open_score = player.hand_score
+            player.open()
+        
+        if player.opened == True:
+            arcade.schedule_once(self.com_open_turn, 2)
+        else:
+            arcade.schedule_once(self.com_discard, 2)
 
     def com_discard(self, delta_time = 2):
         player = self.get_current_player()
         # Gets the hand score and determines which tiles are being used for scoring
-        print(player.get_hand_score())
+        print(player.hand_score)
         # TODO: Add opening logic here
 
         # -----2. Discard
@@ -180,3 +190,10 @@ class Turn:
 
         if self.has_discarded:
             self.end_turn()
+    
+    def com_open_turn(self, delta_time = 2):
+        player = self.get_current_player()
+        player.add_valid_tiles_to_open()
+        player.print_open_tiles()
+        arcade.schedule_once(self.com_discard, 2)
+        return
