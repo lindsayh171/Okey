@@ -14,7 +14,7 @@ class Turn:
         self.must_draw = False  # check if player must draw before discarding
         self.turn_ended = False  # to track if discard is finalized
         self.has_discarded = False # to track if a player discarded in their turn
-        self.open_score = 10
+        self.open_score = 81 #Starts at 81
 
     def get_current_player(self):
         """
@@ -193,6 +193,7 @@ class Turn:
     
     def com_open_turn(self, delta_time = 2):
         player = self.get_current_player()
+        # TODO add drawing from other player's discards
         player.add_valid_tiles_to_open()
         self.add_to_other_open(player)
         player.print_open_tiles()
@@ -200,6 +201,7 @@ class Turn:
         return
     
     def try_add_tile_to_group(self, tile, target_player, group_index):
+        """Tries to add a given tile to aan existing group in a player's open"""
         group = target_player.open_tiles[group_index]
 
         if tile is None or not group:

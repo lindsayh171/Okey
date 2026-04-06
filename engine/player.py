@@ -158,9 +158,6 @@ class Player:
         # Create a copy of the hand so we don't modify while iterating
         score_hand = list(self.hand)
 
-        # Track tiles that have already been used in a valid set or run
-        used = set()
-
         # Stores grouped sets/runs for ordering self.hand
         final_groups = []
 
@@ -182,7 +179,7 @@ class Player:
 
         for _, tiles in number_groups.items():
 
-            available_tiles = [t for t in tiles if t not in used]
+            available_tiles = [t for t in tiles if t not in self.used_tiles]
 
             unique_colors = {}
             for t in available_tiles:
@@ -199,7 +196,6 @@ class Player:
                 self.used_tiles.append(None)
 
                 for t in valid_set:
-                    used.add(t)
                     self.hand_score += t.tile_info.value
 
         # ===================================
@@ -211,9 +207,9 @@ class Player:
 
         for tile in score_hand:
             if tile is None:
-                continue  # IMPORTANT: skip separators
+                continue  # skip separators
 
-            if tile not in used:
+            if tile not in self.used_tiles:
                 color_groups[tile.tile_info.color].append(tile)
 
         for _, tiles in color_groups.items():
@@ -244,7 +240,6 @@ class Player:
                     self.used_tiles.append(None)
 
                     for t in run:
-                        used.add(t)
                         self.hand_score += t.tile_info.value
 
                     i += len(run)
@@ -256,7 +251,7 @@ class Player:
         # Collect Leftover Tiles (Not part of any set/run)
         # ===================================
 
-        leftovers = [t for t in score_hand if t is not None and t not in used]
+        leftovers = [t for t in score_hand if t is not None and t not in self.used_tiles]
 
         # ===================================
         # Sort the Hand (Sets/Runs First, Leftovers Last)
@@ -325,7 +320,7 @@ class Player:
             for subgroup in subgroups:
 
                 # Ignore groups smaller that are not 3-4 tiles
-                if len(subgroup) < 3 or len(subgroup) > 4:
+                if len(subgroup) < 3: #or len(subgroup) > 4
                     continue
 
                 # check regular and joker tiles
