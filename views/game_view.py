@@ -64,7 +64,7 @@ class GameView(arcade.View):
         self.setup_player_tiles()
 
         self.hand_score = arcade.Text(
-            str(self.game.turn.players[0].hand_score),
+            str(self.game.turn.players[0].player_get_hand_score()),
             self.window.height * 0.03 + self.player_stand.total_stand_height * 0.75 * 0.5,
             self.window.height * 0.03 + self.player_stand.total_stand_height * 0.3,
             colr.THEME_TEAL,
