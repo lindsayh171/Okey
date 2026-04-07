@@ -33,6 +33,20 @@ class DrawPile(arcade.Sprite):
             anchor_y="center",
         )
 
+        self.draw_highlight = False
+        self.highlight_tile = rr.RoundedRectangle(
+                [self.center_x, self.center_y],
+                [TILE_WIDTH + 10, TILE_HEIGHT + 10],
+                TILE_HEIGHT // 9,
+                colr.LIGHT_GOLDENROD_YELLOW,
+            )
+        self.back_tile = rr.RoundedRectangle(
+            [self.center_x, self.center_y],
+            [TILE_WIDTH, TILE_HEIGHT],
+            TILE_HEIGHT // 9,
+            (222, 212, 193)
+        )
+
     def count(self):
         return len(self.tiles)
 
@@ -43,15 +57,14 @@ class DrawPile(arcade.Sprite):
         return self.tiles.pop()
 
     def draw(self):
+
+
+        if self.draw_highlight:
+            self.highlight_tile.draw()
+
         # Back of top tile
 
-        back_tile = rr.RoundedRectangle(
-            [self.center_x, self.center_y],
-            [TILE_WIDTH, TILE_HEIGHT],
-            TILE_HEIGHT // 9,
-            (222, 212, 193)
-        )
-        back_tile.draw()
+        self.back_tile.draw()
 
         # label
         arcade.draw_circle_filled(self.label_x,

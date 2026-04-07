@@ -139,6 +139,11 @@ class GameView(arcade.View):
         for tile in self.tile_list:
             tile.draw()
 
+        if self.game.turn.get_current_player() is self.game.players[0] and self.game.turn.must_draw:
+            self.game.turn.draw_pile.draw_highlight = True
+        else:
+            self.game.turn.draw_pile.draw_highlight = False
+
         # ui manager
         self.gui.manager.draw()
 
@@ -233,6 +238,7 @@ class GameView(arcade.View):
 
             # Check if draw pile was clicked
             if self.game.turn.draw_pile.collides_with_point((x, y)):
+                self.game.turn.draw_pile.draw_highlight = False
                 # make Game handle draw logic
                 top_tile = self.game.turn.draw_tile()
                 # if draw not allowed, stop
@@ -523,7 +529,7 @@ class GameView(arcade.View):
         tile.unhighlight()
 
         player = self.game.turn.players[0]
-        player.hand_Score = player.player_get_hand_score()
+        player.hand_score = player.player_get_hand_score()
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
