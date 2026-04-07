@@ -123,7 +123,8 @@ class ScoreboardView(arcade.View):
                     )
 
             # Draw total scores
-            total_score_x = board_start_x + name_width + (total_rounds * column_width) + total_score_gap
+            total_score_x = (board_start_x + name_width +
+                             (total_rounds * column_width) + total_score_gap)
             arcade.draw_text(
                 f"Total: {player.total_score}",
                 total_score_x,
