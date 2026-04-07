@@ -1,7 +1,7 @@
 import arcade
 from ui_components import rounded_rectangle
 
-class Button():
+class Button:
     """
     Creates a button using a rounded rectangle and text.
     """

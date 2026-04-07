@@ -2,6 +2,7 @@ import arcade
 from arcade import gui
 import assets.colors as colr
 from ui_components import button
+from ui_components.message import Message
 
 class NameView(arcade.View):
     """
@@ -89,5 +90,8 @@ class NameView(arcade.View):
             username = self.input_field.text
             if username:
                 self.window.show_game(self.input_field.text)
+            else:
+                error_box = Message(self.manager, "Please enter a name.")
+                error_box.show()
         if self.back_button.button_pressed(x, y):
             self.window.show_title()
