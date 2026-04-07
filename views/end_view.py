@@ -25,9 +25,9 @@ class EndView(arcade.View):
         self.window.background_color = colr.THEME_DARK_BLUE
 
         title_x = self.window.width / 2
-        title_y = self.window.height / 2
+        title_y = 2* self.window.height / 3
 
-        button_width = self.window.width / 5
+        button_width = (self.window.width / 5) * 1.45
         button_height = self.window.height / 10
 
         self.title_text = arcade.Text(
@@ -35,52 +35,69 @@ class EndView(arcade.View):
             title_x,
             title_y,
             colr.THEME_PINK,
-            font_size=self.window.height * 0.3,
+            font_size=self.window.height * 0.1,
             anchor_x="center",
             font_name="Irish Grover"
         )
         if not self.quit:
-            place = self.get_place()
+            # TODO: change back - debugging
+            place = 3
 
             match place:
                 case 0:
                     self.title_text = arcade.Text(
-                        "1st Place! Congratulations.",
+                        "1st Place!!\nCongratulations.",
                         title_x,
                         title_y,
                         colr.THEME_PINK,
-                        font_size=self.window.height * 0.3,
+                        font_size=self.window.height * 0.1,
                         anchor_x="center",
+                        anchor_y="center",
+                        multiline=True,
+                        align="center",
+                        width=self.window.width * 0.8,
                         font_name="Irish Grover"
                     )
                 case 1:
                     self.title_text = arcade.Text(
-                        "2nd Place! Thank you for playing.",
+                        "2nd Place!\nThank you for playing.",
                         title_x,
                         title_y,
                         colr.THEME_PINK,
-                        font_size=self.window.height * 0.3,
+                        font_size=self.window.height * 0.1,
                         anchor_x="center",
+                        anchor_y="center",
+                        multiline=True,
+                        align="center",
+                        width=self.window.width,
                         font_name="Irish Grover"
                     )
                 case 2:
                     self.title_text = arcade.Text(
-                        "3rd Place! Thank you for playing.",
+                        "3rd Place.\nThank you for playing.",
                         title_x,
                         title_y,
                         colr.THEME_PINK,
-                        font_size=self.window.height * 0.3,
+                        font_size=self.window.height * 0.1,
                         anchor_x="center",
+                        anchor_y="center",
+                        multiline=True,
+                        align="center",
+                        width=self.window.width,
                         font_name="Irish Grover"
                     )
                 case 3:
                     self.title_text = arcade.Text(
-                        "4th Place! Thank you for playing.",
+                        "Last Place :(\nThank you for playing.",
                         title_x,
                         title_y,
                         colr.THEME_PINK,
-                        font_size=self.window.height * 0.3,
+                        font_size=self.window.height * 0.1,
                         anchor_x="center",
+                        anchor_y="center",
+                        multiline=True,
+                        align="center",
+                        width=self.window.width,
                         font_name="Irish Grover"
                     )
                 case _:
@@ -89,23 +106,23 @@ class EndView(arcade.View):
                         title_x,
                         title_y,
                         colr.THEME_PINK,
-                        font_size=self.window.height * 0.3,
+                        font_size=self.window.height * 0.1,
                         anchor_x="center",
                         font_name="Irish Grover"
                     )
 
-        # play button
+        # quit button
         self.quit_button = button.Button([title_x - button_width * 0.8,
-                                         title_y - button_height * 1.6],
+                                         title_y - button_height * 3],
                                          [button_width,
                                          button_height],
                                          "Quit",
                                          [colr.THEME_YELLOW,
                                          colr.THEME_DARK_BLUE])
 
-        # rules button
+        # new game button
         self.new_button = button.Button([title_x + button_width * 0.8,
-                                          title_y - button_height * 1.6],
+                                          title_y - button_height * 3],
                                           [button_width,
                                           button_height],
                                           "New Game",
@@ -113,8 +130,8 @@ class EndView(arcade.View):
                                           colr.THEME_DARK_BLUE])
 
         # scoreboard button
-        self.scoreboard_button = button.Button([title_x + button_width * 0.8,
-                                         title_y - 2*button_height * 1.6],
+        self.scoreboard_button = button.Button([title_x,
+                                         title_y - button_height * 4.6],
                                         [button_width,
                                          button_height],
                                         "Scoreboard",
