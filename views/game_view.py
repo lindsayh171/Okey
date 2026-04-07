@@ -139,6 +139,9 @@ class GameView(arcade.View):
         for tile in self.tile_list:
             tile.draw()
 
+        # ui manager
+        self.gui.manager.draw()
+
     def setup_player_tiles(self):
         """Sets up the player's tiles"""
         for i, tile in enumerate(self.game.players[0].hand):
@@ -198,7 +201,7 @@ class GameView(arcade.View):
                         prev_plyr_disc_click = True
                         break
                 if not prev_plyr_disc_click:
-                    print("You must draw first")
+                    self.gui.show_popup("You must draw first")
                     return
 
         # TILE IS CLICKED
@@ -209,12 +212,14 @@ class GameView(arcade.View):
         # lock tiles that have been taken to open space
         if clicked_tile and getattr(clicked_tile, "is_in_open", False):
             print("Opened tiles cannot be moved")
+            self.gui.show_popup("Opened tiles cannot be moved.")
             return
         if clicked_tile:
             # prevent a player from picking up discarded tile after ending their turn
             for disc in self.game.discards:
                 if clicked_tile in disc.tiles and self.game.turn.turn_ended:
                     print("Cannot move discarded tile after ending turn")
+                    self.gui.show_popup("Cannot move discarded tile after ending turn.")
                     return
 
             # Otherwise allow normal dragging
@@ -311,12 +316,14 @@ class GameView(arcade.View):
 
             if score < 10: # temp number for testing
                 print("Not enough points to open. Reach 10")
+                self.gui.show_popup("Not enough points to open. Reach 81")
                 return
 
             groups = player.arranged_groups
 
             if not groups:
                 print("No valid arranged groups to open with")
+                self.gui.show_popup("No valid arranged groups to open with")
                 return
 
             player.open_tiles = [[], [], [], []] # 4 rows for open sets
@@ -347,6 +354,8 @@ class GameView(arcade.View):
             self.open_displaying_player = player
 
             print(f"{player.name} opened with {score} points!")
+            if player.is_player_ai:
+                self.gui.show_popup(f"{player.name} opened with {score} points")
 
             return
 
@@ -360,6 +369,7 @@ class GameView(arcade.View):
                 # must have visually placed a tile in discard
                 if not disc.tiles:
                     print("Please place a tile in discard before ending your turn")
+                    self.gui.show_popup(f"Please place a tile in discard before ending your turn.")
                     return
 
                 # get the tile that is visually in discard
@@ -367,6 +377,7 @@ class GameView(arcade.View):
 
                 if tile not in player.hand:
                     print("You must place a *new* tile in discard before ending your turn")
+                    self.gui.show_popup("You must place a *new* tile in discard before ending your turn.")
                     return
 
                 # Remove discarded tile from held tiles
@@ -437,6 +448,7 @@ class GameView(arcade.View):
 
                 if current_player.opened_this_turn:
                     print("Cannot add tiles on the same turn you opened")
+                    self.gui.show_popup("Cannot add tiles on the same turn you opened")
                     self.snap(tile, available_slots)
                     self.held_tiles = []
                     tile.unhighlight()
@@ -479,6 +491,7 @@ class GameView(arcade.View):
                 # block access to discard except first player
                 if self.game.turn.must_draw:
                     print("You must draw before discarding")
+                    self.gui.show_popup("You must draw before discarding")
                     # send tile back to stand
                     self.snap(tile, available_slots)
 

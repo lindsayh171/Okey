@@ -1,6 +1,8 @@
 import arcade
+import arcade.gui
 import assets.colors as colr
 import ui_components.button as ui_button
+from ui_components.message import Message
 
 class GameViewGraphics:
     """
@@ -54,6 +56,25 @@ class GameViewGraphics:
             font_size=20,
             anchor_x="center",
             font_name="Irish Grover"
-
         )
+
+        self.manager = arcade.gui.UIManager()
+        # Main vertical layout with spacing
+        self.v_box = arcade.gui.UIBoxLayout(space_between=20)
+
+        # Anchor layout (center everything)
+        anchor = arcade.gui.UIAnchorLayout()
+        anchor.add(
+            self.v_box,
+            anchor_x="center_x",
+            anchor_y="center_y"
+        )
+
+        self.manager.add(anchor)
+
+    def show_popup(self, text):
+        self.manager.enable()
+        error_box = Message(self.manager, text)
+        error_box.show()
+
 
