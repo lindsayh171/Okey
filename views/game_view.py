@@ -208,7 +208,7 @@ class GameView(arcade.View):
             if t.tile_clicked(x, y):
                 clicked_tile = t
         # lock tiles that have been taken to open space
-        if clicked_tile and clicked_tile.is_in_open:
+        if clicked_tile and getattr(clicked_tile, "is_in_open", False):
             print("Opened tiles cannot be moved")
             return
         if clicked_tile:
@@ -292,7 +292,7 @@ class GameView(arcade.View):
         # When open button is pressed
         if self.gui.open_button.button_pressed(x, y):
             """
-            This function moves valid arranged groups from hand to open,
+            Allows valid arranged groups from hand to open,
             prevents dragging back to hand, removes opened tiles, 
             resets hand score and ensures tiles persist in next turn. 
             """
@@ -345,6 +345,7 @@ class GameView(arcade.View):
             player.hand_score = 0
             # mark player as opened
             player.opened = True
+            player.opened_this_turn = True
             # display open window
             self.open_displaying_player = player
 
@@ -428,29 +429,50 @@ class GameView(arcade.View):
         touching_discard = disc.tile_overlaps(tile)
 
         # Tile snapping if an open window is displaying
-        if self.open_displaying_player is not None:
-            if touching_slot:
-                row_index = touching_slot.open_row_index
+        if self.open_displaying_player is not None and touching_slot:
 
-                # address TypeError
-                if row_index is None:
+            row_index = touching_slot.open_row_index
+
+            # address TypeError
+            if row_index is None:
+
+                current_player = self.game.turn.get_current_player()
+
+                if current_player.opened_this_turn:
+                    print("Cannot add tiles on the same turn you opened")
                     self.snap(tile, available_slots)
                     self.held_tiles = []
                     tile.unhighlight()
                     return
 
                 open_edge = getattr(touching_slot, "open_edge", None)
+
                 row = self.open_displaying_player.open_tiles[row_index]
+
+                # TEMP (next step = validation)
                 if open_edge == "before":
                     row.insert(0, tile)
                 else:
                     row.append(tile)
-                self.tile_list.remove(tile)
+
+                if tile in self.tile_list:
+                    self.tile_list.remove(tile)
+
+                if tile in current_player.hand:
+                    current_player.hand.remove(tile)
+
+                tile.is_in_open = True
+
                 self.snap(tile, available_slots)
                 self.open_displaying_player.open_stand.update()
+
+
             else:
                 # snap tile back to original position
                 self.snap(tile, available_slots)
+
+                if tile not in player.hand:
+                    player.hand.append(tile)
 
         # Tile snapping if no open window is displaying
         else:

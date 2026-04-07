@@ -136,6 +136,7 @@ class Turn:
         """
 
         player = self.get_current_player()
+        player.opened_this_turn = False
 
         # validate that player indeed discarded
         if not self.has_discarded:

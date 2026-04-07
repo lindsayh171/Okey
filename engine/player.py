@@ -75,6 +75,7 @@ class Player:
         self.discard_pile = disc # player's discard piles, empty initially
         self.can_open = False
         self.opened = False
+        self.opened_this_turn = False # to prevent player from expanding tiles during opening
         self.stars = 0
         self.hand_score = 0 # score used for opening
         self.turn_score = 0 # score during a round that is added to total
