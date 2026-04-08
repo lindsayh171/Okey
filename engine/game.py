@@ -6,7 +6,6 @@ from engine.player import Player
 from engine.discard_pile import DiscardPile
 from engine.tile import TILE_WIDTH
 from engine.turn import Turn
-from assets.utils import ROUNDS
 
 class Game:
     """
@@ -56,7 +55,7 @@ class Game:
         """Sets the player's name to the inputed name"""
         self.players[0].name = name
 
-    def start_game(self, starting_player_idx=0):
+    def start_new_round(self, starting_player_idx=0):
         """
         Starts a new round
         """

@@ -36,27 +36,27 @@ class ScoreboardView(arcade.View):
 
         arcade.load_font("assets/fonts/IrishGrover-Regular.ttf")
 
-        # Title text
-        self.title_text = arcade.Text(
-            "Scoreboard",
-            scoreboard_x,
-            self.scoreboard_y,
-            colr.THEME_PINK,
-            font_size=self.window.height * 0.1,
-            anchor_x="center",
-            font_name="Irish Grover"
-        )
-
         # Exit/Continue button
         if self.round_end:
             self.exit_button = button.Button(
                 [scoreboard_x,
                  self.window.height / 10],
-                [button_width,
+                [button_width * 1.4,
                  button_height],
                 "Continue",
                 [colr.THEME_TEAL,
                  colr.THEME_DARK_BLUE]
+            )
+
+            # Title text
+            self.title_text = arcade.Text(
+                "Round Over.",
+                scoreboard_x,
+                self.scoreboard_y,
+                colr.THEME_PINK,
+                font_size=self.window.height * 0.1,
+                anchor_x="center",
+                font_name="Irish Grover"
             )
         else:
             self.exit_button = button.Button(
@@ -67,6 +67,17 @@ class ScoreboardView(arcade.View):
                 "Exit",
                 [colr.THEME_TEAL,
                 colr.THEME_DARK_BLUE]
+            )
+
+            # Title text
+            self.title_text = arcade.Text(
+                "Scoreboard",
+                scoreboard_x,
+                self.scoreboard_y,
+                colr.THEME_PINK,
+                font_size=self.window.height * 0.1,
+                anchor_x="center",
+                font_name="Irish Grover"
             )
 
         self.window.default_camera.use()
@@ -150,6 +161,7 @@ class ScoreboardView(arcade.View):
     def on_mouse_press(self, x, y, _button, _modifiers):
         if self.exit_button.button_pressed(x, y):
             if self.round_end:
+                self.game_view.setup()
                 self.window.show_view(self.game_view)
             else:
                 match self.origin:

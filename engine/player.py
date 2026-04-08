@@ -552,3 +552,7 @@ class Player:
                 values.append(tile.tile_info.value)
 
             print(f"Group {i + 1}: {values}")
+
+    def check_complete(self):
+        hand_tiles = [t for t in self.hand if t is not None]
+        return len(hand_tiles) == 0

@@ -3,6 +3,7 @@ from board_components.com import Com, COM_WIDTH
 from board_components.stand import Stand
 from engine.game import Game
 import assets.colors as colr
+from assets.utils import Views
 from views.game_view_graphics import GameViewGraphics
 
 # Game window class
@@ -46,7 +47,7 @@ class GameView(arcade.View):
         # need to do this here so width and height are set up
         self.game = Game(self.width, self.height)
         self.game.set_player_name(self.player_name)
-        self.game.start_game()
+        self.game.start_new_round()
 
         self.game.players[0].open_stand.update()
 
@@ -71,6 +72,8 @@ class GameView(arcade.View):
             anchor_x="center",
             anchor_y="center",
         )
+
+        self.game.turn.end_round = self.handle_round_end
 
     def on_show_view(self):
         self.background_color = colr.THEME_LIGHT_BLUE
@@ -399,7 +402,6 @@ class GameView(arcade.View):
                 self.game.turn.discard_tile(tile)
                 # now end turn
                 self.game.turn.end_turn()
-                return
 
         # check if menu was clicked
         if self.gui.menu_button.button_pressed(x, y):
@@ -586,3 +588,6 @@ class GameView(arcade.View):
         """Returns the location of a tile when it is clicked"""
         return (tile.center_x - tile.width < x < tile.center_x + self.width
                 and tile.center_y - self.height < y < tile.center_y + self.height)
+
+    def handle_round_end(self):
+        self.window.show_scoreboard(Views.GAME, self.game, self, True)
