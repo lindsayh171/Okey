@@ -68,6 +68,3 @@ class Com(arcade.Sprite):
                 colr.LIGHT_GOLDENROD_YELLOW,
                 4
             )
-
-
-
