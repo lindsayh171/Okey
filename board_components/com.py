@@ -2,7 +2,7 @@ import random
 
 import arcade
 from arcade import load_texture
-
+import assets.colors as colr
 from assets import textures
 from assets import names
 COM_WIDTH = 75
@@ -24,7 +24,7 @@ class Com(arcade.Sprite):
             self.name,
             self.center_x,
             self.center_y - COM_WIDTH - 15, # minus 15 for font size
-            arcade.color.WHITE,
+            colr.WHITE,
             font_size=15,
             anchor_x="center",
             anchor_y="center",
@@ -32,8 +32,6 @@ class Com(arcade.Sprite):
 
         # Assign random texture to com
         self.texture = textures.get_random_icon()
-
-    # Highlight com to show hand
 
     # Set different icons for each com
     @staticmethod
@@ -50,6 +48,7 @@ class Com(arcade.Sprite):
         for com in com_list:
             com.name = available.pop()
 
+
     def draw(self):
         arcade.draw_sprite(self)
 
@@ -59,3 +58,16 @@ class Com(arcade.Sprite):
 
         # Draw the label
         self.label.draw()
+
+        if self.player.opened:
+            arcade.draw_lbwh_rectangle_outline(
+                self.center_x - COM_WIDTH,
+                self.center_y - COM_WIDTH,
+                150,
+                150,
+                colr.LIGHT_GOLDENROD_YELLOW,
+                4
+            )
+
+
+

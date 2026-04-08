@@ -1,7 +1,7 @@
 import arcade
 from ui_components import rounded_rectangle
 
-class Button():
+class Button:
     """
     Creates a button using a rounded rectangle and text.
     """
@@ -14,30 +14,25 @@ class Button():
         self.colors = {"color": colors[0],
                        "text_color": colors[1]}
 
-        self.rect = None
-
-    def draw(self):
-        # draw_tile a rounded rectangle
-        self.rect = rounded_rectangle.RoundedRectangle([self.coordinates["x"],
-                                                        self.coordinates["y"]],
-                                                  [self.dimensions["width"],
-                                                   self.dimensions["height"]],
-                                                  self.radius,
-                                                  self.colors["color"])
-
-        # draw_tile button text
-        arcade.load_font("assets/fonts/Itim-Regular.ttf")
-        txt = arcade.Text(
+        self.rect = rounded_rectangle.RoundedRectangle(
+            [self.coordinates["x"], self.coordinates["y"]],
+            [self.dimensions["width"], self.dimensions["height"]],
+            self.radius,
+            self.colors["color"],
+        )
+        self.label = arcade.Text(
             self.text,
             self.coordinates["x"],
             self.coordinates["y"] - self.dimensions["height"] // 4,
             self.colors["text_color"],
-            font_size= self.dimensions["height"] * 0.6,
+            font_size = self.dimensions["height"] * 0.6,
             anchor_x="center",
             font_name="Itim"
         )
+
+    def draw(self):
         self.rect.draw()
-        txt.draw()
+        self.label.draw()
 
     def button_pressed(self, x, y):
         """
@@ -51,3 +46,22 @@ class Button():
 
     def set_color(self, color):
         self.colors["color"] = color
+        self.rect.color = color
+
+    def show_pressed_button(self, pressed_color):
+        """
+        Shows button has been pressed and goes back to original color afterwards.
+        :return: NULL
+        """
+        original_color = self.colors["color"]
+
+        self.set_color(pressed_color)
+
+        # sets color back to original after a second
+        def reset_color(dt):
+            self.set_color(original_color)
+
+        # Change the color for a split second to look like it was pressed
+        arcade.schedule_once(reset_color, 0.1)
+
+

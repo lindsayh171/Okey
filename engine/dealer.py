@@ -4,10 +4,10 @@
 # Puts back the remaining tiles in the draw_pile (middle pile)
 
 import random
-import arcade
 
 from engine.tile import Tile, TILE_COLORS_SYMBOLS, TileInfo
 from engine.draw_pile import DrawPile
+import assets.colors as colr
 
 class Dealer:
     """
@@ -19,21 +19,24 @@ class Dealer:
         self.rng = random.Random()
 
     def build_okey_set(self):
-        # 106 total tiles
-        # Numbers 1-13; 2 copies of each
-        # 2 jokers
-        # 4 colors
+        """
+        Builds the tiles that are used in the game
+        106 total tiles
+        Numbers 1-13; 2 copies of each
+        2 jokers
+        4 colors
+        """
 
         tiles = []
         for color, symbol in TILE_COLORS_SYMBOLS.items():
-            for number in range(1, 14):
+            for number in range(1, 14): # use 1, 8 for debugging
                 # appending two copies of each tile
                 tiles.append(Tile(TileInfo(number, color, symbol, 0)))
                 tiles.append(Tile(TileInfo(number, color, symbol, 1)))
 
         # Adding the jokers
-        tiles.append(Tile(TileInfo(0, arcade.color.FOREST_GREEN, "⚡", 0)))
-        tiles.append(Tile(TileInfo(0, arcade.color.FOREST_GREEN, "⚡", 0)))
+        tiles.append(Tile(TileInfo(0, colr.GREEN, "⚡", 0)))
+        tiles.append(Tile(TileInfo(0, colr.GREEN, "⚡", 1)))
 
         return tiles
 

@@ -1,6 +1,7 @@
 import arcade
 from engine.tile import TILE_WIDTH, TILE_HEIGHT
-from stand_slot import StandSlot, DIVIDER_GAP
+from board_components.stand_slot import StandSlot, DIVIDER_GAP
+import assets.colors as colr
 
 class Stand:
     """
@@ -8,7 +9,6 @@ class Stand:
     """
     def __init__(self):
         self.stand_start_x = 0
-        self.open_stand_start_x = 0
         self.stand_divider = 5
         self.rows = 2
         self.columns = 12
@@ -30,7 +30,7 @@ class Stand:
                 stand_x = self.stand_start_x + column * TILE_WIDTH
 
                 # create stand_slot and append to the slot list
-                stand_slot = StandSlot(stand_x, stand_y, arcade.color.BEAVER)
+                stand_slot = StandSlot(stand_x, stand_y, colr.BEAVER)
                 slots_list.append(stand_slot)
 
         return slots_list
@@ -45,5 +45,5 @@ class Stand:
             (TILE_HEIGHT + DIVIDER_GAP / 2) - self.stand_divider / 2,
             self.total_stand_width,
             self.stand_divider,
-            arcade.color.DEEP_COFFEE,
+            colr.DEEP_COFFEE,
         )

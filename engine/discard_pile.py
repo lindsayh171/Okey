@@ -17,12 +17,14 @@ class DiscardPile(arcade.Sprite):
         else:
             self.tiles = tiles
 
-        self.held_tiles = []
+        # TODO: Delete this
+        #self.held_tiles = []
         self.player_discard = False
         self.player_com_discard = False
         self.holding_tile = False
         self.center_x = x
         self.center_y = y
+
 
     def count(self):
         return len(self.tiles)
@@ -40,4 +42,11 @@ class DiscardPile(arcade.Sprite):
             TILE_HEIGHT + self.BORDER_WIDTH,
             arcade.color.DEEP_COFFEE,
             self.BORDER_WIDTH
+        )
+
+    def tile_overlaps(self, tile):
+        return (
+            # make sure tile is less than a tile away from slot (can just touch border)
+            abs(tile.center_x - self.center_x) * 2 < (TILE_WIDTH + self.BORDER_WIDTH)
+            and abs(tile.center_y - self.center_y) * 2 < (TILE_HEIGHT + self.BORDER_WIDTH)
         )

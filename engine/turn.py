@@ -1,18 +1,20 @@
-import time
+import arcade
 
 class Turn:
     """
     Manages a single turn in the game
     """
-    def __init__(self, players, draw_pile):
+    def __init__(self, players):
         self.players = players
-        self.draw_pile = draw_pile
+        self.draw_pile = None
 
         # -------- Turn system --------
         self.current_player_idx = 0  # to track turn of player
         self.last_discard = None  # track most recently discarded tile
         self.must_draw = False  # check if player must draw before discarding
         self.turn_ended = False  # to track if discard is finalized
+        self.has_discarded = False # to track if a player discarded in their turn
+        self.open_score = 81 #Starts at 81
 
     def get_current_player(self):
         """
@@ -21,6 +23,7 @@ class Turn:
         return self.players[self.current_player_idx]
 
     def new_round(self, start_player):
+        """Sets all the variables for a new round"""
         # set turn to starting player (at start, current player is the starting player)
         self.current_player_idx = start_player
 
@@ -46,22 +49,23 @@ class Turn:
         # Remove tile from player's hand
         if tile in player.hand:
             player.hand.remove(tile)
-        #else:
-        #    raise ValueError("Tile not in hand to be discarded")
 
         # save last discarded tile for next player to possibly take
         self.last_discard = tile
 
         # update to only show last tile
-        player.discard_pile.tiles.clear() # remove everything in discard pile
         player.discard_pile.tiles.append(tile) # add tile player just discarded
+        player.discard_pile.holding_tile = False
 
         print(f"{player.name} placed {tile.tile_info.value} in discard (NOT FINAL)")
+        self.has_discarded = True
 
-    def draw_tile(self):
+    def draw_tile(self, delta_time = 2):
         """
         function that handles the action of drawing a tile from middle pile
         """
+        # check that game is not done
+
         player = self.get_current_player()
 
         # block drawing if a player is not allowed
@@ -132,44 +136,160 @@ class Turn:
         Finalizes the turn of a player by validating rules.
         Locks player's arranged valid tile groupings
         """
-        self.turn_ended = True
 
         player = self.get_current_player()
+        player.opened_this_turn = False
 
         # validate that player indeed discarded
-        if not player.discard_pile.tiles:
+        if not self.has_discarded:
             print("Please discard a tile before ending your turn")
             return
-
-        # Lock score at what player last arranged for their tiles
-        player.locked_score = player.player_get_hand_score()
-
-        # reset draw flag for current player before moving to next
-        player.drawn = False
 
         # moves to next player (circular)
         self.current_player_idx = (self.current_player_idx - 1) % len(self.players)
 
-        # After first turn, all players draw before discarding
-        self.must_draw = True
+        # get next player
+        next_player = self.get_current_player()
 
-        print(f"Next player's turn: {self.get_current_player().name}")
-        # self.debug_state()
+        # ---- Resetting turn state for next player
+        self.must_draw = True # next player must draw
+        self.has_discarded = False # reset discard tracking
+        self.turn_ended = True # allow dragging back
+        player.drawn = False # next player hasn't drawn yet
+
+        print(f"\n--- {next_player.name}'s turn ---")
+        print(f"Open score {self.open_score}")
+        print(f"Open Status {next_player.opened}")
+
+        if self.is_round_over():
+            self.end_round()
+            return
+
         # If the current player is AI, run the com turn logic
-        if self.get_current_player().is_player_ai:
-            self.com_turn()
+        if next_player.is_player_ai:
+            arcade.schedule_once(self.com_turn, 1)
 
-    def com_turn(self):
+    def com_turn(self, delta_time = 2):
         """Handles AI player's full turn."""
         player = self.get_current_player()
-        self.draw_tile()
-        # Simulated wait time
-        time.sleep(2)
+        print(f"AI player's turn: {player.name}")
+        # -----1. Draw
+        arcade.schedule_once(self.draw_tile, 1)
+
+        if player.get_hand_score() >= self.open_score:
+            print(f"{player.hand_score}")
+            self.open_score = player.hand_score
+            player.open()
+        if player.opened:
+            arcade.schedule_once(self.com_open_turn, 2)
+        else:
+            arcade.schedule_once(self.com_discard, 2)
+
+    def com_discard(self, delta_time = 2):
+        """Logic for computer discarding"""
+        player = self.get_current_player()
         # Gets the hand score and determines which tiles are being used for scoring
-        player.get_hand_score()
+        print(player.hand_score)
         # TODO: Add opening logic here
-        # Simulated wait time
-        time.sleep(2)
+
+        # -----2. Discard
         # Runs the com discard function
         self.discard_tile(player.com_discard_tile())
-        self.end_turn()
+
+        if self.has_discarded:
+            self.end_turn()
+
+    def com_open_turn(self, delta_time = 2):
+        """Logic for what a computer does on a turn if they have opened"""
+        player = self.get_current_player()
+        # TODO add drawing from other player's discards
+        player.add_valid_tiles_to_open()
+        self.add_to_other_open(player)
+        player.print_open_tiles()
+        arcade.schedule_once(self.com_discard, 2)
+        return
+
+    def try_add_tile_to_group(self, tile, target_player, group_index):
+        """Tries to add a given tile to aan existing group in a player's open"""
+        group = target_player.open_tiles[group_index]
+
+        if tile is None or not group:
+            return False
+
+        is_set = all(t.tile_info.value == group[0].tile_info.value for t in group)
+        is_run = all(t.tile_info.color == group[0].tile_info.color for t in group)
+
+        # SET RULE
+        if is_set:
+            if tile.tile_info.value != group[0].tile_info.value:
+                return False
+
+            colors = {t.tile_info.color for t in group}
+            if tile.tile_info.color in colors:
+                return False
+
+            group.append(tile)
+            return True
+
+        # RUN RULE
+        if is_run:
+            if tile.tile_info.color != group[0].tile_info.color:
+                return False
+
+            values = sorted(t.tile_info.value for t in group)
+
+            if tile.tile_info.value == values[0] - 1:
+                group.insert(0, tile)
+                return True
+
+            if tile.tile_info.value == values[-1] + 1:
+                group.append(tile)
+                return True
+
+        return False
+
+    def add_to_other_open(self, ai_player):
+        """
+        During AI turn: attempt to extend ANY player's open tiles
+        using ALL tiles in AI hand.
+        """
+        moved = True
+
+        while moved:
+            moved = False
+
+            for tile in ai_player.hand[:]:   # all AI tiles
+
+                if tile is None:
+                    continue
+
+                for target_player in self.players:   # ALL AI players
+                    if not target_player.is_player_ai or target_player is ai_player:
+                        continue
+
+                    for group_index in range(len(target_player.open_tiles)):
+
+                        if self.try_add_tile_to_group(tile, target_player, group_index):
+
+                            ai_player.hand.remove(tile)
+                            moved = True
+                            print(f"Added {tile.tile_info.value} to {target_player.name}'s open")
+
+                            # Restart scanning after any successful move
+                            break
+
+                    if moved:
+                        break
+
+                if moved:
+                    break
+
+    def is_round_over(self):
+        if self.draw_pile.count() == 0:
+            return True
+
+        for player in self.players:
+            if player.check_complete():
+                return True
+
+        return False

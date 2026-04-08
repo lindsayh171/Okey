@@ -23,23 +23,13 @@ class Game:
 
         self.players = [Player(self.discards[0], "Person", False),
                         Player(self.discards[1],"Com_1", True),
-                        Player(self.discards[2],"Com_2", True),
-                        Player(self.discards[3],"Com_3", True)]
+                        # com 2 and 3 discard were displaying in opposite places on board
+                        Player(self.discards[3],"Com_2", True),
+                        Player(self.discards[2],"Com_3", True)]
 
         self.dealer = Dealer(self.window_width, self.window_height)
-        self.draw_pile = None
-        self.turn = Turn(self.players, self.draw_pile)
-
-    def start_new_round(self, starting_player_idx=0):
-        """
-        Starts a new round
-        """
-        # Dealer deals cards to the player and computers after
-        # building tiles and randomizing. Returns remaining draw pile.
-        self.draw_pile = self.dealer.deal_new_round(self.players, starting_player_idx)
-        self.turn.draw_pile = self.draw_pile
-
-        self.turn.new_round(starting_player_idx)
+        self.turn = Turn(self.players)
+        self.curr_round = 1
 
     def discard_setup(self):
         """
@@ -63,14 +53,26 @@ class Game:
         return discards
 
     def set_player_name(self, name):
+        """Sets the player's name to the inputed name"""
         self.players[0].name = name
 
-    def start_game(self):
+    def start_new_round(self, starting_player_idx=0):
         """
-        Loops through rounds but for now it does just one
-        :return:
+        Starts a new round
         """
-        self.start_new_round()
+        # reset player hands
+        for player in self.players:
+            player.hand = []
+
+        # reset discards
+        for discard in self.discards:
+            discard.tiles = []
+
+        # Dealer deals cards to the player and computers after
+        # building tiles and randomizing. Returns remaining draw pile.
+        self.turn.draw_pile = self.dealer.deal_new_round(self.players, starting_player_idx)
+
+        self.turn.new_round(starting_player_idx)
 
     def debug_state(self):
         """
@@ -89,7 +91,7 @@ class Game:
         # Scores
         arranged_score = player.player_get_hand_score()
         print(f"GUI tile arrangement Score: {arranged_score}")
-        print(f"Locked Score: {player.locked_score}")
+        print(f"Locked Score: {player.hand_score}")
 
         # Discard
         if player.discard_pile.tiles:
@@ -101,7 +103,7 @@ class Game:
         print(f"Turn Ended: {self.turn.turn_ended}")
 
         # Draw pile
-        if self.draw_pile:
-            print(f"Draw Pile Count: {self.draw_pile.count()}")
+        if self.turn.draw_pile:
+            print(f"Draw Pile Count: {self.turn.draw_pile.count()}")
 
         print("================================\n")

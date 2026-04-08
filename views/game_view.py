@@ -1,10 +1,9 @@
 import arcade
-from com import Com, COM_WIDTH
-from stand_slot import StandSlot, DIVIDER_GAP
+from board_components.com import Com, COM_WIDTH
+from board_components.stand import Stand
 from engine.game import Game
-from engine.tile import TILE_WIDTH, TILE_HEIGHT
-from stand import Stand
 import assets.colors as colr
+from assets.utils import Views, ROUNDS
 from views.game_view_graphics import GameViewGraphics
 
 # Game window class
@@ -16,7 +15,7 @@ class GameView(arcade.View):
         super().__init__()
 
         # create a new game
-        self.game = None
+        self.game = Game(self.width, self.height)
 
         # get player name from previous screen
         self.player_name = player_name
@@ -34,31 +33,17 @@ class GameView(arcade.View):
 
         self.held_tiles = []
 
-        self.player_discard = None
-
-        self.player_hand = None
-
         self.open_displaying_player = None
-        self.open_stand_slot_list = []
-        self.current_open_tiles = []
-        self.open_window_tiles = []
 
         self.gui = GameViewGraphics(self.window, self.player_stand.total_stand_height)
 
 
-    # Set up game
     def setup(self):
-        # need to do this here so width and height are set up
-        self.game = Game(self.width, self.height)
+        """Sets up the game"""
         self.game.set_player_name(self.player_name)
-        self.game.start_game()
+        self.game.start_new_round()
 
-
-        # TODO: DELETE THESE TWO LINES, ONLY HERE FOR TESTING PLAYER OPEN
-        self.game.players[0].can_open = True
-        self.game.players[0].sets_played = [[1, 2, 3, 4], [4, 4, 4], [9, 10, 11, 12],
-                                            [1, 1, 1, 1, 1]]
-
+        self.game.players[0].open_stand.update()
 
         # Clear any existing sprites
         self.stand_slot_list.clear()
@@ -67,10 +52,24 @@ class GameView(arcade.View):
 
         # Stand coordinates
         self.stand_slot_list = self.player_stand.setup(self.width)
+        print(len(self.stand_slot_list))
         # Com coordinates
         self.setup_coms()
 
         self.setup_player_tiles()
+        print(len(self.game.players[0].hand))
+
+        self.hand_score = arcade.Text(
+            str(self.game.turn.players[0].player_get_hand_score()),
+            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.75 * 0.5,
+            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.3,
+            colr.THEME_TEAL,
+            font_size=50,
+            anchor_x="center",
+            anchor_y="center",
+        )
+
+        self.game.turn.end_round = self.handle_round_end
 
     def on_show_view(self):
         self.background_color = colr.THEME_LIGHT_BLUE
@@ -88,25 +87,22 @@ class GameView(arcade.View):
         # Draw discard piles
         for disc in self.game.discards:
             disc.draw()
+            # Draw top tile
+            if disc.tiles:
+                tile = disc.tiles[len(disc.tiles) - 1]
+                if disc is not self.game.players[0].discard_pile:
+                    tile.center_x = disc.center_x
+                    tile.center_y = disc.center_y
+                # Set coordinates of tile to discard
+                tile.tile_info.set_face_up()
+                tile.draw()
 
         # Draw draw pile
-        self.game.draw_pile.draw()
+        self.game.turn.draw_pile.draw()
 
         if self.open_displaying_player is not None:
             # Draw window box
-            arcade.draw_lbwh_rectangle_filled(
-                2 * COM_WIDTH + DIVIDER_GAP,
-                self.player_stand.total_stand_height + DIVIDER_GAP,
-                self.width - (4 * COM_WIDTH + 2 * DIVIDER_GAP),
-                (self.height - self.player_stand.total_stand_height
-                 - 2 * COM_WIDTH - 2 * DIVIDER_GAP),
-                arcade.color.GRAY_BLUE
-            )
-
-            # Draw slots
-            for slot in self.open_stand_slot_list:
-                slot.draw()
-
+            self.open_displaying_player.open_stand.draw_stand(self.width, self.height)
 
         self.gui.menu_button.draw()
         # Change open button if player can open
@@ -114,7 +110,7 @@ class GameView(arcade.View):
             self.gui.open_button.set_color(colr.THEME_YELLOW)
             self.gui.open_button.draw()
         else:
-            self.gui.open_button.set_color(arcade.color.GRAY)
+            self.gui.open_button.set_color(colr.GRAY)
             self.gui.open_button.draw()
 
         # draw hand score
@@ -127,23 +123,34 @@ class GameView(arcade.View):
                                            )
         self.gui.score_label.draw()
 
-        score_text = arcade.Text(
-            str(self.game.turn.get_current_player().hand_score),
-            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.75 * 0.5,
-            self.window.height * 0.03 + self.player_stand.total_stand_height * 0.3,
-            colr.THEME_TEAL,
-            font_size=50,
-            anchor_x="center",
-            anchor_y="center",
+        self.hand_score.text = str(
+            self.game.turn.players[0].hand_score
         )
-        score_text.draw()
+        self.hand_score.draw()
         self.gui.end_turn_button.draw()
+
+        # Minimum open score display
+        self.gui.open_score.text = f"Minimum Open Score: {self.game.turn.open_score}"
+        self.gui.open_score.draw()
+
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
+            if (self.open_displaying_player is not None
+                    and tile in self.game.players[0].discard_pile.tiles):
+                continue
             tile.draw()
 
+        if self.game.turn.get_current_player() is self.game.players[0] and self.game.turn.must_draw:
+            self.game.turn.draw_pile.draw_highlight = True
+        else:
+            self.game.turn.draw_pile.draw_highlight = False
+
+        # ui manager
+        self.gui.manager.draw()
+
     def setup_player_tiles(self):
+        """Sets up the player's tiles"""
         for i, tile in enumerate(self.game.players[0].hand):
             tile.set_curr_slot(self.stand_slot_list[i])
             self.stand_slot_list[i].holding_tile = True
@@ -152,6 +159,7 @@ class GameView(arcade.View):
 
     # Com setup
     def setup_coms(self):
+        """Sets up the computers"""
         screen_width = self.width
         screen_height = self.height
 
@@ -164,9 +172,9 @@ class GameView(arcade.View):
         com3_y = screen_height / 2
 
         # Make each com
-        com1 = Com(com1_x, com1_y, arcade.color.RED, self.game.players[1])
-        com2 = Com(com2_x, com2_y, arcade.color.YELLOW, self.game.players[2])
-        com3 = Com(com3_x, com3_y, arcade.color.BLUE, self.game.players[3])
+        com1 = Com(com1_x, com1_y, colr.GRAY, self.game.players[1])
+        com2 = Com(com2_x, com2_y, colr.GRAY, self.game.players[2])
+        com3 = Com(com3_x, com3_y, colr.GRAY, self.game.players[3])
 
         # Add each com to the list
         self.com_list.append(com1)
@@ -177,43 +185,62 @@ class GameView(arcade.View):
         Com.assign_unique_icons(self.com_list)
         Com.assign_unique_names(self.com_list)
 
+        for com in self.com_list:
+            if com.player is not self.game.players[0]:
+                com.player.name = com.name
+
     # Discard setup
     def setup_discard(self, player):
+        """Sets up discard"""
         pass
-
-    # Resize window
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        # Run setup again with new screen size
-        self.setup()
 
     def on_mouse_press(self, x, y, button, modifiers):
         # prevents more clicking of player after end of turn
         if self.game.turn.get_current_player() != self.game.players[0]:
             return
 
-        # TILE IS CLICKED
-        clicked_tiles = arcade.get_sprites_at_point((x, y), self.tile_list)
-        if len(clicked_tiles) > 0:
-            tile = clicked_tiles[0]
+        # when player must draw, allow clicking draw pile or discard pile
+        if self.game.turn.must_draw:
+            if not self.game.turn.draw_pile.collides_with_point((x, y)):
+                prev_plyr_disc_click = False
+                for discard in self.game.discards:
+                    if discard.collides_with_point((x, y)) and discard.player_com_discard:
+                        prev_plyr_disc_click = True
+                        break
+                if not prev_plyr_disc_click:
+                    self.gui.show_popup("You must draw first")
+                    return
 
+        # TILE IS CLICKED
+        clicked_tile = None
+        for t in self.tile_list:
+            if t.tile_clicked(x, y):
+                clicked_tile = t
+        # lock tiles that have been taken to open space
+        if clicked_tile and getattr(clicked_tile, "is_in_open", False):
+            print("Opened tiles cannot be moved")
+            self.gui.show_popup("Opened tiles cannot be moved.")
+            return
+        if clicked_tile:
             # prevent a player from picking up discarded tile after ending their turn
             for disc in self.game.discards:
-                if tile in disc.tiles and self.game.turn.turn_ended:
+                if clicked_tile in disc.tiles and self.game.turn.turn_ended:
                     print("Cannot move discarded tile after ending turn")
+                    self.gui.show_popup("Cannot move discarded tile after ending turn.")
                     return
 
             # Otherwise allow normal dragging
-            self.held_tiles.append(tile)
-            self.pull_to_top(tile)
-            tile.highlight()
+            self.held_tiles.append(clicked_tile)
+            self.pull_to_top(clicked_tile)
+            clicked_tile.highlight()
             return
 
         # ---- Draw + discard
         if self.open_displaying_player is None:
 
             # Check if draw pile was clicked
-            if self.game.draw_pile.collides_with_point((x, y)):
+            if self.game.turn.draw_pile.collides_with_point((x, y)):
+                self.game.turn.draw_pile.draw_highlight = False
                 # make Game handle draw logic
                 top_tile = self.game.turn.draw_tile()
                 # if draw not allowed, stop
@@ -236,12 +263,23 @@ class GameView(arcade.View):
             for discard in self.game.discards:
                 # Check if clicked on discard not for player to access
                 if discard.collides_with_point((x, y)):
+                    print(self.game.turn.get_current_player().opened)
                     if not discard.player_com_discard:
+                        self.gui.show_popup("You can only draw from the player "
+                                            "to your left's discard.")
                         continue
+                    if not self.game.turn.get_current_player().opened:
+                        self.gui.show_popup("Only players who have opened may draw"
+                                            " from a discard pile.")
+                        return
                     top_tile = self.game.turn.draw_from_discard(discard)
                     if top_tile is None:
                         return
-                    print(f"Drawn from discard pile: {top_tile.value}")
+                    print(f"Drawn from discard pile: {top_tile.tile_info.value}")
+                    if top_tile not in self.tile_list:
+                        self.tile_list.append(top_tile)
+
+                    top_tile.tile_info.set_face_up()
 
                     # Add tile to gui hand
                     for slot in self.stand_slot_list:
@@ -251,87 +289,136 @@ class GameView(arcade.View):
                             slot.holding_tile = True
                             top_tile.current_slot = slot
                             break
-                    self.tile_list.append(top_tile)
                     return
 
         # Check if clicked on com
         for com in self.com_list:
             # TODO: Once a boolean for player being open, add and statement to check
             if com.collides_with_point((x, y)):
+                if not com.player.opened:
+                    self.gui.show_popup("This player has not opened.")
+                    return
 
                 # No coms are displaying their hand
                 if self.open_displaying_player is None:
                     # Display hand
                     self.open_displaying_player = com.player
-                    # TODO: Delete this line once we have logic implemented
-                    com.player.sets_played = [[1,2,3,4], [4, 4, 4], [9, 10, 11, 12],
-                                              [1, 1, 1, 1, 1]]
-                    self.setup_open_stand(com.player)
+                    com.player.open_stand.update()
                     return
 
                 # Closing currently open com window
                 if self.open_displaying_player == com.player:
-                    # Remove tile display with window
-                    for tile in self.open_window_tiles:
-                        if tile in self.tile_list:
-                            self.tile_list.remove(tile)
-                            tile.current_slot = None
-                        else:
-                            continue
-                    self.open_window_tiles.clear()
-                    self.open_stand_slot_list.clear()
                     self.open_displaying_player = None
                     return
 
-        # Check if open button was clicked
-        if self.gui.open_button.button_pressed(x, y) and self.game.players[0].can_open:
-            # See if any open window is displaying
-            if self.open_displaying_player is None:
-                self.open_displaying_player = self.game.players[0]
-                self.setup_open_stand(self.open_displaying_player)
-            # Stop displaying player open window
-            else:
-                # Save tile to open sets list
-                if self.current_open_tiles:
-                    self.open_displaying_player.sets_played.append(self.current_open_tiles.copy())
-                # Remove tile display with window
-                for tile in self.open_window_tiles:
+        # When open button is pressed
+        if self.gui.open_button.button_pressed(x, y):
+            # Allows valid arranged groups from hand to open,
+            # prevents dragging back to hand, removes opened tiles,
+            # resets hand score and ensures tiles persist in next turn.
+
+            player = self.game.turn.get_current_player()
+
+            # ---- player has opened
+            if player.opened:
+                if self.open_displaying_player == player:
+                    self.open_displaying_player = None # close
+                else:
+                    player.open_stand.update()
+                    self.open_displaying_player = player
+                return
+
+            # ---- player has not opened
+            # use gui-based scoring when player arranges tiles
+            score = player.player_get_hand_score()
+
+            if score < 10: # temp number for testing
+                print("Not enough points to open. Reach 10")
+                self.gui.show_popup("Not enough points to open. Reach 81")
+                return
+
+            groups = player.arranged_groups
+
+            if not groups:
+                print("No valid arranged groups to open with")
+                self.gui.show_popup("No valid arranged groups to open with")
+                return
+
+            player.open_tiles = [[], [], [], []] # 4 rows for open sets
+
+            # moving groups to open racks, each group to a row
+            for i, group in enumerate(groups):
+                if i < 4:
+                    player.open_tiles[i] = group
+
+                for tile in group:
+                    if tile in player.hand:
+                        player.hand.remove(tile)
+
+                    if tile.current_slot:
+                        tile.current_slot.holding_tile = False
+
                     if tile in self.tile_list:
                         self.tile_list.remove(tile)
-                        tile.current_slot = None
-                    else:
-                        continue
-                self.open_window_tiles.clear()
-                self.current_open_tiles.clear()
-                self.open_stand_slot_list.clear()
-                self.open_displaying_player = None
+
+                    tile.is_in_open = True # locking tile
+
+            player.open_stand.update()
+            player.hand_score = 0
+            player.opened = True # mark player as opened
+            player.opened_this_turn = True
+            self.open_displaying_player = player # display open window
+
+            print(f"{player.name} opened with {score} points!")
+            if player.is_player_ai:
+                self.gui.show_popup(f"{player.name} opened with {score} points")
+
             return
 
         # Check if end_turn button was clicked
         if self.gui.end_turn_button.button_pressed(x, y):
+            # Make sure no open window is displaying before ending turn
+            if self.open_displaying_player is None:
+                player = self.game.turn.get_current_player()
+                disc = player.discard_pile
 
-            player = self.game.turn.get_current_player()
-            disc = player.discard_pile
+                # must have visually placed a tile in discard
+                if not disc.tiles:
+                    print("Please place a tile in discard before ending your turn")
+                    self.gui.show_popup(f"Please place a tile in discard before ending your turn.")
+                    return
 
-            # must have placed a tile in discard
-            if not disc.tiles:
-                print("Please place a tile in discard before ending your turn")
-                return
+                # get the tile that is visually in discard
+                tile = disc.tiles[-1]
 
-            # get the tile that is visually in discard
-            tile = disc.tiles[-1]
+                if tile not in player.hand:
+                    print("You must place a *new* tile in discard before ending your turn")
+                    self.gui.show_popup("You must place a *new* tile in discard before ending your turn.")
+                    return
 
-            # Handing discard to game logic
-            self.game.turn.discard_tile(tile)
-            # now end turn
-            self.game.turn.end_turn()
-            return
+                # Remove discarded tile from held tiles
+                if tile in self.held_tiles:
+                    self.held_tiles.remove(tile)
+                    tile.unhighlight()
+
+                # Don't draw tile over open display
+                if tile in self.tile_list:
+                    self.tile_list.remove(tile)
+
+                # Handing discard to game logic
+                self.game.turn.discard_tile(tile)
+                # now end turn
+                self.game.turn.end_turn()
 
         # check if menu was clicked
         if self.gui.menu_button.button_pressed(x, y):
             self.window.show_menu(self)
 
     def on_mouse_release(self, x, y, button, modifiers):
+        # Show button press if clicked on end turn
+        if self.gui.end_turn_button.button_pressed(x, y) :
+            self.gui.end_turn_button.show_pressed_button(colr.GRAY)
+
         # If no cards are being held, return
         if len(self.held_tiles) == 0:
             return
@@ -340,44 +427,136 @@ class GameView(arcade.View):
         player = self.game.turn.get_current_player()
         disc = player.discard_pile
 
-        print(arcade.check_for_collision(tile, disc))
-        print(disc.holding_tile)
-
         # remove tile from discard list if was in disc
-        if tile in disc.tiles and not arcade.check_for_collision(tile, disc):
+        if tile in disc.tiles and not disc.tile_overlaps(tile):
             disc.tiles.remove(tile)
             disc.holding_tile = False
+
+            tile.current_slot = None
+
+            if tile not in player.hand:
+                player.hand.append(tile)
 
         # get set of slots
         available_slots = list(self.stand_slot_list)
         if self.open_displaying_player is not None:
-            available_slots = self.stand_slot_list + self.open_stand_slot_list
+            for slot in self.open_displaying_player.open_stand.slots:
+                if (not slot.holding_tile and
+                        len(self.open_displaying_player.open_stand.tiles[slot.open_row_index]) > 0):
+                    available_slots.append(slot)
 
         # Snap tile to the closest stand slot or a com hand if displayed
         # check if tile touching slot
         touching_slot = None
         for slot in available_slots:
-            if not slot.holding_tile and arcade.check_for_collision(tile, slot):
-                touching_slot = slot
-                break
+            is_open_slot = getattr(slot, "open_row_index", None) is not None
+            # slot is open rack
+            if is_open_slot:
+                # Open slots can be expanded
+                if slot.tile_overlaps(tile):
+                    touching_slot = slot
+                    break
+            # slot is player hand
+            else:
+                # Only empty slots
+                if not slot.holding_tile and slot.tile_overlaps(tile):
+                    touching_slot = slot
+                    break
 
-        if touching_slot:
-            self.snap(tile, available_slots)
-            if touching_slot in self.open_stand_slot_list:
-                self.current_open_tiles.append(tile)
-                self.open_window_tiles.append(tile)
-            if tile not in player.hand:
-                player.hand.append(tile)
-        elif arcade.check_for_collision(tile, disc):
-            self.snap(tile, [disc])
-            disc.tiles.append(tile)
-            disc.holding_tile = True
+        touching_discard = disc.tile_overlaps(tile)
+
+        # Tile snapping if an open window is displaying
+        if self.open_displaying_player is not None and touching_slot:
+
+            row_index = touching_slot.open_row_index
+
+            # address TypeError
+            if row_index is not None: # open racks
+
+                current_player = self.game.turn.get_current_player()
+
+                # Block same turn adding tiles to open
+                if current_player.opened_this_turn:
+                    print("Cannot add tiles on the same turn you opened. Add at your next turn")
+                    self.gui.show_popup("Cannot add tiles on the same turn you opened. "
+                                        "Add at your next turn")
+                    self.snap(tile, self.stand_slot_list) # snap only back to hand
+                    self.held_tiles = []
+                    tile.unhighlight()
+                    return
+
+                target_player = self.open_displaying_player
+                row = target_player.open_tiles[row_index]
+
+                # ---------- Existing group ----------
+                if len(row) > 0: # if row already has a group
+                    success = self.game.turn.try_add_tile_to_group(tile, target_player, row_index)
+
+                    if not success:
+                        print("Invalid move: does not fit this open group")
+                        self.snap(tile, self.stand_slot_list)
+                        self.held_tiles = []
+                        tile.unhighlight()
+                        return
+
+                    if tile in self.tile_list:
+                        self.tile_list.remove(tile) # remove from gui
+
+                    if tile in current_player.hand:
+                        current_player.hand.remove(tile) # remove from hand
+
+                    tile.is_in_open = True
+                    target_player.open_stand.update()
+                # ---------- Existing group ----------
+
+            else:
+                # snap tile back to original position
+                self.snap(tile, available_slots)
+
+                if tile not in player.hand:
+                    player.hand.append(tile)
+
+        # Tile snapping if no open window is displaying
         else:
-            self.snap(tile, available_slots)
+            # If tile is over discard
+            if touching_discard and not touching_slot:
+
+                # block access to discard except first player
+                if self.game.turn.must_draw:
+                    print("You must draw before discarding")
+                    self.gui.show_popup("You must draw before discarding")
+                    # send tile back to stand
+                    self.snap(tile, available_slots)
+
+                    self.held_tiles = []
+                    tile.unhighlight()
+                    return
+                # allow discard access after draw
+                self.snap(tile, [disc])
+
+                if tile not in disc.tiles:
+                    disc.tiles.append(tile)
+                #
+                # if tile in player.hand:
+                #     player.hand.remove(tile)
+
+                disc.holding_tile = True
+
+            # If tile is touching a stand slot
+            elif touching_slot:
+                self.snap(tile, available_slots)
+                if tile not in player.hand:
+                    player.hand.append(tile)
+            # Else nowhere to snap so send it back to original spot
+            else:
+                # Snap back to original slot
+                self.snap(tile, available_slots)
 
         self.held_tiles = []
         tile.unhighlight()
-        self.game.turn.get_current_player().player_get_hand_score()
+
+        player = self.game.turn.players[0]
+        player.hand_score = player.player_get_hand_score()
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
@@ -388,8 +567,8 @@ class GameView(arcade.View):
         self.tile_list.remove(selected_tile)
         self.tile_list.append(selected_tile)
 
-    # Snap tile to a slot location
     def snap(self, tile, selected_list):
+        """Snaps a tile to a slot location"""
         reset_position = True
 
         # find the closest spot by looping through list
@@ -398,12 +577,21 @@ class GameView(arcade.View):
 
         while available_slots and reset_position:
             # if closest slot is empty and tile is on top of it at all, snap
-            if not slot.holding_tile and arcade.check_for_collision(tile, slot):
+            if not slot.holding_tile and slot.tile_overlaps(tile):
                 tile.position = slot.center_x, slot.center_y
                 slot.holding_tile = True
 
                 # reset previous slot before changing curr slot to new location
-                tile.current_slot.holding_tile = False
+                if tile.current_slot is not None:
+                    prev_slot = tile.current_slot
+                    prev_slot.holding_tile = False
+
+                    row_index = prev_slot.open_row_index
+                    if row_index is not None and self.open_displaying_player is not None:
+                        row = self.open_displaying_player.open_tiles[row_index]
+                        if tile in row:
+                            row.remove(tile)
+                            self.open_displaying_player.open_stand.update()
                 tile.current_slot = slot
                 reset_position = False
             else:
@@ -418,29 +606,17 @@ class GameView(arcade.View):
 
         # if invalid spot reset
         if reset_position:
-            tile.position = tile.current_slot.center_x, tile.current_slot.center_y
+            if tile.current_slot is not None:
+                tile.position = tile.current_slot.center_x, tile.current_slot.center_y
 
-    def setup_open_stand(self, player):
-        self.open_stand_slot_list.clear()
-        self.current_open_tiles.clear()
+    def tile_clicked(self, x, y, tile):
+        """Returns the location of a tile when it is clicked"""
+        return (tile.center_x - tile.width < x < tile.center_x + self.width
+                and tile.center_y - self.height < y < tile.center_y + self.height)
 
-        # Coordinates of the stand based on the size of the screen
-        self.player_stand.open_stand_start_x = 2 * COM_WIDTH + DIVIDER_GAP + TILE_WIDTH / 2
-
-        start_y = self.player_stand.total_stand_height + TILE_HEIGHT / 2 + DIVIDER_GAP
-
-        # Build as many rows as the player has sets in their open
-        for current_set, _ in enumerate(player.sets_played):
-            stand_y = start_y + current_set * (TILE_HEIGHT + 2 * DIVIDER_GAP)
-            # Build as many columns as there are length of the current set +
-            # 2 empty slots on either side
-            for column in range(len(player.sets_played[current_set]) + 4):
-                # stand_slot position
-                stand_x = self.player_stand.open_stand_start_x + column * TILE_WIDTH
-
-                # create stand_slot and append to the slot list
-                stand_slot = StandSlot(stand_x, stand_y, arcade.color.BLUE)
-                stand_slot.holding_tile = False
-                self.open_stand_slot_list.append(stand_slot)
-
-        # Insert tiles onto stand
+    def handle_round_end(self):
+        if self.game.curr_round < ROUNDS:
+            self.game.curr_round += 1
+            self.window.show_scoreboard(Views.GAME, self.game, self, True)
+        else:
+            self.window.show_end(self.game, False)
