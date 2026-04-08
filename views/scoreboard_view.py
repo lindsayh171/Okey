@@ -73,7 +73,7 @@ class ScoreboardView(arcade.View):
         column_width = 80
         total_score_gap = 100
         border_thickness = 4
-        name_width = 200
+        name_width = 250
 
         grid_width = name_width + (total_rounds * column_width) + total_score_gap
 

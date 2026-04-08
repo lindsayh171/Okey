@@ -137,6 +137,8 @@ class GameView(arcade.View):
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
+            if self.open_displaying_player is not None and tile in self.game.players[0].discard_pile.tiles:
+                continue
             tile.draw()
 
         if self.game.turn.get_current_player() is self.game.players[0] and self.game.turn.must_draw:
@@ -406,6 +408,10 @@ class GameView(arcade.View):
             self.window.show_menu(self)
 
     def on_mouse_release(self, x, y, button, modifiers):
+        # Show button press if clicked on end turn
+        if self.gui.end_turn_button.button_pressed(x, y) :
+            self.gui.end_turn_button.show_pressed_button(colr.GRAY)
+
         # If no cards are being held, return
         if len(self.held_tiles) == 0:
             return
