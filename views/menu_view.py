@@ -23,7 +23,7 @@ class MenuView(arcade.View):
         self.window.background_color = colr.THEME_LIGHT_BLUE
 
         title_x = self.window.width / 2
-        title_y = 6 * self.window.height / 10
+        title_y = 7 * self.window.height / 10
 
         menu_buttons_width = self.window.width / 6
         button_height = self.window.height / 12
