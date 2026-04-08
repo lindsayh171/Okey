@@ -64,6 +64,8 @@ class Turn:
         """
         function that handles the action of drawing a tile from middle pile
         """
+        # check that game is not done
+
         player = self.get_current_player()
 
         # block drawing if a player is not allowed
@@ -158,6 +160,10 @@ class Turn:
         print(f"\n--- {next_player.name}'s turn ---")
         print(f"Open score {self.open_score}")
         print(f"Open Status {next_player.opened}")
+
+        if self.is_round_over():
+            self.end_round()
+            return
 
         # If the current player is AI, run the com turn logic
         if next_player.is_player_ai:
@@ -277,3 +283,13 @@ class Turn:
 
                 if moved:
                     break
+
+    def is_round_over(self):
+        if self.draw_pile.count() == 0:
+            return True
+
+        for player in self.players:
+            if player.check_complete():
+                return True
+
+        return False

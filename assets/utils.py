@@ -5,3 +5,6 @@ class Views(Enum):
     MENU = 'm'
     TITLE = 't'
     END = 'e'
+    GAME = 'g'
+
+ROUNDS = 6 # change to 1 to debug

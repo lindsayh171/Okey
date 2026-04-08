@@ -166,9 +166,9 @@ class EndView(arcade.View):
         for player in self.game.players:
             curr_index = 0
             for ordered_player in player_order:
-                if player.total_score > ordered_player.total_score:
+                if player.total_score >= ordered_player.total_score:
                     curr_index += 1
-                else:
-                    player_order.insert(curr_index, player)
+
+            player_order.insert(curr_index, player)
 
         return player_order.index(self.game.players[0])

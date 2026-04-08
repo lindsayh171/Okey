@@ -10,7 +10,7 @@ class ScoreboardView(arcade.View):
     View displaying the game rules.
     Exits back to previous screen
     """
-    def __init__(self, origin, game, game_view=None):
+    def __init__(self, origin, game, game_view=None, round_end=False):
         super().__init__()
 
         self.origin = origin
@@ -18,6 +18,7 @@ class ScoreboardView(arcade.View):
         self.game_view = game_view
         self.title_text = None
         self.exit_button = None
+        self.round_end = round_end
 
         # grid to hold rules
         self.rule_sections = []
@@ -35,27 +36,49 @@ class ScoreboardView(arcade.View):
 
         arcade.load_font("assets/fonts/IrishGrover-Regular.ttf")
 
-        # Title text
-        self.title_text = arcade.Text(
-            "Scoreboard",
-            scoreboard_x,
-            self.scoreboard_y,
-            colr.THEME_PINK,
-            font_size=self.window.height * 0.1,
-            anchor_x="center",
-            font_name="Irish Grover"
-        )
+        # Exit/Continue button
+        if self.round_end:
+            self.exit_button = button.Button(
+                [scoreboard_x,
+                 self.window.height / 10],
+                [button_width * 1.4,
+                 button_height],
+                "Continue",
+                [colr.THEME_TEAL,
+                 colr.THEME_DARK_BLUE]
+            )
 
-        # Exit button
-        self.exit_button = button.Button(
-            [scoreboard_x,
-            self.window.height / 10],
-            [button_width,
-            button_height],
-            "Exit",
-            [colr.THEME_TEAL,
-            colr.THEME_DARK_BLUE]
-        )
+            # Title text
+            self.title_text = arcade.Text(
+                f"Round {self.game_view.game.curr_round - 1} Over.",
+                scoreboard_x,
+                self.scoreboard_y,
+                colr.THEME_PINK,
+                font_size=self.window.height * 0.1,
+                anchor_x="center",
+                font_name="Irish Grover"
+            )
+        else:
+            self.exit_button = button.Button(
+                [scoreboard_x,
+                self.window.height / 10],
+                [button_width,
+                button_height],
+                "Exit",
+                [colr.THEME_TEAL,
+                colr.THEME_DARK_BLUE]
+            )
+
+            # Title text
+            self.title_text = arcade.Text(
+                "Scoreboard",
+                scoreboard_x,
+                self.scoreboard_y,
+                colr.THEME_PINK,
+                font_size=self.window.height * 0.1,
+                anchor_x="center",
+                font_name="Irish Grover"
+            )
 
         self.window.default_camera.use()
 
@@ -137,12 +160,16 @@ class ScoreboardView(arcade.View):
 
     def on_mouse_press(self, x, y, _button, _modifiers):
         if self.exit_button.button_pressed(x, y):
-            match self.origin:
-                case Views.TITLE:
-                    self.window.show_title()
-                case Views.MENU:
-                    self.window.show_menu(self.game_view)
-                case Views.END:
-                    self.window.show_end(game=self.game)
-                case _:
-                    self.window.show_menu(self.game_view)
+            if self.round_end:
+                self.game_view.setup()
+                self.window.show_view(self.game_view)
+            else:
+                match self.origin:
+                    case Views.TITLE:
+                        self.window.show_title()
+                    case Views.MENU:
+                        self.window.show_menu(self.game_view)
+                    case Views.END:
+                        self.window.show_end(game=self.game)
+                    case _:
+                        self.window.show_menu(self.game_view)

@@ -29,7 +29,7 @@ class Dealer:
 
         tiles = []
         for color, symbol in TILE_COLORS_SYMBOLS.items():
-            for number in range(1, 14):
+            for number in range(1, 14): # use 1, 8 for debugging
                 # appending two copies of each tile
                 tiles.append(Tile(TileInfo(number, color, symbol, 0)))
                 tiles.append(Tile(TileInfo(number, color, symbol, 1)))
