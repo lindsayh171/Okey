@@ -33,10 +33,6 @@ class GameView(arcade.View):
 
         self.held_tiles = []
 
-        self.player_discard = None
-
-        self.player_hand = None
-
         self.open_displaying_player = None
 
         self.gui = GameViewGraphics(self.window, self.player_stand.total_stand_height)
@@ -140,7 +136,8 @@ class GameView(arcade.View):
 
         # Draw tiles at end on top of everything.
         for tile in self.tile_list:
-            if self.open_displaying_player is not None and tile in self.game.players[0].discard_pile.tiles:
+            if (self.open_displaying_player is not None
+                    and tile in self.game.players[0].discard_pile.tiles):
                 continue
             tile.draw()
 
@@ -268,10 +265,12 @@ class GameView(arcade.View):
                 if discard.collides_with_point((x, y)):
                     print(self.game.turn.get_current_player().opened)
                     if not discard.player_com_discard:
-                        self.gui.show_popup("You can only draw from the player to your left's discard.")
+                        self.gui.show_popup("You can only draw from the player "
+                                            "to your left's discard.")
                         continue
                     if not self.game.turn.get_current_player().opened:
-                        self.gui.show_popup("Only players who have opened may draw from a discard pile.")
+                        self.gui.show_popup("Only players who have opened may draw"
+                                            " from a discard pile.")
                         return
                     top_tile = self.game.turn.draw_from_discard(discard)
                     if top_tile is None:
@@ -296,6 +295,9 @@ class GameView(arcade.View):
         for com in self.com_list:
             # TODO: Once a boolean for player being open, add and statement to check
             if com.collides_with_point((x, y)):
+                if not com.player.opened:
+                    self.gui.show_popup("This player has not opened.")
+                    return
 
                 # No coms are displaying their hand
                 if self.open_displaying_player is None:
@@ -476,7 +478,8 @@ class GameView(arcade.View):
                 # Block same turn adding tiles to open
                 if current_player.opened_this_turn:
                     print("Cannot add tiles on the same turn you opened. Add at your next turn")
-                    self.gui.show_popup("Cannot add tiles on the same turn you opened. Add at your next turn")
+                    self.gui.show_popup("Cannot add tiles on the same turn you opened. "
+                                        "Add at your next turn")
                     self.snap(tile, self.stand_slot_list) # snap only back to hand
                     self.held_tiles = []
                     tile.unhighlight()
