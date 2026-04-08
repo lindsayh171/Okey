@@ -103,4 +103,4 @@ class MenuView(arcade.View):
                 game = None
             self.window.show_scoreboard(Views.MENU, game, self.game_view)
         if self.quit_button.button_pressed(x, y):
-            self.window.show_title()
+            self.window.show_end(self.game_view.game, True)

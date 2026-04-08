@@ -33,8 +33,6 @@ class Com(arcade.Sprite):
         # Assign random texture to com
         self.texture = textures.get_random_icon()
 
-    # Highlight com to show hand
-
     # Set different icons for each com
     @staticmethod
     def assign_unique_icons(com_list):
@@ -60,3 +58,16 @@ class Com(arcade.Sprite):
 
         # Draw the label
         self.label.draw()
+
+        if self.player.opened:
+            arcade.draw_lbwh_rectangle_outline(
+                self.center_x - COM_WIDTH,
+                self.center_y - COM_WIDTH,
+                150,
+                150,
+                colr.LIGHT_GOLDENROD_YELLOW,
+                4
+            )
+
+
+

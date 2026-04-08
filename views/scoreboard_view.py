@@ -73,7 +73,7 @@ class ScoreboardView(arcade.View):
         column_width = 80
         total_score_gap = 100
         border_thickness = 4
-        name_width = 200
+        name_width = 250
 
         grid_width = name_width + (total_rounds * column_width) + total_score_gap
 
@@ -123,7 +123,8 @@ class ScoreboardView(arcade.View):
                     )
 
             # Draw total scores
-            total_score_x = board_start_x + name_width + (total_rounds * column_width) + total_score_gap
+            total_score_x = (board_start_x + name_width +
+                             (total_rounds * column_width) + total_score_gap)
             arcade.draw_text(
                 f"Total: {player.total_score}",
                 total_score_x,
@@ -141,5 +142,7 @@ class ScoreboardView(arcade.View):
                     self.window.show_title()
                 case Views.MENU:
                     self.window.show_menu(self.game_view)
+                case Views.END:
+                    self.window.show_end(game=self.game)
                 case _:
                     self.window.show_menu(self.game_view)

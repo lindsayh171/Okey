@@ -7,6 +7,7 @@ from views.name_view import NameView
 from views.rules_view import RulesView
 from views.scoreboard_view import ScoreboardView
 from views.title_view import TitleView
+from views.end_view import EndView
 
 
 class ViewManager(arcade.Window):
@@ -34,3 +35,6 @@ class ViewManager(arcade.Window):
 
     def show_menu(self, game_view):
         self.show_view(MenuView(game_view))
+
+    def show_end(self, game=None, user_quit=False):
+        self.show_view(EndView(game, user_quit))
