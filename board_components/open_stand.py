@@ -54,7 +54,7 @@ class OpenStand(Stand):
 
             # 1 empty slot on either side of current set
             stand_x = self.open_stand_start_x
-            stand_slot = StandSlot(stand_x, stand_y, colr.BLUE)
+            stand_slot = StandSlot(stand_x, stand_y, colr.GRAY_BLUE)
             stand_slot.holding_tile = False
             stand_slot.open_row_index = set_index
             stand_slot.open_edge = "before"
@@ -64,7 +64,7 @@ class OpenStand(Stand):
             for index, tile in enumerate(current_set):
                 # set up slots
                 stand_x = self.open_stand_start_x + (index + 1) * TILE_WIDTH
-                stand_slot = StandSlot(stand_x, stand_y, colr.BLUE)
+                stand_slot = StandSlot(stand_x, stand_y, colr.GRAY_BLUE)
                 stand_slot.holding_tile = True
                 stand_slot.open_row_index = set_index
                 stand_slot.open_edge = None
@@ -76,7 +76,7 @@ class OpenStand(Stand):
                 tile.tile_info.set_face_up()
 
             stand_x = self.open_stand_start_x + (len(current_set) + 1) * TILE_WIDTH
-            stand_slot = StandSlot(stand_x, stand_y, colr.BLUE)
+            stand_slot = StandSlot(stand_x, stand_y, colr.GRAY_BLUE)
             stand_slot.holding_tile = False
             stand_slot.open_row_index = set_index
             stand_slot.open_edge = "after"
