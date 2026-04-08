@@ -114,26 +114,25 @@ class Player:
             self.hand.remove(highest_tile)
 
             return highest_tile
-        else:
-            # Filter tiles that:
-            # - are not None
-            # - were not used in scoring
-            candidates = [
-                tile for tile in self.hand
-                if tile is not None and tile not in self.used_tiles
-            ]
+        # Filter tiles that:
+        # - are not None
+        # - were not used in scoring
+        candidates = [
+            tile for tile in self.hand
+            if tile is not None and tile not in self.used_tiles
+        ]
 
-            # If no valid tiles to discard, do nothing
-            if not candidates:
-                return None
+        # If no valid tiles to discard, do nothing
+        if not candidates:
+            return None
 
-            # Find the tile with the lowest value
-            lowest_tile = min(candidates, key=lambda t: t.tile_info.value)
+        # Find the tile with the lowest value
+        lowest_tile = min(candidates, key=lambda t: t.tile_info.value)
 
-            # Remove it from hand and add to discard
-            self.hand.remove(lowest_tile)
+        # Remove it from hand and add to discard
+        self.hand.remove(lowest_tile)
 
-            return lowest_tile
+        return lowest_tile
 
     def hand_size(self):
         """
