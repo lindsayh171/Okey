@@ -266,8 +266,13 @@ class GameView(arcade.View):
             for discard in self.game.discards:
                 # Check if clicked on discard not for player to access
                 if discard.collides_with_point((x, y)):
+                    print(self.game.turn.get_current_player().opened)
                     if not discard.player_com_discard:
+                        self.gui.show_popup("You can only draw from the player to your left's discard.")
                         continue
+                    if not self.game.turn.get_current_player().opened:
+                        self.gui.show_popup("Only players who have opened may draw from a discard pile.")
+                        return
                     top_tile = self.game.turn.draw_from_discard(discard)
                     if top_tile is None:
                         return
