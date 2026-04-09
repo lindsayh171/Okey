@@ -23,7 +23,7 @@ class GameViewGraphics:
 
         # open button, initially set to grey
         self.open_button = ui_button.Button([window.width * 0.9,
-                                             window.height * 0.07],
+                                             window.height * 0.05],
                                             [window.width / 5,
                                              window.height / 12],
                                             "Open",
@@ -41,11 +41,20 @@ class GameViewGraphics:
 
         # end turn button
         self.end_turn_button = ui_button.Button([window.width * 0.9,
-                                            window.height * 0.07 + window.height / 11],
+                                            window.height * 0.07 + window.height / 14.5],
                                                 [window.width / 5,
                                                 window.height / 12],
                                             "End Turn",
                                             [colr.THEME_PINK,
+                                            colr.THEME_DARK_BLUE])
+
+        # add button
+        self.add_button = ui_button.Button([window.width * 0.9,
+                                            window.height * 0.225],
+                                           [window.width / 5.1,
+                                            window.height / 14],
+                                           "Add",
+                                           [colr.THEME_YELLOW,
                                             colr.THEME_DARK_BLUE])
 
         self.open_score = arcade.Text(
