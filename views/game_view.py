@@ -419,6 +419,9 @@ class GameView(arcade.View):
 
             player.opened = True # mark player as opened
             player.opened_this_turn = True
+
+            self.game.turn.open_score = score
+
             self.open_displaying_player = player # display open window
             self.game.turn.open_score = score
 
