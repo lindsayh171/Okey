@@ -3,6 +3,8 @@ import arcade.gui
 import assets.colors as colr
 import ui_components.button as ui_button
 from ui_components.message import Message
+import assets.sounds as sounds
+from assets.sounds import VOLUME
 
 class GameViewGraphics:
     """
@@ -85,3 +87,5 @@ class GameViewGraphics:
         self.manager.enable()
         error_box = Message(self.manager, text)
         error_box.show()
+        arcade.play_sound(sounds.error, VOLUME)
+
