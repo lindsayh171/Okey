@@ -139,7 +139,7 @@ class ScoreboardView(arcade.View):
                         str(player.round_scores[round_index]),
                         score_x,
                         player_y,
-                        colr.THEME_LIGHT_BLUE,
+                        colr.WHITE,
                         font_size=30,
                         anchor_x="center",
                         anchor_y="center",

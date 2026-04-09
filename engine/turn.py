@@ -208,7 +208,7 @@ class Turn:
                     continue
                 for group_index in range(len(target_player.open_tiles)):
                     if self.try_add_tile_to_group(self.last_discard, target_player, group_index):
-                        self.draw_from_discard(previous_player.discard)
+                        self.draw_from_discard(previous_player.discard_pile)
         if not player.drawn:
             arcade.schedule_once(self.draw_tile, 1)
         player.add_valid_tiles_to_open()
@@ -296,11 +296,16 @@ class Turn:
         """Checks if a round is over
             by checking if any player's hand is empty
             or the draw pile is empty"""
+        round_over = False
         if self.draw_pile.count() == 0:
-            return True
+            round_over = True
 
         for player in self.players:
             if player.check_complete():
-                return True
+                round_over = True
 
-        return False
+        if round_over:
+            for player in self.players:
+                player.calculate_round_score()
+
+        return round_over

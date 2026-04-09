@@ -541,3 +541,17 @@ class Player:
         if self.turn_score >= open_score:
             return True
         return False
+
+    def calculate_round_score(self):
+        # player gets 100 points if they did not open
+        if not self.opened:
+            self.round_scores.append(100)
+        else:
+            # otherwise calculate the total of tiles still in their hand
+            score = 0
+            for tile in self.hand:
+                score += tile.tile_info.value
+            self.round_scores.append(score)
+
+        # add to total score
+        self.total_score += self.round_scores[-1]

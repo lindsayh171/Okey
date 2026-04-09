@@ -17,7 +17,7 @@ class DiscardPile(arcade.Sprite):
         else:
             self.tiles = tiles
 
-        self.player_discard = False
+        # player can draw from this discard
         self.player_com_discard = False
         self.holding_tile = False
         self.center_x = x
