@@ -538,7 +538,7 @@ class Player:
         return len(hand_tiles) == 0
 
     def check_open(self, open_score):
-        if self.turn_score >= open_score:
+        if self.turn_score > open_score:
             return True
         return False
 

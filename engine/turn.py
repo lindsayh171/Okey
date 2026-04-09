@@ -218,7 +218,6 @@ class Turn:
         self.add_to_other_open(player)
         player.print_open_tiles()
         arcade.schedule_once(self.com_discard, 2)
-        return
 
     def try_add_tile_to_group(self, tile, target_player, group_index):
         """Tries to add a given tile to an existing group in a player's open"""
