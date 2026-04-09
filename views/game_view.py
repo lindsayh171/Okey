@@ -48,13 +48,13 @@ class GameView(arcade.View):
         # Clear any existing sprites
         self.stand_slot_list.clear()
         self.tile_list.clear()
-        self.com_list.clear()
 
         # Stand coordinates
         self.stand_slot_list = self.player_stand.setup(self.width)
         print(len(self.stand_slot_list))
         # Com coordinates
-        self.setup_coms()
+        if self.game.curr_round == 1:
+            self.setup_coms()
 
         self.setup_player_tiles()
         print(len(self.game.players[0].hand))

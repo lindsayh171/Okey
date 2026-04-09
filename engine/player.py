@@ -555,3 +555,16 @@ class Player:
 
         # add to total score
         self.total_score += self.round_scores[-1]
+
+    def reset(self):
+        self.hand = []
+        self.played = []  # tiles that are displayed when the player opens
+        self.open_tiles = [[], [], [], []]  # sets of tiles out of what the player has opened with
+        self.arranged_groups = []  # to track player's list of arranged valid groups
+        self.used_tiles = set()  # Keep track of tiles that have already been used in a set or run
+        self.opened = False
+        self.opened_this_turn = False  # to prevent player from expanding tiles during opening
+        self.stars = 0
+        self.hand_score = 0  # score used for opening
+        self.turn_score = 0  # score during a round that is added to total
+        self.drawn = False  # Keeps track that one tile has been drawn per round

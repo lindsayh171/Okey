@@ -62,7 +62,7 @@ class Game:
         """
         # reset player hands
         for player in self.players:
-            player.hand = []
+            player.reset()
 
         # reset discards
         for discard in self.discards:
