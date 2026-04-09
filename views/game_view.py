@@ -404,9 +404,9 @@ class GameView(arcade.View):
             # ---- player has not opened
             # use gui-based scoring when player arranges tiles
             score = player.player_get_hand_score()
-
-            if score < self.game.turn.open_score: # temp number for testing
-                self.gui.show_popup(f"Not enough points to open. Reach {self.game.turn.open_score}")
+            required_score = self.game.turn.open_score + 1; # next open must exceed previous open score
+            if score < required_score:
+                self.gui.show_popup(f"Not enough points to open. Reach {required_score}")
                 return
 
             groups = player.arranged_groups
@@ -420,6 +420,7 @@ class GameView(arcade.View):
             player.opened = True # mark player as opened
             player.opened_this_turn = True
             self.open_displaying_player = player # display open window
+            self.game.turn.open_score = score
 
             print(f"{player.name} opened with {score} points!")
             if player.is_player_ai:
@@ -524,9 +525,10 @@ class GameView(arcade.View):
 
                 current_player = self.game.turn.get_current_player()
 
-                # Block same turn adding tiles to open
-                if current_player.opened_this_turn:
-                    self.gui.show_popup("Cannot add tiles on the same turn you opened. "
+                # Block player from adding tiles to their open during their opening turn
+                # player may add to another player's open
+                if current_player.opened_this_turn and self.open_displaying_player == current_player:
+                    self.gui.show_popup("Cannot add tiles to your open tiles on the same turn you opened. "
                                         "Add at your next turn")
                     self.snap(tile, self.stand_slot_list) # snap only back to hand
                     self.held_tiles = []
