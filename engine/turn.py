@@ -192,8 +192,6 @@ class Turn:
         player = self.get_current_player()
         # Gets the hand score and determines which tiles are being used for scoring
         print(player.hand_score)
-        # TODO: Add opening logic here
-
         # -----2. Discard
         # Runs the com discard function
         self.discard_tile(player.com_discard_tile())
