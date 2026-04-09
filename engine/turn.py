@@ -175,16 +175,15 @@ class Turn:
         """Handles AI player's full turn."""
         player = self.get_current_player()
         print(f"AI player's turn: {player.name}")
-        # -----1. Draw
-        arcade.schedule_once(self.draw_tile, 1)
 
         if player.get_hand_score() >= self.open_score:
             print(f"{player.hand_score}")
             self.open_score = player.hand_score
             player.open()
         if player.opened:
-            arcade.schedule_once(self.com_open_turn, 2)
+            arcade.schedule_once(self.com_open_turn, 1)
         else:
+            arcade.schedule_once(self.draw_tile, 1)
             arcade.schedule_once(self.com_discard, 2)
 
     def com_discard(self, delta_time = 2):
@@ -202,7 +201,16 @@ class Turn:
     def com_open_turn(self, delta_time = 2):
         """Logic for what a computer does on a turn if they have opened"""
         player = self.get_current_player()
-        # TODO add drawing from other player's discards
+        previous_player = self.players[(self.current_player_idx + 1) % len(self.players)]
+        if not player.drawn:
+            for target_player in self.players:
+                if not target_player is player:
+                    continue
+                for group_index in range(len(target_player.open_tiles)):
+                    if self.try_add_tile_to_group(self.last_discard, target_player, group_index):
+                        self.draw_from_discard(previous_player.discard)
+        if not player.drawn:
+            arcade.schedule_once(self.draw_tile, 1)
         player.add_valid_tiles_to_open()
         self.add_to_other_open(player)
         player.print_open_tiles()
@@ -210,7 +218,7 @@ class Turn:
         return
 
     def try_add_tile_to_group(self, tile, target_player, group_index):
-        """Tries to add a given tile to aan existing group in a player's open"""
+        """Tries to add a given tile to an existing group in a player's open"""
         group = target_player.open_tiles[group_index]
 
         if tile is None or not group:
@@ -248,7 +256,7 @@ class Turn:
 
         return False
 
-    def add_to_other_open(self, ai_player):
+    def add_to_other_open(self, player):
         """
         During AI turn: attempt to extend ANY player's open tiles
         using ALL tiles in AI hand.
@@ -258,20 +266,20 @@ class Turn:
         while moved:
             moved = False
 
-            for tile in ai_player.hand[:]:   # all AI tiles
+            for tile in player.hand[:]:   # all tiles
 
                 if tile is None:
                     continue
 
-                for target_player in self.players:   # ALL AI players
-                    if not target_player.is_player_ai or target_player is ai_player:
+                for target_player in self.players:   # ALL players
+                    if not target_player is player:
                         continue
 
                     for group_index in range(len(target_player.open_tiles)):
 
                         if self.try_add_tile_to_group(tile, target_player, group_index):
 
-                            ai_player.hand.remove(tile)
+                            player.hand.remove(tile)
                             moved = True
                             print(f"Added {tile.tile_info.value} to {target_player.name}'s open")
 
@@ -285,6 +293,9 @@ class Turn:
                     break
 
     def is_round_over(self):
+        """Checks if a round is over
+            by checking if any player's hand is empty
+            or the draw pile is empty"""
         if self.draw_pile.count() == 0:
             return True
 
