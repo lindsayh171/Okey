@@ -167,11 +167,11 @@ class GameView(arcade.View):
         screen_height = self.height
 
         # Com coordinates
-        com1_x = COM_WIDTH
+        com1_x = screen_width - COM_WIDTH
         com1_y = screen_height / 2
         com2_x = self.width / 2
         com2_y = screen_height - COM_WIDTH
-        com3_x = screen_width - COM_WIDTH
+        com3_x = COM_WIDTH
         com3_y = screen_height / 2
 
         # Make each com

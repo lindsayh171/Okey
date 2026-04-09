@@ -24,8 +24,8 @@ class Game:
         self.players = [Player(self.discards[0], "Person", False),
                         Player(self.discards[1],"Com_1", True),
                         # com 2 and 3 discard were displaying in opposite places on board
-                        Player(self.discards[3],"Com_2", True),
-                        Player(self.discards[2],"Com_3", True)]
+                        Player(self.discards[2],"Com_2", True),
+                        Player(self.discards[3],"Com_3", True)]
 
         self.dealer = Dealer(self.window_width, self.window_height)
         self.turn = Turn(self.players)
@@ -47,9 +47,9 @@ class Game:
         bottom_disc_y = third_height
 
         discards = [DiscardPile(right_disc_x, bottom_disc_y, ),
-                     DiscardPile(left_disc_x, bottom_disc_y, ),
                      DiscardPile(right_disc_x, top_disc_y, ),
-                     DiscardPile(left_disc_x, top_disc_y, )]
+                     DiscardPile(left_disc_x, top_disc_y, ),
+                     DiscardPile(left_disc_x, bottom_disc_y, )]
         return discards
 
     def set_player_name(self, name):
