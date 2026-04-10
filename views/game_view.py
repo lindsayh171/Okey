@@ -35,10 +35,6 @@ class GameView(arcade.View):
         self.held_tiles = []
 
         self.open_displaying_player = None
-        self._pending_human_open = False
-        self._pending_open_player = None
-        self._pending_open_groups = None
-        self._pending_open_score = 0
 
         self.gui = GameViewGraphics(self.window, self.player_stand.total_stand_height)
 
@@ -56,13 +52,13 @@ class GameView(arcade.View):
 
         # Stand coordinates
         self.stand_slot_list = self.player_stand.setup(self.width)
-        print(len(self.stand_slot_list))
+        # print(len(self.stand_slot_list))
         # Com coordinates
         if self.game.curr_round == 1:
             self.setup_coms()
 
         self.setup_player_tiles()
-        print(len(self.game.players[0].hand))
+        # print(len(self.game.players[0].hand))
 
         self.hand_score = arcade.Text(
             str(self.game.turn.players[0].player_get_hand_score()),
@@ -102,7 +98,7 @@ class GameView(arcade.View):
                 tile.tile_info.set_face_up()
                 tile.draw()
 
-        # Draw draw pile
+        # Draw the draw pile
         self.game.turn.draw_pile.draw()
 
         if self.open_displaying_player is not None:
@@ -136,7 +132,12 @@ class GameView(arcade.View):
         self.gui.end_turn_button.draw()
 
         # Minimum open score display
-        self.gui.open_score.text = f"Minimum Open Score: {self.game.turn.open_score}"
+        if self.game.turn.is_first_open():
+            required_score = self.game.turn.open_score
+        else:
+            required_score = self.game.turn.open_score + 1 # next open must exceed previous open score
+
+        self.gui.open_score.text = f"Minimum Open Score: {required_score}"
         self.gui.open_score.draw()
 
         # Draw tiles at end on top of everything.
@@ -312,7 +313,7 @@ class GameView(arcade.View):
 
                 # Sound effect
                 arcade.play_sound(sounds.rock, VOLUME)
-                print(f"Tile drawn from draw pile: {top_tile.tile_info.value}")
+                # print(f"Tile drawn from draw pile: {top_tile.tile_info.value}")
                 # Add tile to gui hand
                 for slot in self.stand_slot_list:
                     if not slot.holding_tile:
@@ -329,7 +330,7 @@ class GameView(arcade.View):
             for discard in self.game.discards:
                 # Check if clicked on discard not for player to access
                 if discard.collides_with_point((x, y)):
-                    print(self.game.turn.get_current_player().opened)
+                    #print(self.game.turn.get_current_player().opened)
                     if not discard.player_com_discard:
                         self.gui.show_popup("You can only draw from the player "
                                             "to your left's discard.")
@@ -396,8 +397,10 @@ class GameView(arcade.View):
             # ---- player has not opened
             # use gui-based scoring when player arranges tiles
             score = player.player_get_hand_score()
-            # next open must exceed previous open score
-            required_score = self.game.turn.open_score + 1
+            if self.game.turn.is_first_open():
+                required_score = self.game.turn.open_score
+            else:
+                required_score = self.game.turn.open_score + 1 # next open must exceed previous open score
             if score < required_score:
                 self.gui.show_popup(f"Not enough points to open. Reach {required_score}")
                 return
