@@ -5,7 +5,8 @@ from engine.game import Game
 import assets.colors as colr
 from assets.utils import Views, ROUNDS, STARS_OPEN
 from views.game_view_graphics import GameViewGraphics
-
+import assets.sounds as sounds
+from assets.sounds import VOLUME
 # Game window class
 class GameView(arcade.View):
     """
@@ -290,6 +291,10 @@ class GameView(arcade.View):
             self.held_tiles.append(clicked_tile)
             self.pull_to_top(clicked_tile)
             clicked_tile.highlight()
+
+            # Sound effect
+            arcade.play_sound(sounds.rock, VOLUME)
+
             return
 
         # ----------- Draw + discard -----------
@@ -302,8 +307,10 @@ class GameView(arcade.View):
                 # If draw not allowed, stop
                 if top_tile is None:
                     return
-                print(f"Tile drawn from draw pile: {top_tile.tile_info.value}")
 
+                # Sound effect
+                arcade.play_sound(sounds.rock, VOLUME)
+                print(f"Tile drawn from draw pile: {top_tile.tile_info.value}")
                 # Add tile to gui hand
                 for slot in self.stand_slot_list:
                     if not slot.holding_tile:
@@ -335,6 +342,8 @@ class GameView(arcade.View):
                     print(f"Drawn from discard pile: {top_tile.tile_info.value}")
                     if top_tile not in self.tile_list:
                         self.tile_list.append(top_tile)
+                        # Sound effect
+                        arcade.play_sound(sounds.rock, VOLUME)
 
                     top_tile.tile_info.set_face_up()
 
@@ -488,6 +497,9 @@ class GameView(arcade.View):
         if len(self.held_tiles) == 0:
             return
 
+
+        # Sound effect
+        arcade.play_sound(sounds.rock, VOLUME)
         tile = self.held_tiles[0]
         player = self.game.turn.get_current_player()
         disc = player.discard_pile

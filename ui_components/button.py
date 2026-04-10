@@ -1,5 +1,7 @@
 import arcade
 from ui_components import rounded_rectangle
+import assets.sounds as sounds
+from assets.sounds import VOLUME
 
 class Button:
     """
@@ -42,6 +44,11 @@ class Button:
         :param y: y coordinate
         :return: true if collides, false otherwise
         """
+        if self.rect.collided_with_rect(x, y):
+            # Sound effect
+            arcade.play_sound(sounds.button, VOLUME)
+            return self.rect.collided_with_rect(x, y)
+
         return self.rect.collided_with_rect(x, y)
 
     def set_color(self, color):
