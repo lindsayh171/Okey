@@ -386,7 +386,7 @@ class Player:
 
     def open(self):
         """Populates open_tiles from used_tiles and removes tiles from hand"""
-        print(f"{self.name} opened")
+        print(f"*** {self.name} opened ***")
         self.opened = True
         self.open_tiles = []
         current_group = []

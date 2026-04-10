@@ -59,7 +59,8 @@ class Turn:
         player.discard_pile.tiles.append(tile) # add tile player just discarded
         player.discard_pile.holding_tile = False
 
-        print(f"{player.name} placed {tile.tile_info.value} in discard (NOT FINAL)")
+        print(f"{player.name} placed {tile.tile_info.value} in their discard")
+        print(f"--- End of {player.name}'s turn ---")
         self.has_discarded = True
 
     def draw_tile(self, delta_time = 2):
@@ -73,16 +74,14 @@ class Turn:
         # block drawing if a player is not allowed
         # first player starts with 15 (no draw here)
         if not self.must_draw:
-            print("Not allowed to draw right now")
+            print("Not allowed to draw right now.")
             return None
 
         # prevent multiple drawing
         if player.drawn:
-            print("Tile already drawn for your turn")
             return None
 
         if self.draw_pile.count() == 0:
-            print("Draw pile is empty")
             return None
 
         # draw from pile
@@ -129,7 +128,8 @@ class Turn:
         self.must_draw = False
         self.turn_ended = False
 
-        print(f"{player.name} drew {tile.tile_info.value} from discard pile")
+        previous_player = self.players[(self.current_player_idx - 1) % len(self.players)]
+        print(f"{player.name} drew {tile.tile_info.value} from {previous_player.name}'s discard")
 
         return tile
 
@@ -159,6 +159,14 @@ class Turn:
         # get next player
         next_player = self.get_current_player()
 
+        # Reset all discard access
+        for p in self.players:
+            p.discard_pile.player_com_discard = False
+
+        # Allow only previous player's discard
+        previous_player = self.players[(self.current_player_idx - 1) % len(self.players)]
+        previous_player.discard_pile.player_com_discard = True
+
         # ---- Resetting turn state for next player
         self.must_draw = True # next player must draw
         self.has_discarded = False # reset discard tracking
@@ -166,8 +174,8 @@ class Turn:
         player.drawn = False # next player hasn't drawn yet
 
         print(f"\n--- {next_player.name}'s turn ---")
-        print(f"Open score {self.open_score}")
-        print(f"Open Status {next_player.opened}")
+        print(f"Open score: {self.open_score}")
+        print(f"Open Status: {next_player.opened}")
 
         if self.is_round_over():
             self.end_round()
@@ -183,7 +191,7 @@ class Turn:
         print(f"AI player's turn: {player.name}")
 
         if player.get_hand_score() >= self.open_score:
-            print(f"{player.hand_score}")
+            #print(f"{player.hand_score}")
             self.open_score = player.hand_score
             if self.open_score >= STARS_OPEN and self.is_first_open():
                 player.stars += 1
@@ -199,7 +207,7 @@ class Turn:
         """Logic for computer discarding"""
         player = self.get_current_player()
         # Gets the hand score and determines which tiles are being used for scoring
-        print(player.hand_score)
+        #print(player.hand_score)
         # -----2. Discard
         # Runs the com discard function
         self.discard_tile(player.com_discard_tile())
@@ -210,7 +218,7 @@ class Turn:
     def com_open_turn(self, delta_time = 2):
         """Logic for what a computer does on a turn if they have opened"""
         player = self.get_current_player()
-        previous_player = self.players[(self.current_player_idx + 1) % len(self.players)]
+        previous_player = self.players[(self.current_player_idx - 1) % len(self.players)]
         if not player.drawn:
             for target_player in self.players:
                 if not target_player is player:
@@ -218,6 +226,9 @@ class Turn:
                 for group_index in range(len(target_player.open_tiles)):
                     if self.try_add_tile_to_group(self.last_discard, target_player, group_index):
                         self.draw_from_discard(previous_player.discard_pile)
+                        break
+                if player.drawn:
+                    break
         if not player.drawn:
             arcade.schedule_once(self.draw_tile, 1)
         player.add_valid_tiles_to_open()
