@@ -50,15 +50,6 @@ class GameViewGraphics:
                                             [colr.THEME_PINK,
                                             colr.THEME_DARK_BLUE])
 
-        # add button
-        self.add_button = ui_button.Button([window.width * 0.9,
-                                            window.height * 0.225],
-                                           [window.width / 5.1,
-                                            window.height / 14],
-                                           "Add",
-                                           [colr.THEME_YELLOW,
-                                            colr.THEME_DARK_BLUE])
-
         self.open_score = arcade.Text(
             "",
             175,

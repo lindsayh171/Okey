@@ -109,14 +109,10 @@ class GameView(arcade.View):
         # Change open button if player can open
         if self.game.players[0].check_open(self.game.turn.open_score) or self.game.players[0].opened:
             self.gui.open_button.set_color(colr.THEME_YELLOW)
-            self.gui.add_button.set_color(colr.THEME_YELLOW)
             self.gui.open_button.draw()
-            self.gui.add_button.draw()
         else:
             self.gui.open_button.set_color(colr.GRAY)
-            self.gui.add_button.set_color(colr.GRAY)
             self.gui.open_button.draw()
-            self.gui.add_button.draw()
 
         # draw hand score
         arcade.draw_lbwh_rectangle_outline(self.window.height * 0.03,
@@ -370,29 +366,6 @@ class GameView(arcade.View):
                 if self.open_displaying_player == com.player:
                     self.open_displaying_player = None
                     return
-
-        # ---------- 'Add' button pressed ----------
-        if self.gui.add_button.button_pressed(x, y):
-
-            player = self.game.turn.get_current_player()
-
-            if not player.opened:
-                self.gui.show_popup("You must open first")
-                return
-
-            if player.opened_this_turn:
-                self.gui.show_popup("Cannot add on same turn as opening")
-                return
-
-            player.player_get_hand_score()
-            groups = player.arranged_groups
-
-            if not groups:
-                self.gui.show_popup("No valid groups to add")
-                return
-
-            print("Added groups to open")
-            return
 
         # ---------- 'Open' button pressed ----------
         if self.gui.open_button.button_pressed(x, y):
