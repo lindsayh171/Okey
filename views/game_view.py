@@ -107,7 +107,8 @@ class GameView(arcade.View):
 
         self.gui.menu_button.draw()
         # Change open button if player can open
-        if self.game.players[0].check_open(self.game.turn.open_score) or self.game.players[0].opened:
+        if (self.game.players[0].check_open(self.game.turn.open_score) or
+            self.game.players[0].opened):
             self.gui.open_button.set_color(colr.THEME_YELLOW)
             self.gui.open_button.draw()
         else:
@@ -134,7 +135,8 @@ class GameView(arcade.View):
         if self.game.turn.is_first_open():
             required_score = self.game.turn.open_score
         else:
-            required_score = self.game.turn.open_score + 1 # next open must exceed previous open score
+            # next open must exceed previous open score
+            required_score = self.game.turn.open_score + 1
 
         self.gui.open_score.text = f"Minimum Open Score: {required_score}"
         self.gui.open_score.draw()
@@ -393,7 +395,8 @@ class GameView(arcade.View):
             if self.game.turn.is_first_open():
                 required_score = self.game.turn.open_score
             else:
-                required_score = self.game.turn.open_score + 1 # next open must exceed previous open score
+                # next open must exceed previous open score
+                required_score = self.game.turn.open_score + 1
             if score < required_score:
                 self.gui.show_popup(f"Not enough points to open. Reach {required_score}")
                 return
@@ -435,14 +438,15 @@ class GameView(arcade.View):
 
                 # Visual tile must be in discard
                 if not disc.tiles:
-                    self.gui.show_popup(f"Please place a tile in discard before ending your turn.")
+                    self.gui.show_popup("Please place a tile in discard before ending your turn.")
                     return
 
                 # Get the tile that is visually in discard
                 tile = disc.tiles[-1]
 
                 if tile not in player.hand:
-                    self.gui.show_popup("You must place a *new* tile in discard before ending your turn.")
+                    self.gui.show_popup("You must place a *new* tile "
+                    "in discard before ending your turn.")
                     return
 
                 # Remove discarded tile from held tiles
