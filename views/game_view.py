@@ -5,7 +5,7 @@ from engine.game import Game
 import assets.colors as colr
 from assets.utils import Views, ROUNDS, STARS_OPEN
 from views.game_view_graphics import GameViewGraphics
-import assets.sounds as sounds
+from assets import sounds
 from assets.sounds import VOLUME
 # Game window class
 class GameView(arcade.View):
@@ -111,7 +111,8 @@ class GameView(arcade.View):
 
         self.gui.menu_button.draw()
         # Change open button if player can open
-        if self.game.players[0].check_open(self.game.turn.open_score) or self.game.players[0].opened:
+        if (self.game.players[0].check_open(self.game.turn.open_score) or
+                self.game.players[0].opened):
             self.gui.open_button.set_color(colr.THEME_YELLOW)
             self.gui.open_button.draw()
         else:
@@ -395,7 +396,8 @@ class GameView(arcade.View):
             # ---- player has not opened
             # use gui-based scoring when player arranges tiles
             score = player.player_get_hand_score()
-            required_score = self.game.turn.open_score + 1; # next open must exceed previous open score
+            # next open must exceed previous open score
+            required_score = self.game.turn.open_score + 1
             if score < required_score:
                 self.gui.show_popup(f"Not enough points to open. Reach {required_score}")
                 return
@@ -444,7 +446,8 @@ class GameView(arcade.View):
                 tile = disc.tiles[-1]
 
                 if tile not in player.hand:
-                    self.gui.show_popup("You must place a *new* tile in discard before ending your turn.")
+                    self.gui.show_popup("You must place a *new* tile in "
+                                        "discard before ending your turn.")
                     return
 
                 # Remove discarded tile from held tiles

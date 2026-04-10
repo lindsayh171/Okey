@@ -148,8 +148,7 @@ class Turn:
 
         # Updates open score if real player opened
         if not player.is_player_ai and player.opened_this_turn:
-            if player.hand_score >= self.open_score:
-                self.open_score = player.hand_score
+            self.open_score = max(self.open_score, player.hand_score)
 
         player.opened_this_turn = False
 

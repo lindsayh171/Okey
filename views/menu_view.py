@@ -27,7 +27,6 @@ class MenuView(arcade.View):
 
         menu_buttons_width = self.window.width / 6
         button_height = self.window.height / 12
-        close_button = self.window.height / 16
 
         button_divider = button_height * 1.8
 
