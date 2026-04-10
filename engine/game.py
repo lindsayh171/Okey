@@ -19,7 +19,7 @@ class Game:
         self.discards = self.discard_setup()
 
         # To note what discard pile player can access
-        self.discards[1].player_com_discard = True
+        self.discards[3].player_com_discard = True
 
         self.players = [Player(self.discards[0], "Person", False),
                         Player(self.discards[1],"Com_1", True),
