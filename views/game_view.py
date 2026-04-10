@@ -406,13 +406,13 @@ class GameView(arcade.View):
                 self.gui.show_popup("No valid arranged groups to open with")
                 return
 
-            self.move_groups_to_open(player, groups, reset=False)
-
             print(f"Check score {player.hand_score} >= {STARS_OPEN}")
             print(f"Check first {self.game.turn.is_first_open()}")
             if player.hand_score >= STARS_OPEN and self.game.turn.is_first_open():
                 self.gui.show_popup("You have earned 1 star (-100 points).")
                 player.stars += 1
+
+            self.move_groups_to_open(player, groups, reset=False)
 
             player.opened = True # mark player as opened
             player.opened_this_turn = True
