@@ -149,6 +149,12 @@ class GameView(arcade.View):
         else:
             self.game.turn.draw_pile.draw_highlight = False
 
+        # put any groups in open if player is open
+        if self.game.turn.get_current_player() is self.game.players[0]:
+            curr_player = self.game.players[0]
+            if curr_player.opened:
+                self.move_groups_to_open(curr_player, curr_player.arranged_groups, reset=True)
+
         # ui manager
         self.gui.manager.draw()
 
