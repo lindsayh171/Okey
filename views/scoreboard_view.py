@@ -19,9 +19,6 @@ class ScoreboardView(arcade.View):
         self.title_text = None
         self.exit_button = None
         self.round_end = round_end
-
-        self.stars = []
-
         self.scoreboard_y = 17 * self.window.height / 20
 
     def on_show_view(self):

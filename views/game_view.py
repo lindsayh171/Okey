@@ -202,11 +202,6 @@ class GameView(arcade.View):
             if com.player is not self.game.players[0]:
                 com.player.name = com.name
 
-    # Discard setup
-    def setup_discard(self, player):
-        """Sets up discard"""
-        pass
-
     def remove_and_lock(self, player, group):
         """
         Helper function that clears previous hand position
@@ -666,11 +661,6 @@ class GameView(arcade.View):
         if reset_position:
             if tile.current_slot is not None:
                 tile.position = tile.current_slot.center_x, tile.current_slot.center_y
-
-    def tile_clicked(self, x, y, tile):
-        """Returns the location of a tile when it is clicked"""
-        return (tile.center_x - tile.width < x < tile.center_x + self.width
-                and tile.center_y - self.height < y < tile.center_y + self.height)
 
     def handle_round_end(self):
         if self.game.curr_round < ROUNDS:

@@ -45,7 +45,6 @@ class Tile(arcade.Sprite):
 
         self.tile_info = t_info
         self.current_slot = curr_slot
-        self.is_in_set = False # distinguish what tiles are in another players set
         self.is_in_open = False # tile is committed to the open space area
 
         # text for tile

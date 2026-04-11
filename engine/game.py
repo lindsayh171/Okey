@@ -73,37 +73,3 @@ class Game:
         self.turn.draw_pile = self.dealer.deal_new_round(self.players, starting_player_idx)
 
         self.turn.new_round(starting_player_idx)
-
-    def debug_state(self):
-        """
-        Prints game state in readable format
-        """
-
-        print("\n========== GAME STATE ==========")
-
-        # Focus more on human player (index 0)
-        player = self.players[0]
-
-        print(f"\n--- Player [0] {player.name} ---")
-        print(f"Hand Size: {len(player.hand)}")
-        print(f"Drawn This Turn: {player.drawn}")
-
-        # Scores
-        arranged_score = player.player_get_hand_score()
-        print(f"GUI tile arrangement Score: {arranged_score}")
-        print(f"Locked Score: {player.hand_score}")
-
-        # Discard
-        if player.discard_pile.tiles:
-            top_tile = player.discard_pile.tiles[-1]
-            print(f"Top Discard: {top_tile.value}")
-        else:
-            print("Top Discard: None")
-
-        print(f"Turn Ended: {self.turn.turn_ended}")
-
-        # Draw pile
-        if self.turn.draw_pile:
-            print(f"Draw Pile Count: {self.turn.draw_pile.count()}")
-
-        print("================================\n")
