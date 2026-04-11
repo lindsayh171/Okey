@@ -170,7 +170,7 @@ class Turn:
         self.must_draw = True # next player must draw
         self.has_discarded = False # reset discard tracking
         self.turn_ended = True # allow dragging back
-        player.drawn = False # next player hasn't drawn yet
+        next_player.drawn = False # next player hasn't drawn yet
 
         print(f"\n--- {next_player.name}'s turn ---")
         print(f"Open score: {self.open_score}")
