@@ -35,9 +35,8 @@ class Dealer:
                 tiles.append(Tile(TileInfo(number, color, symbol, 1)))
 
         # Adding the jokers
-        for _ in range(6):
-            tiles.append(Tile(TileInfo(0, colr.GREEN, "⚡", 0)))
-            tiles.append(Tile(TileInfo(0, colr.GREEN, "⚡", 1)))
+        tiles.append(Tile(TileInfo(0, colr.GREEN, "⚡", 0)))
+        tiles.append(Tile(TileInfo(0, colr.GREEN, "⚡", 1)))
 
         return tiles
 

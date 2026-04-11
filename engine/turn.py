@@ -250,9 +250,6 @@ class Turn:
         is_set = all(t.tile_info.value == normal_tiles[0].tile_info.value for t in normal_tiles)
         is_run = all(t.tile_info.color == normal_tiles[0].tile_info.color for t in normal_tiles)
 
-        print(f"Is set: {is_set}")
-        print(f"Is run: {is_run}")
-
         # SET RULE
         if is_set:
             # a joker can always be appended to a set
@@ -283,12 +280,10 @@ class Turn:
 
             # check that color is the same
             if tile.tile_info.color != normal_tiles[0].tile_info.color:
-                print("Failing wrong color")
                 return False
 
             # 1-2 jokers at beginning
             if values[0] == 0 or (values[0] == 0 and values[1] == 0):
-                print(f"{tile.tile_info.value} == {values[2]} - 3")
                 # check beginning
                 if tile.tile_info.value == values[2] - 3:
                     group.insert(0, tile)
@@ -300,7 +295,6 @@ class Turn:
 
             # 1-2 jokers at end
             if values[-1] == 0 or (values[-1] == 0 and values[-2] == 0):
-                print(f"{tile.tile_info.value} == {values[-3]} + 3")
                 if tile.tile_info.value == values[-3] + 3:
                     group.append(tile)
                     return True
@@ -309,12 +303,10 @@ class Turn:
                     return True
 
             if tile.tile_info.value == values[0] - 1:
-                print(f"{tile.tile_info.value} == {values[0]} - 1")
                 group.insert(0, tile)
                 return True
 
             if tile.tile_info.value == values[-1] + 1:
-                print(f"{tile.tile_info.value} == {values[-1]} + 1")
                 group.append(tile)
                 return True
 
