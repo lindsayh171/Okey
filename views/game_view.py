@@ -636,11 +636,27 @@ class GameView(arcade.View):
 
         # If tile is touching a stand slot
         elif touching_slot:
+
+            overlapping_slot = None
+            for slot in self.stand_slot_list:
+                if slot.tile_overlaps(tile):
+                    overlapping_slot = slot
+                    break
+            if overlapping_slot is not None and overlapping_slot.holding_tile:
+                self.split(tile, self.stand_slot_list)
+
+                self.snap(tile, available_slots)
+
+                if tile not in player.hand:
+                    player.hand.append(tile)
+                return
+
             self.snap(tile, available_slots)
             if tile not in player.hand:
                 player.hand.append(tile)
-        else:
-            self.snap(tile, available_slots)
+            return
+        self.snap(tile, available_slots)
+
 
     def on_mouse_motion(self, x, y, dx, dy):
         for moving_tile in self.held_tiles:
@@ -651,7 +667,7 @@ class GameView(arcade.View):
         self.tile_list.remove(selected_tile)
         self.tile_list.append(selected_tile)
 
-    def snap(self, tile, selected_list):
+    def snap(self, tile, selected_list, from_split=False):
         """Snaps a tile to a slot location"""
         reset_position = True
 
@@ -666,7 +682,7 @@ class GameView(arcade.View):
                 slot.holding_tile = True
 
                 # reset previous slot before changing curr slot to new location
-                if tile.current_slot is not None:
+                if tile.current_slot is not None and not from_split:
                     prev_slot = tile.current_slot
                     prev_slot.holding_tile = False
 
@@ -699,3 +715,101 @@ class GameView(arcade.View):
             self.window.show_scoreboard(Views.GAME, self.game, self, True)
         else:
             self.window.show_end(self.game, False)
+
+    def split(self, tile, selected_list):
+        print("\nsplit triggered")
+        available_slots = selected_list
+        slot_result = arcade.get_closest_sprite(tile, available_slots)
+
+        # If the tile's closest slot is empty, return
+        if not slot_result:
+            return
+
+        slot, _ = slot_result
+
+        if slot not in available_slots:
+            return
+
+        slot_index = available_slots.index(slot)
+        # If the slot is in the top row
+        if slot_index > 11:
+            start_index = 12
+            end_index = 23
+        else:
+            start_index = 0
+            end_index = 11
+
+        # List of empty slots in row
+        empty_slots = []
+        for i in range(start_index, end_index):
+            # If a slot is empty
+            if available_slots[i].holding_tile is False:
+                empty_slots.append(available_slots[i])
+
+        # if there are no empty slots in the row, return
+        if not empty_slots:
+            return
+
+        closest_empty_index = None
+        shortest_distance = 100 # Something bigger than the largest possible distance
+        # Find the closest empty slot to the slot_index
+        for empty_slot in empty_slots:
+            empty_index = available_slots.index(empty_slot)
+            # Find the distance the empty slot is from the intended tile slot
+            distance = abs(slot_index - empty_index)
+            if distance < shortest_distance:
+                shortest_distance = distance
+                closest_empty_index = empty_index
+
+        if closest_empty_index is None:
+            return
+
+        # Move tiles
+        self.shift_tiles(available_slots, slot_index, closest_empty_index)
+
+
+    def shift_tiles(self, available_slots, slot_index, closest_empty_index):
+
+        # Find what direction to go in
+        if slot_index < closest_empty_index:
+            # Need to shift tiles right
+            for i in range(closest_empty_index, slot_index, -1):
+                starting_slot = available_slots[i - 1]
+                ending_slot = available_slots[i]
+
+                tile_to_move = None
+                # Find the tile in the starting_slot
+                for tile in self.tile_list:
+                    if tile.current_slot is starting_slot:
+                        tile_to_move = tile
+                        break
+                if tile_to_move:
+                    tile_to_move.center_x = ending_slot.center_x
+                    tile_to_move.center_y = ending_slot.center_y
+                    tile_to_move.current_slot = ending_slot
+                ending_slot.holding_tile = True
+                starting_slot.holding_tile = False
+
+        # Tile needs to move shift to the left
+        else:
+            for i in range(closest_empty_index, slot_index):
+                starting_slot = available_slots[i + 1]
+                ending_slot = available_slots[i]
+
+                tile_to_move = None
+                # Find the tile in the starting_slot
+                for tile in self.tile_list:
+                    if tile.current_slot is starting_slot:
+                        tile_to_move = tile
+                        break
+                if tile_to_move:
+                    tile_to_move.center_x = ending_slot.center_x
+                    tile_to_move.center_y = ending_slot.center_y
+                    tile_to_move.current_slot = ending_slot
+                ending_slot.holding_tile = True
+                starting_slot.holding_tile = False
+        for slot in available_slots:
+            slot.holding_tile = any(t.current_slot is slot for t in self.tile_list)
+
+
+
