@@ -189,8 +189,7 @@ class Turn:
         player = self.get_current_player()
         print(f"AI player's turn: {player.name}")
 
-        if player.get_hand_score() >= self.open_score:
-            #print(f"{player.hand_score}")
+        if player.get_hand_score() > self.open_score:
             self.open_score = player.hand_score
             if self.open_score >= STARS_OPEN and self.is_first_open():
                 player.stars += 1

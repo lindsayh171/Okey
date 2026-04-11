@@ -8,5 +8,8 @@ class Views(Enum):
     GAME = 'g'
 
 ROUNDS = 6 # change to 1 to debug
-INITIAL_OPEN = 10 # to test for now
-STARS_OPEN = 10
+
+# make initial open 80 because player hand must be strictly greater than open score
+INITIAL_OPEN = 80
+
+STARS_OPEN = 100
