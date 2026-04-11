@@ -5,7 +5,6 @@ scores that are dependent on how each evaluate tiles.
 """
 
 from collections import defaultdict
-import math
 from board_components.open_stand import OpenStand
 
 def group_tiles(tiles, y_threshold = 25):
