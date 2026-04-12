@@ -486,15 +486,15 @@ class GameView(arcade.View):
         player = self.game.turn.get_current_player()
         disc = player.discard_pile
 
-        # remove tile from discard list if was in disc
-        if tile in disc.tiles and not disc.tile_overlaps(tile):
-            disc.tiles.remove(tile)
+        # Only remove current turn discard, not previous turn discard
+        if (
+            disc.tiles
+            and disc.tiles[-1] == tile # most recent discard
+            and tile in player.hand # for this turn
+            and not disc.tile_overlaps(tile)
+        ):
+            disc.tiles.pop()
             disc.holding_tile = False
-
-            tile.current_slot = None
-
-            if tile not in player.hand:
-                player.hand.append(tile)
 
         # get set of slots
         available_slots = list(self.stand_slot_list)
@@ -577,10 +577,17 @@ class GameView(arcade.View):
             # If tile is over discard
             if touching_discard and not touching_slot:
 
-                # block access to discard except first player
+                # must draw first
                 if self.game.turn.must_draw:
                     self.gui.show_popup("You must draw before discarding")
-                    self.snap(tile, available_slots)
+                    self.snap(tile, self.stand_slot_list)
+                    self.held_tiles = []
+                    tile.unhighlight()
+                    return
+
+                # block if another tile is placed on top of the latest top discard tile
+                if disc.tiles and disc.tiles[-1] in player.hand and disc.tiles[-1] != tile:
+                    self.snap(tile, self.stand_slot_list)
                     self.held_tiles = []
                     tile.unhighlight()
                     return
@@ -590,7 +597,8 @@ class GameView(arcade.View):
 
                 if tile not in disc.tiles:
                     disc.tiles.append(tile)
-
+                elif disc.tiles[-1] != tile:
+                    disc.tiles.append(tile)
                 disc.holding_tile = True
 
             # If tile is touching a stand slot
@@ -642,7 +650,7 @@ class GameView(arcade.View):
                     prev_slot = tile.current_slot
                     prev_slot.holding_tile = False
 
-                    row_index = prev_slot.open_row_index
+                    row_index = getattr(prev_slot, "open_row_index", None)
                     if row_index is not None and self.open_displaying_player is not None:
                         row = self.open_displaying_player.open_tiles[row_index]
                         if tile in row:
