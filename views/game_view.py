@@ -246,8 +246,8 @@ class GameView(arcade.View):
                     continue
 
                 # print(player.open_tiles)
-                for i in range(len(player.open_tiles)):
-                    if len(player.open_tiles[i]) == 0:
+                for i, row in enumerate(player.open_tiles):
+                    if len(row) == 0:
                         player.open_tiles[i] = list(group)
                         self.remove_and_lock(player, group)
                         break
