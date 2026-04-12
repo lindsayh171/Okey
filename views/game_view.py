@@ -9,6 +9,7 @@ from assets.sounds import VOLUME
 from views.game_view_graphics import GameViewGraphics
 
 # Game window class
+
 def is_touching_slot(tile, available_slots):
     """
     Check if a tile is touching one of the available slots
@@ -27,8 +28,7 @@ def is_touching_slot(tile, available_slots):
                 break
         # slot is player hand
         else:
-            # Only empty slots
-            if not slot.holding_tile and slot.tile_overlaps(tile):
+            if slot.tile_overlaps(tile):
                 touching_slot = slot
                 break
 
@@ -157,12 +157,7 @@ class GameView(arcade.View):
         self.hand_score.draw()
         self.gui.end_turn_button.draw()
 
-        # Minimum open score display
-        if self.game.turn.is_first_open():
-            required_score = self.game.turn.open_score
-        else:
-            # next open must exceed previous open score
-            required_score = self.game.turn.open_score + 1
+        required_score = self.game.turn.open_score + 1
 
         self.gui.open_score.text = f"Minimum Open Score: {required_score}"
         self.gui.open_score.draw()
@@ -537,8 +532,10 @@ class GameView(arcade.View):
 
         touching_discard = disc.tile_overlaps(tile)
 
+        if touching_slot and touching_slot.holding_tile:
+            self.split(tile, available_slots)
         # Tile snapping if an open window is displaying
-        if self.open_displaying_player is not None and touching_slot:
+        elif self.open_displaying_player is not None and touching_slot and not touching_slot.holding_tile:
             row_index = touching_slot.open_row_index
             self.snap_if_open(row_index, tile, available_slots)
 
@@ -643,8 +640,6 @@ class GameView(arcade.View):
                     overlapping_slot = slot
                     break
             if overlapping_slot is not None and overlapping_slot.holding_tile:
-                self.split(tile, self.stand_slot_list)
-
                 self.snap(tile, available_slots)
 
                 if tile not in player.hand:
@@ -718,6 +713,7 @@ class GameView(arcade.View):
 
     def split(self, tile, selected_list):
         print("\nsplit triggered")
+
         available_slots = selected_list
         slot_result = arcade.get_closest_sprite(tile, available_slots)
 
@@ -731,6 +727,7 @@ class GameView(arcade.View):
             return
 
         slot_index = available_slots.index(slot)
+        print(f"slot index {slot_index}")
         # If the slot is in the top row
         if slot_index > 11:
             start_index = 12
@@ -739,15 +736,26 @@ class GameView(arcade.View):
             start_index = 0
             end_index = 11
 
+        # remove tile from previous slot
+        prev_slot = tile.current_slot
+        tile.current_slot.holding_tile = False
+        tile.current_slot = None
+
         # List of empty slots in row
         empty_slots = []
-        for i in range(start_index, end_index):
+        for i in range(start_index, end_index + 1):
             # If a slot is empty
-            if available_slots[i].holding_tile is False:
+            if not available_slots[i].holding_tile:
                 empty_slots.append(available_slots[i])
 
         # if there are no empty slots in the row, return
         if not empty_slots:
+            # put tile back in previous slot
+            tile.current_slot = prev_slot
+            tile.current_slot.holding_tile = True
+            tile.center_x = prev_slot.center_x
+            tile.center_y = prev_slot.center_y
+            print("No empty slots in row")
             return
 
         closest_empty_index = None
@@ -761,55 +769,69 @@ class GameView(arcade.View):
                 shortest_distance = distance
                 closest_empty_index = empty_index
 
+        empty_slot, _ = arcade.get_closest_sprite(tile, empty_slots)
+        empty_index = available_slots.index(empty_slot)
+        print(f"Empty index: {empty_index}")
+
         if closest_empty_index is None:
             return
 
         # Move tiles
-        self.shift_tiles(available_slots, slot_index, closest_empty_index)
+        self.shift_tiles(tile, available_slots, slot_index, closest_empty_index)
 
 
-    def shift_tiles(self, available_slots, slot_index, closest_empty_index):
+    def shift_tiles(self, tile_to_add, available_slots, slot_index, closest_empty_index):
 
         # Find what direction to go in
         if slot_index < closest_empty_index:
+            print("Shifting right")
             # Need to shift tiles right
             for i in range(closest_empty_index, slot_index, -1):
-                starting_slot = available_slots[i - 1]
-                ending_slot = available_slots[i]
+                prev_slot = available_slots[i - 1]
+                new_slot = available_slots[i]
 
-                tile_to_move = None
-                # Find the tile in the starting_slot
+                # find tile in working slot and move it right
                 for tile in self.tile_list:
-                    if tile.current_slot is starting_slot:
-                        tile_to_move = tile
+                    if tile.current_slot is prev_slot:
+                        print(f"Moving {tile} from {i- 1} to {i}")
+                        # shift tile to right
+                        tile.current_slot = new_slot
+                        tile.center_x = new_slot.center_x
+                        tile.center_y = new_slot.center_y
                         break
-                if tile_to_move:
-                    tile_to_move.center_x = ending_slot.center_x
-                    tile_to_move.center_y = ending_slot.center_y
-                    tile_to_move.current_slot = ending_slot
-                ending_slot.holding_tile = True
-                starting_slot.holding_tile = False
+
+                new_slot.holding_tile = True
+                prev_slot.holding_tile = False
+
+            # put original moved tile in open spot
+            tile_to_add.current_slot = available_slots[slot_index]
+            tile_to_add.center_x = available_slots[slot_index].center_x
+            tile_to_add.center_y = available_slots[slot_index].center_y
+            tile_to_add.current_slot.holding_tile = True
 
         # Tile needs to move shift to the left
         else:
+            print("Shifting left")
+            # Need to shift tiles left
             for i in range(closest_empty_index, slot_index):
-                starting_slot = available_slots[i + 1]
-                ending_slot = available_slots[i]
+                prev_slot = available_slots[i + 1]
+                new_slot = available_slots[i]
 
-                tile_to_move = None
-                # Find the tile in the starting_slot
+                # find tile in working slot and move it left
                 for tile in self.tile_list:
-                    if tile.current_slot is starting_slot:
-                        tile_to_move = tile
+                    if tile.current_slot is prev_slot:
+                        print(f"Moving {tile} from {i + 1} to {i}")
+                        # shift tile to right
+                        tile.current_slot = new_slot
+                        tile.center_x = new_slot.center_x
+                        tile.center_y = new_slot.center_y
                         break
-                if tile_to_move:
-                    tile_to_move.center_x = ending_slot.center_x
-                    tile_to_move.center_y = ending_slot.center_y
-                    tile_to_move.current_slot = ending_slot
-                ending_slot.holding_tile = True
-                starting_slot.holding_tile = False
-        for slot in available_slots:
-            slot.holding_tile = any(t.current_slot is slot for t in self.tile_list)
 
+                new_slot.holding_tile = True
+                prev_slot.holding_tile = False
 
-
+            # put original moved tile in open spot
+            tile_to_add.current_slot = available_slots[slot_index]
+            tile_to_add.center_x = available_slots[slot_index].center_x
+            tile_to_add.center_y = available_slots[slot_index].center_y
+            tile_to_add.current_slot.holding_tile = True
