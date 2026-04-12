@@ -557,7 +557,7 @@ class GameView(arcade.View):
         if self.game.turn.get_current_player() is self.game.players[0]:
             curr_player = self.game.players[0]
             if curr_player.opened:
-                print("Moving")
+                #print("Moving")
                 self.move_groups_to_open(curr_player, curr_player.arranged_groups, reset=False)
 
     # on_mouse_release helpers
@@ -746,7 +746,7 @@ class GameView(arcade.View):
             return
 
         slot_index = slots_list.index(slot)
-        print(f"slot index {slot_index}")
+        #print(f"slot index {slot_index}")
         # If the slot is in the top row
         if slot_index > 11:
             start_index = 12
@@ -790,7 +790,7 @@ class GameView(arcade.View):
 
         empty_slot, _ = arcade.get_closest_sprite(tile, empty_slots)
         empty_index = slots_list.index(empty_slot)
-        print(f"Empty index: {empty_index}")
+        #print(f"Empty index: {empty_index}")
 
         if closest_empty_index is None:
             return
@@ -803,7 +803,7 @@ class GameView(arcade.View):
 
         # Find what direction to go in
         if slot_index < closest_empty_index:
-            print("Shifting right")
+            #print("Shifting right")
             # Need to shift tiles right
             for i in range(closest_empty_index, slot_index, -1):
                 prev_slot = available_slots[i - 1]
@@ -812,7 +812,7 @@ class GameView(arcade.View):
                 # find tile in working slot and move it right
                 for tile in self.tile_list:
                     if tile.current_slot is prev_slot:
-                        print(f"Moving {tile} from {i- 1} to {i}")
+                        #print(f"Moving {tile} from {i- 1} to {i}")
                         # shift tile to right
                         tile.current_slot = new_slot
                         tile.center_x = new_slot.center_x
@@ -830,7 +830,7 @@ class GameView(arcade.View):
 
         # Tile needs to move shift to the left
         else:
-            print("Shifting left")
+            #print("Shifting left")
             # Need to shift tiles left
             for i in range(closest_empty_index, slot_index):
                 prev_slot = available_slots[i + 1]
@@ -839,7 +839,7 @@ class GameView(arcade.View):
                 # find tile in working slot and move it left
                 for tile in self.tile_list:
                     if tile.current_slot is prev_slot:
-                        print(f"Moving {tile} from {i + 1} to {i}")
+                        #print(f"Moving {tile} from {i + 1} to {i}")
                         # shift tile to right
                         tile.current_slot = new_slot
                         tile.center_x = new_slot.center_x

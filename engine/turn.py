@@ -334,7 +334,7 @@ class Turn:
 
                             player.hand.remove(tile)
                             moved = True
-                            print(f"Added {tile.tile_info.value} to {target_player.name}'s open")
+                            print(f"{player.name} added {tile.tile_info.value} to {target_player.name}'s open")
 
                             # Restart scanning after any successful move
                             break
