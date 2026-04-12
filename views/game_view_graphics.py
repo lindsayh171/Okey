@@ -74,9 +74,18 @@ class GameViewGraphics:
 
         self.manager.add(anchor)
 
+        # keep track of what popup is active and hide if new one
+        self.active_popup = None
+
     def show_popup(self, text):
         self.manager.enable()
-        error_box = Message(self.manager, text)
-        error_box.show()
-        arcade.play_sound(sounds.error, VOLUME)
+        # If a popup is already active, remove it
+        if self.active_popup:
+            self.manager.remove(self.active_popup)
+            self.active_popup = None
 
+        # Create and show the new popup
+        self.active_popup = Message(self.manager, text)
+        self.active_popup.show()
+
+        arcade.play_sound(sounds.error, VOLUME)
