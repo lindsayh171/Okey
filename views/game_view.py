@@ -363,7 +363,8 @@ class GameView(arcade.View):
             return
 
         # ---------- 'End Turn' button pressed ----------
-        if self.gui.end_turn_button.button_pressed(x, y):
+        if (self.game.turn.get_current_player() == self.game.players[0] and
+            self.gui.end_turn_button.button_pressed(x, y)):
             self.handle_end_turn_click()
 
         # check if menu was clicked
@@ -500,7 +501,8 @@ class GameView(arcade.View):
 
     def on_mouse_release(self, x, y, button, modifiers):
         # Show button press if clicked on end turn
-        if self.gui.end_turn_button.button_pressed(x, y) :
+        if (self.game.turn.get_current_player() == self.game.players[0] and
+                self.gui.end_turn_button.button_pressed(x, y)):
             self.gui.end_turn_button.show_pressed_button(colr.GRAY)
 
         # If no cards are being held, return
