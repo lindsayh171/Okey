@@ -711,22 +711,17 @@ class GameView(arcade.View):
         else:
             self.window.show_end(self.game, False)
 
-    def split(self, tile, selected_list):
-        print("\nsplit triggered")
-
-        available_slots = selected_list
-        slot_result = arcade.get_closest_sprite(tile, available_slots)
+    def split(self, tile, slots_list):
+        slot, _ = arcade.get_closest_sprite(tile, slots_list)
 
         # If the tile's closest slot is empty, return
-        if not slot_result:
+        if not slot:
             return
 
-        slot, _ = slot_result
-
-        if slot not in available_slots:
+        if slot not in slots_list:
             return
 
-        slot_index = available_slots.index(slot)
+        slot_index = slots_list.index(slot)
         print(f"slot index {slot_index}")
         # If the slot is in the top row
         if slot_index > 11:
@@ -745,8 +740,8 @@ class GameView(arcade.View):
         empty_slots = []
         for i in range(start_index, end_index + 1):
             # If a slot is empty
-            if not available_slots[i].holding_tile:
-                empty_slots.append(available_slots[i])
+            if not slots_list[i].holding_tile:
+                empty_slots.append(slots_list[i])
 
         # if there are no empty slots in the row, return
         if not empty_slots:
@@ -762,7 +757,7 @@ class GameView(arcade.View):
         shortest_distance = 100 # Something bigger than the largest possible distance
         # Find the closest empty slot to the slot_index
         for empty_slot in empty_slots:
-            empty_index = available_slots.index(empty_slot)
+            empty_index = slots_list.index(empty_slot)
             # Find the distance the empty slot is from the intended tile slot
             distance = abs(slot_index - empty_index)
             if distance < shortest_distance:
@@ -770,14 +765,14 @@ class GameView(arcade.View):
                 closest_empty_index = empty_index
 
         empty_slot, _ = arcade.get_closest_sprite(tile, empty_slots)
-        empty_index = available_slots.index(empty_slot)
+        empty_index = slots_list.index(empty_slot)
         print(f"Empty index: {empty_index}")
 
         if closest_empty_index is None:
             return
 
         # Move tiles
-        self.shift_tiles(tile, available_slots, slot_index, closest_empty_index)
+        self.shift_tiles(tile, slots_list, slot_index, closest_empty_index)
 
 
     def shift_tiles(self, tile_to_add, available_slots, slot_index, closest_empty_index):
