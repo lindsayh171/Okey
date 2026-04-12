@@ -59,8 +59,10 @@ class GameView(arcade.View):
         # Stand specifications
         self.player_stand = Stand()
 
+        # Players held tiles
         self.held_tiles = []
 
+        # Player that is displaying their open screen
         self.open_displaying_player = None
 
         self.gui = GameViewGraphics(self.window, self.player_stand.total_stand_height)
@@ -742,6 +744,7 @@ class GameView(arcade.View):
         if not slot:
             return
 
+        # If the slot is not in stand slot list
         if slot not in slots_list:
             return
 
@@ -751,11 +754,12 @@ class GameView(arcade.View):
         if slot_index > 11:
             start_index = 12
             end_index = 23
+        # Slot is in the bottom row
         else:
             start_index = 0
             end_index = 11
 
-        # remove tile from previous slot
+        # Remove tile from previous slot
         prev_slot = tile.current_slot
         tile.current_slot.holding_tile = False
         tile.current_slot = None
@@ -767,9 +771,9 @@ class GameView(arcade.View):
             if not slots_list[i].holding_tile:
                 empty_slots.append(slots_list[i])
 
-        # if there are no empty slots in the row, return
+        # If there are no empty slots in the row, return
         if not empty_slots:
-            # put tile back in previous slot
+            # Put tile back in previous slot
             tile.current_slot = prev_slot
             tile.current_slot.holding_tile = True
             tile.center_x = prev_slot.center_x
@@ -809,11 +813,11 @@ class GameView(arcade.View):
                 prev_slot = available_slots[i - 1]
                 new_slot = available_slots[i]
 
-                # find tile in working slot and move it right
+                # Find tile in working slot and move it right
                 for tile in self.tile_list:
                     if tile.current_slot is prev_slot:
                         #print(f"Moving {tile} from {i- 1} to {i}")
-                        # shift tile to right
+                        # Shift tile to right
                         tile.current_slot = new_slot
                         tile.center_x = new_slot.center_x
                         tile.center_y = new_slot.center_y
