@@ -854,3 +854,4 @@ class GameView(arcade.View):
             tile_to_add.center_x = available_slots[slot_index].center_x
             tile_to_add.center_y = available_slots[slot_index].center_y
             tile_to_add.current_slot.holding_tile = True
+            
