@@ -163,7 +163,7 @@ class GameView(arcade.View):
         if self.game.turn.is_first_open():
             required_score = self.game.turn.open_score
         else:
-            required_score = self.game.turn.open_score + 1 # next open must exceed previous open score
+            required_score = self.game.turn.open_score + 1
 
         self.gui.open_score.text = f"Minimum Open Score: {required_score}"
         self.gui.open_score.draw()
@@ -404,7 +404,7 @@ class GameView(arcade.View):
         top_tile = self.game.turn.draw_from_discard(discard)
         if top_tile is None:
             return
-        print(f"Drawn from discard pile: {top_tile.tile_info.value}")
+        # print(f"Drawn from discard pile: {top_tile.tile_info.value}")
         if top_tile not in self.tile_list:
             self.tile_list.append(top_tile)
             # Sound effect
@@ -868,3 +868,4 @@ class GameView(arcade.View):
             tile_to_add.center_x = available_slots[slot_index].center_x
             tile_to_add.center_y = available_slots[slot_index].center_y
             tile_to_add.current_slot.holding_tile = True
+            

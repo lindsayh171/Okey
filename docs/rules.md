@@ -20,7 +20,7 @@ For example, a set of three 3s is worth 9 points (3 × 3).
   - There are **two sets**  of each numbered tile **1–13**, i.e., two copies of every number from 1-13.
   - Colors of tiles are orange, black, blue, and red.
 - An entire game typically consists of **6 rounds**.
-- The game is played by four players, one of whom is designated as the dealer.
+- The game is played by four players.
 
 ---
 
@@ -64,8 +64,7 @@ During a turn:
 There are **two ways** a player may finish a round:
 
 #### A. Finish by Discarding
-- To win (finish a round), a player must place their **last tile on the table**.
-- A player **cannot** finish by adding their final tiles onto another player’s already-opened hand.
+- To win (finish a round), a player must get rid of all their tiles, including discarding their final tile.
 #### B. Finish with a Complete Hand (No Discard)
 - A player may finish the round if all tiles in their hand form valid groups according to the game rules. In this case, the player finishes with 15 tiles and does not discard a final tile.
 
@@ -77,8 +76,7 @@ Opponent scoring depends on how the round is finished.
 
 #### A. If the Player Finishes by Discarding
 
-- If the finishing tile is a **joker**, all other players receive **double** their calculated points.
-- If the finishing tile is **not** a joker:
+
   - Players who **did not open** during the round receive **100 points**.
   - Players who **did open** receive their **current board tally** (the value of the tiles remaining in their hand).
 
